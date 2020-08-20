@@ -3,73 +3,85 @@ import manage_file
 import parimatch_betting
 import time
 # конкретные модули
+
 WALL_GET_url = 'https://vk.com/rushbet.tips'
 
 def parse_bet(text) :
-    """
-    text =
-    {
-       'победитель' - либо 'название команды', либо 'название команды(+-1.5)', фора или больше меньше 
-       'кэфф'
-       'название ставки'
-       'время и дата матча'
-       '-'
-       'сумма пари'
+    # таблица смещений
+    # отображение группа -> общая форма
+    table = {
+        # победитель по карте
+            'Победа. Карта' : 'map_winner',
+            'Победитель. Карта' : 'map_winner',
+            'Результат. Карта' : 'map_winner',
+        # фора по карте 
+            'Фора. Карта' : 'map_handicap',
+        # тотал по карте
+            'Тотал. Карта' : 'map_total_score',
+        # победа команды
+            'Результат матча' : 'match_result',
+            'Победа' : 'match_result',
+        # фора 
+            'Фора' : 'handicap',
+        # конкретный счет
+            'Счет' : 'score',
+        # тотал(сумма счетов)
+            'Тотал' : 'total_score',
     }
-     возможны неточности в распознавании, их желательно бы устранить
-     Как работает: подается текст одной фотки, задача - определить, ординар, экспресс или система
-     Если ординар - вернуть:
-     {
-         'expr' : False
-         'ord' : True
-         'sys' False
-         'bet' : {здесь будет инфа о ставке(как устроена пока не понятно)}
-     }
-     Если экспресс - вернуть:
-     {
-         'expr' : True
-         'ord' : False
-         'sys' False
-         'bet' : [массив записей о ставках]
-     }
-     С системой пока не ясно
+    result = {}
+    # здесь по идее иедт проверка на ставку по шаблонам
+    if template1(text) or template2(text) :
+        result['type'] = 'ordn'
+        result['winner'] = text[0]
+        for key in table.keys() :
+            #print(text[2].find(key))
+            if text[2].find(key) != -1 :
+                if table[key].find('map') > 0 :
+                    result['outcome_index'] = (table[key], int(text[2][-1]))
+                else :
+                    result['outcome_index'] = table[key]
+                break
+        result['summ'] = 20.0
+        result['match_title'] = text[3][text[3].find(':') + 4 : ]
+    return result
+
     """
-    BALANCE_COEFFICIENT = 1 / 100
+    RETURN
+    {
+        'type' : expr | sys | ordn
+        'summ' : число
+        'match_title' : 'team1 - team2'
+        'outcome_index' : в соответствии с таблицей смещений
+        'winner' : 
+    }
+    """
     """ 
     c суммой ставки пока не понятно, но планирую сделать так:
     на каждый промежуток кэффов юзер сам устанавливает сумму,
     соответсвенно будем брать данные из БД    
     """
 
-    try : 
-        if len(text) == 7 :
-            str_match = text[3][text[3].find(':') + 4:]
-            str_match = str_match.replace('-', '').replace(' ', '')
-            return {
-                'match' : str_match.upper(),
-                'winner' : text[0],
-                'summ' : str(float(text[5][0:(len(text[5]) - 7)]) * BALANCE_COEFFICIENT),
-                'outcome_index' : text[2],
-            }
-        elif len(text) == 6 :
-            str_match = text[2][text[2].find(':') + 4:]
-            str_match = str_match.replace(' - ', '')
-            return {
-                'match' : str_match.upper(),
-                'winner' : text[0],
-                'summ' : str(float(text[5][0:(len(text[4]) - 7)]) * BALANCE_COEFFICIENT),
-                'outcome_index' : text[2][0:text[2].find(':') - 10],
-            }
-    except :
-        return {}
+def template1(text) :
+    # это если ставка ординар!!!
+    if len(text) != 7 :
+        return False
+    if text[4] != 'Сумма пари' or text[6].find('Возможный выигрыш') == -1 :
+        return False
+    return True
+
+def template2(text) :
+    if len(text) != 6 :
+        return False
+    data_time = text[1].replace(' ', '')
+    if data_time.find(':') != len(data_time) - 3 :
+        return False
+    return True
 
 def main_script(BROWSER, post_before : dict, cycle_encounter : int) :
     # что происходит:
     # получается последнее фото со страницы, берется текст с фото, парсится ставка
     # сам процесс ставки
     post = manage_file.get_last_post(BROWSER, WALL_GET_url)
-    if cycle_encounter % 100 == 1 :
-        manage_file.renew(BROWSER, 'https://new.parimatch.ru')
     if post == post_before :
         return post
     # здесь нужно понять, как отличать ставку от поста с другим содержанием(нужно изучить посты)
@@ -78,7 +90,17 @@ def main_script(BROWSER, post_before : dict, cycle_encounter : int) :
         obj = parse_bet(manage_file.get_text_from_image(BROWSER, photo))
         if obj != {} :
             stavka.append(obj)
+    print(stavka)
     # получили массив ставок
 
 if __name__ == "__main__":
-    pass
+    browser = manage_file.create_webdriver()
+    try :
+        main_script(
+            browser, 
+            { 'text' : '', 'list_of_photo' : [] },
+            0
+        )
+    finally :
+        browser.close()
+        browser.quit()

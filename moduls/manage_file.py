@@ -31,19 +31,10 @@ def get_html_with_browser(BROWSER, url, sec=0, scrolls=0) :
     if url != 'none' :
         BROWSER.get(url)
     time.sleep(sec // 2)
-    if scrolls == 1 :
-        last_h = BROWSER.execute_script("return window.pageYOffset")
-        while True :
-            BROWSER.execute_script("window.scrollBy(0, document.body.scrollHeight / 6);")
-            h = BROWSER.execute_script("return window.pageYOffset")
-            if last_h == h :
-                break
-            last_h = h
-            time.sleep(3)
-    elif scrolls > 1 :
+    if scrolls > 1 :
         for i in range(scrolls) :
-            time.sleep(3)
-            BROWSER.execute_script("window.scrollBy(0, document.body.scrollHeight/" + str(scrolls) + ");")
+            BROWSER.execute_script("window.scrollBy(0, document.body.scrollHeight);")
+            time.sleep(1)
     time.sleep(sec // 2)
     return BROWSER.page_source
 
@@ -80,15 +71,19 @@ def get_last_post(BROWSER, WALL_GET_url) :
     result['text'] = first_post.find_element_by_class_name('wall_post_text').text
     # получаем список фото
     photos_click_dom = []
-    a = first_post.find_elements_by_tag_name('a') # можно попробовать соптимизировать, но этот код работает
+    a = first_post.find_elements_by_tag_name('a') 
+    # можно попробовать соптимизировать, но этот код работает
     for a_tag in a :
         if a_tag.get_attribute('class').find('page_post_thumb_wrap') != -1 :
             photos_click_dom.append(a_tag)
+
+    # тест
     for item in photos_click_dom :
         item.click()
-        time.sleep(2)
-        result['list_of_photo'].append(BROWSER.find_element_by_id('pv_photo').find_element_by_tag_name('img').get_attribute('src'))
+        time.sleep(0.1)
+        result['list_of_photo'].append(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
         BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
+        time.sleep(0.1)
     return result
 
 if __name__ == "__main__":
