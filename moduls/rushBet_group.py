@@ -1,6 +1,5 @@
 # общие модули
 import manage_file
-import parimatch_betting
 import time
 # конкретные модули
 
@@ -9,7 +8,7 @@ WALL_GET_url = 'https://vk.com/rushbet.tips'
 def parse_bet(text) :
     # таблица смещений
     # отображение группа -> общая форма
-    table = {
+    offset_table = {
         # победитель по карте
             'Победа. Карта' : 'map_winner',
             'Победитель. Карта' : 'map_winner',
@@ -17,7 +16,7 @@ def parse_bet(text) :
         # фора по карте 
             'Фора. Карта' : 'map_handicap',
         # тотал по карте
-            'Тотал. Карта' : 'map_total_score',
+            'Тотал. Карта' : 'map_total',
         # победа команды
             'Результат матча' : 'match_result',
             'Победа' : 'match_result',
@@ -26,33 +25,42 @@ def parse_bet(text) :
         # конкретный счет
             'Счет' : 'score',
         # тотал(сумма счетов)
-            'Тотал' : 'total_score',
+            'Тотал' : 'total',
     }
     result = {}
     # здесь по идее иедт проверка на ставку по шаблонам
     if template1(text) or template2(text) :
         result['type'] = 'ordn'
-        result['winner'] = text[0]
-        for key in table.keys() :
+        bet = {}
+        bet['winner'] = text[0]
+        for key in offset_table.keys() :
             #print(text[2].find(key))
             if text[2].find(key) != -1 :
-                if table[key].find('map') > 0 :
-                    result['outcome_index'] = (table[key], int(text[2][-1]))
+                if offset_table[key].find('map') > 0 :
+                    bet['outcome_index'] = (offset_table[key], int(text[2][-1]))
                 else :
-                    result['outcome_index'] = table[key]
+                    bet['outcome_index'] = offset_table[key]
                 break
-        result['summ'] = 20.0
-        result['match_title'] = text[3][text[3].find(':') + 4 : ]
+        bet['summ'] = 20.0
+        bet['match_title'] = text[3][text[3].find(':') + 4 : ]
+        result['bets'].append(bet)
     return result
 
     """
     RETURN
     {
         'type' : expr | sys | ordn
-        'summ' : число
-        'match_title' : 'team1 - team2'
-        'outcome_index' : в соответствии с таблицей смещений
-        'winner' : 
+        'bets' : [
+            {
+                'summ' : число
+                'match_title' : 'team1 - team2'
+                'outcome_index' : в соответствии с таблицей смещений
+                'winner' : данные о победителе
+            },
+            много словарей
+            ....
+        ]
+        
     }
     """
     """ 

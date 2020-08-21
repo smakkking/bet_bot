@@ -55,9 +55,10 @@ def renew(BROWSER, url) :
 def create_webdriver() :
     opts = Options()
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
-    #opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\User Data')
+    opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\bet_data')
     opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
-    return webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
+    obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
+    return obj
     
 def get_last_post(BROWSER, WALL_GET_url) :
     get_html_with_browser(BROWSER, WALL_GET_url, WAIT_TIME)
@@ -66,30 +67,28 @@ def get_last_post(BROWSER, WALL_GET_url) :
         'list_of_photo' : [],
     }
     # первый пост
-    first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div')
+    first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
     # получаем текст
-    result['text'] = first_post.find_element_by_class_name('wall_post_text').text
+    result['text'] = first_post.find_elements_by_tag_name('div')[1].text
     # получаем список фото
-    photos_click_dom = []
-    a = first_post.find_elements_by_tag_name('a') 
-    # можно попробовать соптимизировать, но этот код работает
-    for a_tag in a :
-        if a_tag.get_attribute('class').find('page_post_thumb_wrap') != -1 :
-            photos_click_dom.append(a_tag)
-
+    photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
     # тест
-    for item in photos_click_dom :
-        item.click()
-        time.sleep(0.1)
-        result['list_of_photo'].append(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
-        BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-        time.sleep(0.1)
+    try :
+        for item in photos_click_dom :
+            item.click()
+            time.sleep(0.5)
+            result['list_of_photo'].append(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
+            BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
+            time.sleep(0.5)  
+    except common.exceptions.NoSuchElementException:
+        pass
     return result
 
 if __name__ == "__main__":
     browser = create_webdriver()
     try :
         print(get_last_post(browser, 'https://vk.com/rushbet.tips'))
+        time.sleep(10)
     finally :
         browser.close()
         browser.quit()
