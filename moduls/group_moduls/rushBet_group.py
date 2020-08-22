@@ -1,5 +1,5 @@
 # общие модули
-import manage_file
+from moduls import manage_file
 import time
 # конкретные модули
 
@@ -48,20 +48,7 @@ def parse_bet(text) :
 
     """
     RETURN
-    {
-        'type' : expr | sys | ordn
-        'bets' : [
-            {
-                'summ' : число
-                'match_title' : 'team1 - team2'
-                'outcome_index' : в соответствии с таблицей смещений
-                'winner' : данные о победителе
-            },
-            много словарей
-            ....
-        ]
-        
-    }
+    
     """
     """ 
     c суммой ставки пока не понятно, но планирую сделать так:
@@ -85,7 +72,7 @@ def template2(text) :
         return False
     return True
 
-def main_script(BROWSER, post_before : dict, cycle_encounter : int) :
+def main_script(BROWSER, post_before : dict) :
     # что происходит:
     # получается последнее фото со страницы, берется текст с фото, парсится ставка
     # сам процесс ставки
@@ -107,7 +94,6 @@ if __name__ == "__main__":
         main_script(
             browser, 
             { 'text' : '', 'list_of_photo' : [] },
-            0
         )
     finally :
         browser.close()

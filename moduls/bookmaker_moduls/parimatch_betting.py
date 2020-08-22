@@ -1,8 +1,6 @@
 import time
-# ПЕРЕДЕЛАТЬ - УЕБАНЫ НА ПАРИМАТЧ CДЕЛАЛИ НОВУБ ВЕРСИЮ САЙТА БЕЗ ПОИСКА!!!!!!!!!!
-import manage_file
+from moduls import manage_file
 import selenium
-from selenium.webdriver.support.ui import WebDriverWait
 
 BET_URL = 'https://new.parimatch.ru'
 
@@ -14,28 +12,38 @@ def bet(browser, stavka) :
     match_url = 'https://new.parimatch.ru/ru/event/1%7CCS%7Ce1964405daba46d99da77ba5f5046b57%7C1ffa637e9d3c4e018c4c3d3d5848aa29/1%7C5632691'
         
     manage_file.get_html_with_browser(browser, match_url, 12)
+
     click_on_coupons(browser, stavka)
+
     # на данном моменте, все нужные купоны уже установлены
     if stavka['type'] == 'ordn' :
+        # ищется кнопка ОРДИНАР
         browser.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[3]/div/div[2]/div/div/div[1]/div[1]/div/div/div[2]/div/div/div[1]')
+        # все купоны, куда вписывать суммы
         fields = browser.find_elements_by_class_name('_3T2hqqpjUHvN6eDM1nHjXI _1dwqB7ix_-iyFwUe7y3gH8 _1RH51R4LOLseaZp2v_ZBZ3')
         for i in range(len(fields)) :
             fields[i].find_element_by_tag_name('input').send_keys(stavka['bets'][i]['summ'])
+        # нажать на кнопку поставить
         browser.find_element_by_class_name('_3y3rrVqaUcKeM8B2xsdUZp').click()
         pass
     elif stavka['type'] == 'expr' :
+        # ищется кнопка ЭКСПРЕСС
         browser.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[3]/div/div[2]/div/div/div[1]/div[1]/div/div/div[2]/div/div/div[2]')
         pass
     elif stavka['type'] == 'sys' :
+        # ищется кнопка СИСТЕМА
         browser.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[3]/div/div[2]/div/div/div[1]/div[1]/div/div/div[2]/div/div/div[3]')
         pass
     
 def click_on_coupons(browser, stavka) :
+    # нажатие на кнопку Все
     browser.find_element_by_xpath('/html/body/div[3]/div/div[2]/div/div[2]/div[1]').click() #
-    time.sleep(6)  
+    time.sleep(6) 
+    # множество всех исходов в этом матче
     outcome_array = browser.find_element_by_xpath("/html/body/div[3]/div/div[2]/div[2]").find_elements_by_class_name('TzWpMUHFpcQKGRkjHLBth')                         
     bet_count = 0
     for outcome in outcome_array :
+        # если исход закрыт(не видно кнопок для устанления купонов), открыть его
         try :
             outcome.find_element_by_class_name('_13ZKmLYUjuUM095FYb5rbZ') 
         except selenium.common.exceptions.NoSuchElementException:
@@ -43,8 +51,11 @@ def click_on_coupons(browser, stavka) :
         time.sleep(0.5)
         for bet in stavka['bets'] :
             all_div = outcome.find_elements_by_tag_name('div')
+            # название исхода
             name = all_div[1].text
+            # кнопки с купонами
             buttons = [div for div in all_div if div.get_attribute('data-id') == 'outcome']
+            # проверка на совпадение названия исхода и поля в ставке
             if spell_check(bet['outcome_index'], name) :
                 reform_winner(bet, name)
                 for button in buttons :
@@ -65,7 +76,7 @@ def reform_winner(bet, name) :
     
 
 def spell_check(info, name) :
-    
+    # здесь задаеся конкретное отображение общая форма -> бк
     offset_table = {
         'map_winner' : 'Победа. Карта',
         'map_handicap' : 'Фора. Карта', 

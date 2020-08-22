@@ -1,18 +1,16 @@
+import sys
+
 from selenium import webdriver
 from datetime import datetime
-import sys
+
 import time
 from datetime import datetime
 
 
 
-import manage_file
-# bk
-import parimatch_betting
-# groups
-import rushBet_group
-import rushBetPrivate_group
-import mmrDauns_group
+from . import manage_file
+from moduls.bookmaker_moduls import parimatch_betting
+from moduls.group_moduls import rushBet_group
 
 def main() :
     # запускаем браузер
