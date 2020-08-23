@@ -5,34 +5,46 @@ import time
 
 WALL_GET_url = 'https://vk.com/rushbet.tips'
 
+# сюда помещать функции-шаблоны
+BET_TEMPLATES = [
+    template1,
+    template2,
+]
+
+# таблица смещений
+offset_table = {
+    # победитель по карте
+        'Победа. Карта' : 'map_winner',
+        'Победитель. Карта' : 'map_winner',
+        'Результат. Карта' : 'map_winner',
+    # фора по карте 
+        'Фора. Карта' : 'map_handicap',
+    # тотал по карте
+        'Тотал. Карта' : 'map_total',
+    # победа команды
+        'Результат матча' : 'match_result',
+        'Победа' : 'match_result',
+    # фора 
+        'Фора' : 'handicap',
+    # конкретный счет
+        'Счет' : 'score',
+    # тотал(сумма счетов)
+        'Тотал' : 'total',
+}
+
 def parse_bet(text) :
-    # таблица смещений
-    # отображение группа -> общая форма
-    offset_table = {
-        # победитель по карте
-            'Победа. Карта' : 'map_winner',
-            'Победитель. Карта' : 'map_winner',
-            'Результат. Карта' : 'map_winner',
-        # фора по карте 
-            'Фора. Карта' : 'map_handicap',
-        # тотал по карте
-            'Тотал. Карта' : 'map_total',
-        # победа команды
-            'Результат матча' : 'match_result',
-            'Победа' : 'match_result',
-        # фора 
-            'Фора' : 'handicap',
-        # конкретный счет
-            'Счет' : 'score',
-        # тотал(сумма счетов)
-            'Тотал' : 'total',
-    }
-    result = {}
     # здесь по идее иедт проверка на ставку по шаблонам
-    if template1(text) or template2(text) :
-        result['type'] = 'ordn'
+    check = False
+    for check_bet in BET_TEMPLATES :
+        check = check or check_bet(text)
+    if check :
+        result = manage_file.Coupon('ordn')
         bet = {}
+
         bet['winner'] = text[0]
+        bet['summ'] = 20.0
+        bet['match_title'] = text[3][text[3].find(':') + 4 : ]
+
         for key in offset_table.keys() :
             #print(text[2].find(key))
             if text[2].find(key) != -1 :
@@ -41,38 +53,24 @@ def parse_bet(text) :
                 else :
                     bet['outcome_index'] = offset_table[key]
                 break
-        bet['summ'] = 20.0
-        bet['match_title'] = text[3][text[3].find(':') + 4 : ]
-        result['bets'].append(bet)
+        result.add_bet(bet)
     return result
 
-    """
-    RETURN
-    
-    """
-    """ 
-    c суммой ставки пока не понятно, но планирую сделать так:
-    на каждый промежуток кэффов юзер сам устанавливает сумму,
-    соответсвенно будем брать данные из БД    
-    """
-
 def template1(text) :
-    # это если ставка ординар!!!
-    if len(text) != 7 :
-        return False
-    if text[4] != 'Сумма пари' or text[6].find('Возможный выигрыш') == -1 :
-        return False
-    return True
+    flag = True
+    flag = flag and len(text) == 7
+    flag = flag and text[4] == 'Сумма пари'
+    flag = flag and text[6].find('Возможный выигрыш') != -1
+    return flag
 
 def template2(text) :
-    if len(text) != 6 :
-        return False
+    flag = True
+    flag = flag and len(text) == 6
     data_time = text[1].replace(' ', '')
-    if data_time.find(':') != len(data_time) - 3 :
-        return False
-    return True
+    flag = flag and data_time.find(':') == (len(data_time) - 3)
+    return flag
 
-def main_script(BROWSER, post_before : dict) :
+def main_script(BROWSER, post_before) :
     # что происходит:
     # получается последнее фото со страницы, берется текст с фото, парсится ставка
     # сам процесс ставки
@@ -81,11 +79,10 @@ def main_script(BROWSER, post_before : dict) :
         return post
     # здесь нужно понять, как отличать ставку от поста с другим содержанием(нужно изучить посты)
     stavka = []
-    for photo in post['list_of_photo'] :
+    for photo in post.photo_list :
         obj = parse_bet(manage_file.get_text_from_image(BROWSER, photo))
         if obj != {} :
             stavka.append(obj)
-    print(stavka)
     # получили массив ставок
 
 if __name__ == "__main__":
@@ -93,7 +90,7 @@ if __name__ == "__main__":
     try :
         main_script(
             browser, 
-            { 'text' : '', 'list_of_photo' : [] },
+            manage_file.GroupPost('', []),
         )
     finally :
         browser.close()

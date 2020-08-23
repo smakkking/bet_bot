@@ -6,11 +6,9 @@ from datetime import datetime
 import time
 from datetime import datetime
 
-
-
 from . import manage_file
 from moduls.bookmaker_moduls import parimatch_betting
-from moduls.group_moduls import rushBet_group
+from moduls.group_moduls import RushBet_group
 
 def main() :
     # запускаем браузер
@@ -19,7 +17,7 @@ def main() :
     group_photo = {'rB' : {}, 'mmrD' : {}, 'rBp' : {}}
     cycle_encounter = 0
     while (True) :
-        group_photo['rB'] = rushBet_group.main_script(BROWSER, group_photo['rB'], cycle_encounter)
+        group_photo['rB'] = RushBet_group.main_script(BROWSER, group_photo['rB'])
         cycle_encounter += 1
     BROWSER.quit()
     sys.exit()

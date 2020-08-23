@@ -9,20 +9,29 @@ import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
-# конкретные модули
 
-WAIT_TIME = 4 # время ожидания прогрузки страницы в секундах
+class Stavka :
+    def __init__(self, bet_dict) :
+        for key in bet_dict :
+            exec('self.' + str(key) + '=bet_dict[key]')
+            
+class Coupon() :
+    def __init__(self, type_x='ordn') :
+        self.type = type_x
+        self.bets = []
+    def add_bet(self, bet) :
+        self.bets.append(Stavka(bet))
 
-def Error(code) :
-    if code == 0x1 :
-        # не обработан правильно: может попасться текст не ставки, но в нем будет 6 строк 
-        print('text is not bet')
-    elif code == 0x2 :
-        print('no match found')
-    elif code == 0x3 :
-        print('no outcome found')
-    elif code == 0x4 :
-        print('no working case')
+class GroupPost() :
+    def __init__(self, text, photo_list) :
+        self.text = text
+        self.photo_list = photo_list
+    def add_photo(self, photo) :
+        self.photo_list.append(photo)
+    def __str__(self) :
+        return str(dict([('text', self.text), ('photo_list', self.photo_list)]))
+
+
 
 def get_html(url, params=None):
     return requests.get(url, headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}, params=params).text
@@ -42,15 +51,12 @@ def get_text_from_image(BROWSER, url):
     url = url.replace('/', '%2F')
     url = url.replace(':', '%3A')
     url = 'https://yandex.ru/images/search?url=' + url + '&rpt=imageview&from=tabbar' # создание рабочей ссылки
-    soup = BeautifulSoup(get_html_with_browser(BROWSER, url, WAIT_TIME), 'html.parser')
+    soup = BeautifulSoup(get_html_with_browser(BROWSER, url, 4), 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
     for item in items2 :
        text.append(item.text)
     return text
-
-def renew(BROWSER, url) :
-    BROWSER.get(url)
 
 def create_webdriver() :
     opts = Options()
@@ -61,15 +67,12 @@ def create_webdriver() :
     return obj
     
 def get_last_post(BROWSER, WALL_GET_url) :
-    get_html_with_browser(BROWSER, WALL_GET_url, WAIT_TIME)
-    result = {
-        'text' : '',
-        'list_of_photo' : [],
-    }
+    get_html_with_browser(BROWSER, WALL_GET_url, 4)
+    result = GroupPost('', [])
     # первый пост
     first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
     # получаем текст
-    result['text'] = first_post.find_elements_by_tag_name('div')[1].text
+    result.text = first_post.find_elements_by_tag_name('div')[1].text
     # получаем список фото
     photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
     # тест
@@ -77,7 +80,7 @@ def get_last_post(BROWSER, WALL_GET_url) :
         for item in photos_click_dom :
             item.click()
             time.sleep(0.5)
-            result['list_of_photo'].append(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
+            result.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
             BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
             time.sleep(0.5)  
     except common.exceptions.NoSuchElementException:
