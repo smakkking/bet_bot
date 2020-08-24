@@ -5,7 +5,7 @@ BET_TEMPLATES = [
     (template1, parse1),
 ]
 
-WALL_GET_url = 'https://vk.com/victorybets_stavki'
+WALL_GET_url = 'https://vk.com/akademiya_stavki_csgo'
 
 offset_table = {
     # победитель по карте

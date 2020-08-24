@@ -21,17 +21,38 @@ class Coupon() :
         self.bets = []
     def add_bet(self, bet) :
         self.bets.append(Stavka(bet))
+    def change_type(self, new_type) :
+        self.type = new_type
 
 class GroupPost() :
-    def __init__(self, text, photo_list) :
+    def __init__(self, text='', photo_list=[]) :
         self.text = text
         self.photo_list = photo_list
+
     def add_photo(self, photo) :
         self.photo_list.append(photo)
+
     def __str__(self) :
         return str(dict([('text', self.text), ('photo_list', self.photo_list)]))
-
-
+        
+    def get_last_post(self, BROWSER, WALL_GET_url) :
+        get_html_with_browser(BROWSER, WALL_GET_url, 4)
+        # первый пост
+        first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
+        # получаем текст
+        self.text = first_post.find_elements_by_tag_name('div')[1].text
+        # получаем список фото
+        photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
+        # тест
+        try :
+            for item in photos_click_dom :
+                item.click()
+                time.sleep(0.5)
+                self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
+                BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
+                time.sleep(0.5)  
+        except common.exceptions.NoSuchElementException:
+            pass
 
 def get_html(url, params=None):
     return requests.get(url, headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}, params=params).text
@@ -66,32 +87,12 @@ def create_webdriver() :
     obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
     return obj
     
-def get_last_post(BROWSER, WALL_GET_url) :
-    get_html_with_browser(BROWSER, WALL_GET_url, 4)
-    result = GroupPost('', [])
-    # первый пост
-    first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
-    # получаем текст
-    result.text = first_post.find_elements_by_tag_name('div')[1].text
-    # получаем список фото
-    photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
-    # тест
-    try :
-        for item in photos_click_dom :
-            item.click()
-            time.sleep(0.5)
-            result.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
-            BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-            time.sleep(0.5)  
-    except common.exceptions.NoSuchElementException:
-        pass
-    return result
+
 
 if __name__ == "__main__":
     browser = create_webdriver()
     try :
-        print(get_last_post(browser, 'https://vk.com/rushbet.tips'))
-        time.sleep(10)
+        pass
     finally :
         browser.close()
         browser.quit()
