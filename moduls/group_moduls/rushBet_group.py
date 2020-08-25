@@ -9,6 +9,7 @@ WALL_GET_url = 'https://vk.com/rushbet.tips'
 BET_TEMPLATES = [
     template1,
     template2,
+    template3,
 ]
 
 # таблица смещений
@@ -70,16 +71,23 @@ def template2(text) :
     flag = flag and data_time.find(':') == (len(data_time) - 3)
     return flag
 
+def template3(text) :
+    flag = True
+    flag = flag and (len(text) == 4 or len(text) == 3)
+    flag = flag and text[len(text) - 1][1] == ','
+    return flag
+
 def main_script(BROWSER, post_before) :
     # что происходит:
     # получается последнее фото со страницы, берется текст с фото, парсится ставка
     # сам процесс ставки
-    post = manage_file.get_last_post(BROWSER, WALL_GET_url)
-    if post == post_before :
-        return post
+    current_post = manage_file.GroupPost()
+    current_post.get_last_post(BROWSER, WALL_GET_url)
+    if current_post == post_before :
+        return current_post
     # здесь нужно понять, как отличать ставку от поста с другим содержанием(нужно изучить посты)
     stavka = []
-    for photo in post.photo_list :
+    for photo in current_post.photo_list :
         obj = parse_bet(manage_file.get_text_from_image(BROWSER, photo))
         if obj != {} :
             stavka.append(obj)
