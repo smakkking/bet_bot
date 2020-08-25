@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset ="utf8" />
+	<title>Настройки</title>
+</head>
+<body>
+	<p> Список всех доступных для обработки групп</p>
+	<form method="POST">
+		{% csrf_token %}
+		<p><input type="checkbox" name="AcademiaStavok"/> 
+			<a href="https://vk.com/akademiya_stavki_csgo">Академия Ставок CSGO • Прогнозы CS:GO & Dota 2</a>
+		</p>
+		<p><input type="checkbox" name="CSgoNorch"/> 
+			<a href="https://vk.com/csgo_norch">Норч CSGO | Прогнозы CS:GO</a>
+		</p>
+		<p><input type="checkbox" name="CSgoVictory"/>
+			<a href="https://vk.com/victorybets_stavki">CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2</a>
+		</p>
+		<p><input type="checkbox" name="RushBet"/>
+			<a href="https://vk.com/rushbet.tips">RUSH BET | Прогнозы на спорт| +103% за 1 день</a>
+		</p>
+	<input type="submit" value="Save"/>
+	</form>
+</body>
+<html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Вход + Регистрация </title>
+    </head>
+    <body>
+        {% if form.errors %}
+            <p> Your username and password didn't match </p>
+        {% endif %}
+        {% if next %}
+            {% if user.is_authenticated %}
+                <p>Your account doesn't have access</p>
+            {% else %}
+                <p>Please login to see this site</p>
+            {% endif %}
+        {% endif %}
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Login"/>
+        <input type="hidden" name="next" value="http://127.0.0.1:8000/menu/"/>
+        
+    </form>
+    </body>
+
+
+</html>

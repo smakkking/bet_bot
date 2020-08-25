@@ -5,7 +5,7 @@ BET_TEMPLATES = [
     (template1, parse1),
 ]
 
-WALL_GET_url = ''
+WALL_GET_url = 'https://vk.com/csgo_norch'
 
 offset_table = {
     'ПОБЕДИТЕЛЬ МАТЧА' : 'match_result',
