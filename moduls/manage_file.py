@@ -82,7 +82,7 @@ def get_text_from_image(BROWSER, url):
 def create_webdriver() :
     opts = Options()
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
-    opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\bet_data')
+    opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\user_andreysm.main@gmail.com')
     opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
     obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
     return obj
@@ -90,9 +90,10 @@ def create_webdriver() :
 
 
 if __name__ == "__main__":
-    browser = create_webdriver()
+    
     try :
-        pass
+        browser = create_webdriver()
+        get_html_with_browser(browser, 'https://vk.com/feed')
     finally :
         browser.close()
         browser.quit()
