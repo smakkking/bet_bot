@@ -2,3 +2,17 @@ chromedriver.exe
 user_data/database.xlsx
 user_data/group_urls.txt
 moduls/__pycache__/manage_file.cpython-38.pyc
+moduls/__pycache__/__init__.cpython-38.pyc
+moduls/bookmaker_moduls/__pycache__/__init__.cpython-38.pyc
+moduls/bookmaker_moduls/__pycache__/parimatch_betting.cpython-38.pyc
+moduls/group_moduls/__pycache__/__init__.cpython-38.pyc
+moduls/group_moduls/__pycache__/RushBet_group.cpython-38.pyc
+web_element/bet_web/__pycache__/admin.cpython-38.pyc
+web_element/bet_web/__pycache__/models.cpython-38.pyc
+web_element/bet_web/__pycache__/views.cpython-38.pyc
+web_element/bet_web/__pycache__/__init__.cpython-38.pyc
+web_element/bet_web/migrations/__pycache__/0001_initial.cpython-38.pyc
+web_element/bet_web/migrations/__pycache__/0002_auto_20200825_1941.cpython-38.pyc
+web_element/web_element/__pycache__/__init__.cpython-38.pyc
+web_element/web_element/__pycache__/settings.cpython-38.pyc
+web_element/web_element/__pycache__/urls.cpython-38.pyc
