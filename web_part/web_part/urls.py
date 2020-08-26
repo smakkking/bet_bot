@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from bet_web import views
+from UserDataManagment import views
 from django.conf.urls import include
 
 urlpatterns = [

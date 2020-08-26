@@ -16,7 +16,3 @@ class BotSettings(LoginRequiredMixin, views.View) :
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
         return HttpResponse('Hello! i am main menu')
-
-        
-
-        

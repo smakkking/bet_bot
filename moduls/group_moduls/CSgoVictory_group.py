@@ -1,3 +1,7 @@
+# строка для правильной работы импортирования пакетов
+import sys
+sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
+
 from moduls import manage_file
 import time
 

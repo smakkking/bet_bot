@@ -37,7 +37,7 @@ class GroupPost() :
         return str(dict([('text', self.text), ('photo_list', self.photo_list)]))
         
     def get_last_post(self, BROWSER, WALL_GET_url) :
-        #get_html_with_browser(BROWSER, WALL_GET_url)
+        get_html_with_browser(BROWSER, WALL_GET_url)
         # первый пост
         first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
         # получаем текст
@@ -48,10 +48,10 @@ class GroupPost() :
         try :
             for item in photos_click_dom :
                 item.click()
-                time.sleep(1)
+                time.sleep(0.5)
                 self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
                 BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-                time.sleep(1)  
+                time.sleep(0.5)  
         except common.exceptions.NoSuchElementException:
             pass
 
@@ -95,11 +95,9 @@ if __name__ == "__main__":
     try :
         browser = create_webdriver()
         post = GroupPost()
-        get_html_with_browser(browser, 'https://vk.com/lentach')
         while True :
             start = datetime.now()
             post.get_last_post(browser, 'https://vk.com/lentach')
-            #print(post)
             print('Finded by {} seconds'.format(datetime.now() - start))
     finally :
         browser.close()
