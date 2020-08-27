@@ -20,3 +20,6 @@ web_element/bet_web/__pycache__/forms.cpython-38.pyc
 web_element/bet_web/migrations/__pycache__/0003_auto_20200826_1333.cpython-38.pyc
 web_element/bet_web/migrations/__pycache__/0004_remove_profile_photo.cpython-38.pyc
 web_element/web_element/__pycache__/wsgi.cpython-38.pyc
+moduls/group_moduls/__pycache__/AcademiaStavok_group.cpython-38.pyc
+moduls/group_moduls/__pycache__/CSgoNorch_group.cpython-38.pyc
+moduls/group_moduls/__pycache__/CSgoVictory_group.cpython-38.pyc

@@ -6,10 +6,29 @@ from selenium import webdriver
 from datetime import datetime
 
 import time
+import json
 from datetime import datetime
 
 from moduls import manage_file
-from moduls.bookmaker_moduls import parimatch_betting
+from moduls.group_moduls import AcademiaStavok_group, CSgoNorch_group, CSgoVictory_group 
+
+GROUP_LIST = [
+    AcademiaStavok_group,
+    CSgoNorch_group,
+    CSgoVictory_group,
+]
     
 if __name__ == '__main__' :
+    browser = manage_file.create_webdriver()
+    data = {}
+    try :
+        for group in GROUP_LIST :
+            group.LAST_DATA.get(browser)
+            data[group.__name__.replace('moduls.group_moduls.', '')] = group.LAST_DATA.__json_repr__()
+        last_posts_json = open(sys.path[0] + r'\user_data\group_post_data.json', 'w')
+        json.dump(data, last_posts_json, indent=4)
+    finally :
+        last_posts_json.close()
+        browser.close()
+        browser.quit()
     

@@ -25,19 +25,20 @@ class Coupon() :
     def change_type(self, new_type) :
         self.type = new_type
 
-class GroupPost() :
-    def __init__(self, text='', photo_list=[]) :
-        self.text = text
-        self.photo_list = photo_list
+class LastGroupPost() :
+    def __init__(self, wall_url='') :
+        self.text = ''
+        self.photo_list = []
+        self.WALL_GET_url = wall_url
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
 
-    def __str__(self) :
-        return str(dict([('text', self.text), ('photo_list', self.photo_list)]))
+    def __json_repr__(self) :
+        return dict([('text', self.text), ('photo_list', self.photo_list)])
         
-    def get_last_post(self, BROWSER, WALL_GET_url) :
-        get_html_with_browser(BROWSER, WALL_GET_url)
+    def get(self, BROWSER) :
+        get_html_with_browser(BROWSER, self.WALL_GET_url)
         # первый пост
         first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
         # получаем текст
@@ -86,6 +87,7 @@ def create_webdriver() :
     opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\user_andreysm.main@gmail.com')
     opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
     obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
+    obj.maximize_window()
     return obj
     
 
