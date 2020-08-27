@@ -10,22 +10,13 @@ from .models import StandartUser
 
 class BotSettings(LoginRequiredMixin, views.View) :
     def get(self, request) :
-        old_data = {
-            'bookmaker' : request.user.bookmaker, 
-             'bookmaker_login' : request.user.bookmaker_login, 
-             'bookmaker_password' : request.user.bookmaker_password, 
-             'AcademiaStavok' : request.user.AcademiaStavok,
-             'CSgoNorch' : request.user.CSgoNorch,
-        }
-        basic_form = DataForm(old_data)
+        basic_form = DataForm(instance=request.user)
         return render(request, 'bot_set.html', {'form' : basic_form})
     def post(self, request) :
-        print('POST data')
-        data = dict(request.POST)
-        del data['csrfmiddlewaretoken']
-        for key in data :
-            exec('request.user.' + str(key) +'= data[key][0]')
-        return self.get(request)
+        basic_form = DataForm(instance=request.user, data=request.POST)
+        if basic_form.is_valid() :
+            basic_form.save()
+        return render(request, 'bot_set.html', {'form' : basic_form})
 
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :

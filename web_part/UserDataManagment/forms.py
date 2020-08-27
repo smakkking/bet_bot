@@ -1,14 +1,16 @@
-from django import forms
+from django.forms import ModelForm
 from .models import StandartUser
 
-class DataForm(forms.Form) :
-    bookmaker = forms.CharField(max_length=128)
-
-    bookmaker_login = forms.CharField(max_length=128)
-    bookmaker_password = forms.CharField(max_length=128)
-
-    AcademiaStavok = forms.BooleanField()
-    CSgoNorch = forms.BooleanField()
+class DataForm(ModelForm) :
+    class Meta :
+        model = StandartUser
+        fields = (
+            'bookmaker',
+            'bookmaker_login',
+            'bookmaker_password',
+            'AcademiaStavok',
+            'CSgoNorch',
+        )
 
 
     
