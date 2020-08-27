@@ -23,3 +23,7 @@ web_element/web_element/__pycache__/wsgi.cpython-38.pyc
 moduls/group_moduls/__pycache__/AcademiaStavok_group.cpython-38.pyc
 moduls/group_moduls/__pycache__/CSgoNorch_group.cpython-38.pyc
 moduls/group_moduls/__pycache__/CSgoVictory_group.cpython-38.pyc
+web_part/web_part/__pycache__/urls.cpython-38.pyc
+web_part/UserDataManagment/migrations/__pycache__/0002_auto_20200826_2306.cpython-38.pyc
+web_part/web_part/__pycache__/urls.cpython-38.pyc
+web_part/web_part/__pycache__/urls.cpython-38.pyc
