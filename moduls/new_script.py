@@ -22,11 +22,14 @@ if __name__ == '__main__' :
     browser = manage_file.create_webdriver()
     data = {}
     try :
-        for group in GROUP_LIST :
-            group.LAST_DATA.get(browser)
-            data[group.__name__.replace('moduls.group_moduls.', '').replace('_group', '')] = group.LAST_DATA.__json_repr__()
-        last_posts_json = open(sys.path[0] + r'\user_data\group_post_data.json', 'w')
-        json.dump(data, last_posts_json, indent=4)
+        while True :
+            post = manage_file.LastGroupPost()
+            for group in GROUP_LIST :
+                post.get(browser, group.WALL_URL)
+                data[group.__name__.replace('moduls.group_moduls.', '').replace('_group', '')] = post.__json_repr__()
+            last_posts_json = open(sys.path[0] + r'\user_data\group_post_data.json', 'w')
+            json.dump(data, last_posts_json, indent=4)
+            last_posts_json.close()
     finally :
         last_posts_json.close()
         browser.close()

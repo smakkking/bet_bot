@@ -5,7 +5,7 @@ sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
 from moduls import manage_file
 import time
 
-LAST_DATA = manage_file.LastGroupPost(wall_url='https://vk.com/csgo_norch')
+WALL_URL = 'https://vk.com/csgo_norch'
 
 def template1(text) :
     flag = True
