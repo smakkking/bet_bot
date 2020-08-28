@@ -16,19 +16,19 @@ class SettingsForm(ModelForm) :
             'CSgoVictory',
         )
 
-class MenuForm(ModelForm) :
-    post_text = forms.CharField(widget=forms.Textarea(
-        attrs={
-            'rows' : 50,
-            'cols' : 200,
-        }
-    ))
-    class Meta :
-        model = StandartUser
-        fields = (
-            'subscr_end_date',
-            'post_text',
-        )
+class MenuForm(forms.Form) :
+    post_text = forms.CharField(
+        label='Информация о последних постах',
+        widget=forms.Textarea(
+            attrs={
+                'rows' : 15,
+                'cols' : 200,
+                'tabindex' : 4,
+            }),
+    )
+    end_date = forms.DateField(
+        label='Дата окончания действия подписки'
+    )
 
 
     
