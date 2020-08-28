@@ -13,9 +13,10 @@
 	</p>
 	<form method="POST" action="">
 		{% csrf_token %}
-		<table>
-			{{ form.as_table }}
-		</table>
+		<p> <b>
+			Данные по букмекеру:
+		</b> </p>
+			{{ form.as_p }}
 		
 	<input type="submit" value="Save"/>
 	</form>
