@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset ="utf8" />
+	<title>Настройки</title>
+</head>
+<body>
+	
+
+	<h1>Данные для отправки</h1>
+	<p>
+		<a href="http://127.0.0.1:8000/account/menu/"> Здесь можно перейти в меню</a>
+	</p>
+	<form method="POST" action="">
+		{% csrf_token %}
+		<p> <b>
+			Данные по букмекеру:
+		</b> </p>
+			{{ form.as_p }}
+		
+	<input type="submit" value="Save"/>
+	</form>
+</body>
+<html>

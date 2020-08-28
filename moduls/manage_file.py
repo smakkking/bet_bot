@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium import common
 import sys
 import time
+from datetime import datetime
 import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
@@ -24,19 +25,19 @@ class Coupon() :
     def change_type(self, new_type) :
         self.type = new_type
 
-class GroupPost() :
-    def __init__(self, text='', photo_list=[]) :
-        self.text = text
-        self.photo_list = photo_list
+class LastGroupPost() :
+    def __init__(self) :
+        self.text = ''
+        self.photo_list = []
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
 
-    def __str__(self) :
-        return str(dict([('text', self.text), ('photo_list', self.photo_list)]))
+    def __json_repr__(self) :
+        return dict([('text', self.text), ('photo_list', self.photo_list)])
         
-    def get_last_post(self, BROWSER, WALL_GET_url) :
-        get_html_with_browser(BROWSER, WALL_GET_url, 4)
+    def get(self, BROWSER, url) :
+        get_html_with_browser(BROWSER, url)
         # первый пост
         first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
         # получаем текст
@@ -84,16 +85,52 @@ def create_webdriver() :
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
     opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\user_andreysm.main@gmail.com')
     opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
+    opts.add_argument('headless')
+    opts.add_argument('window-size=1920x935')
     obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
     return obj
+    
+# return 'left' or 'right'
+def define_side_winner(url) :
+    from PIL import Image
+    import requests
+
+    def otkl(color) :
+        flag = True
+        green = (182, 235, 52)
+        for i in range(len(color)) :
+            flag = flag and abs(color[i] - green[i]) < 2
+        return flag
+
+    resp = requests.get(url, stream=True).raw
+    image = Image.open(resp)
+
+    obj = image.load()
+    w, h = image.size
+    green_array = []
+    for x in range(w) :
+        for y in range(h) :
+            if otkl(obj[x, y]) :
+                green_array.append((x, y))
+
+    count_left = 0
+    count_right = 0          
+    for (x, y) in green_array :
+        if x < w / 2 :
+            count_left += 1
+        else :
+            count_right += 1
+
+    if count_right == len(green_array) :
+        return 'right'
+    elif  count_left == len(green_array) :
+        return 'left'
     
 
 
 if __name__ == "__main__":
     
     try :
-        browser = create_webdriver()
-        get_html_with_browser(browser, 'https://vk.com/feed')
+        pass
     finally :
-        browser.close()
-        browser.quit()
+        pass

@@ -1,21 +1,11 @@
+# строка для правильной работы импортирования пакетов
+import sys
+sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
+
 from moduls import manage_file
 import time
 
-BET_TEMPLATES = [
-    (template1, parse1),
-]
-
-WALL_GET_url = ''
-
-offset_table = {
-    'ПОБЕДИТЕЛЬ МАТЧА' : 'match_result',
-    'ПОБЕДИТЕЛЬ 1 КАРТЫ' : ('map_winner', 1),
-    'ПОБЕДИТЕЛЬ 2 КАРТЫ' : ('map_winner', 2),
-    'ПОБЕДИТЕЛЬ 3 КАРТЫ' : ('map_winner', 3),
-    'ПОБЕДИТЕЛЬ 4 КАРТЫ' : ('map_winner', 4),
-    'ПОБЕДИТЕЛЬ 5 КАРТЫ' : ('map_winner', 5),
-    'Фора карт' : 'map_handicap'
-}
+WALL_URL = 'https://vk.com/csgo_norch'
 
 def template1(text) :
     flag = True
@@ -41,7 +31,23 @@ def parse1(text) :
     # не работает с форой
     bet['winner'] = text[2]
 
-    
+BET_TEMPLATES = [
+    (template1, parse1),
+]
+
+offset_table = {
+    'ПОБЕДИТЕЛЬ МАТЧА' : 'match_result',
+    'ПОБЕДИТЕЛЬ 1 КАРТЫ' : ('map_winner', 1),
+    'ПОБЕДИТЕЛЬ 2 КАРТЫ' : ('map_winner', 2),
+    'ПОБЕДИТЕЛЬ 3 КАРТЫ' : ('map_winner', 3),
+    'ПОБЕДИТЕЛЬ 4 КАРТЫ' : ('map_winner', 4),
+    'ПОБЕДИТЕЛЬ 5 КАРТЫ' : ('map_winner', 5),
+    'Фора карт' : 'map_handicap'
+}
+
+if __name__ == "__main__":
+    pass
+
 
 
 
