@@ -17,15 +17,6 @@ class SettingsForm(ModelForm) :
         )
 
 class MenuForm(forms.Form) :
-    post_text = forms.CharField(
-        label='Информация о последних постах',
-        widget=forms.Textarea(
-            attrs={
-                'rows' : 15,
-                'cols' : 200,
-                'tabindex' : 4,
-            }),
-    )
     end_date = forms.DateField(
         label='Дата окончания действия подписки'
     )

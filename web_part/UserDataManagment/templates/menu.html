@@ -2,13 +2,41 @@
 <html>
     <head>
         <title> Главное меню </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     </head>
     <body>
         <h1> Добро пожаловать в главное меню !</h1>
         <p> 
             <a href="http://127.0.0.1:8000/account/settings/"> Здесь можно перейти в настройки </a>
         </p>
+
         {{form.as_p}}
+
+        <div id="lastdatafield">
+            <p> xxx </p>
+        </div>
+
+        <script text="text/javascript">    
+            function updateBet() {
+                console.log('Requesting JSON');
+                $.getJSON("{% url 'renew' %}", function(data){
+                    console.log('JSON', data);
+                    $('#lastdatafield').empty();
+                    for (let key in data) {
+                        $('#lastdatafield').append(
+                            '<p><b>' + key + '</b></p>'
+                        );
+                    };
+                    //setTimeout('updateBet()', 10000);
+                })
+            };       
+            $(document).ready(function() {
+                $.ajaxSetup({cache : false});
+                updateBet();
+            });
+
+            
+        </script>
 
         <a href="{% url 'logout' %}"> ВЫХОД </a>
     </body>

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django import views
 from django.middleware.csrf import get_token
 
@@ -9,6 +9,8 @@ from .forms import SettingsForm, MenuForm
 from .models import StandartUser
 
 import json
+
+import sys
 
 class BotSettings(LoginRequiredMixin, views.View) :
     def get(self, request) :
@@ -23,17 +25,20 @@ class BotSettings(LoginRequiredMixin, views.View) :
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
         # задать константный путь к файлу json
-        file = open(r'C:\GitRep\bet_bot\user_data\group_post_data.json', 'r')
+        basic_form = MenuForm(data={
+            'end_date' : request.user.subscr_end_date,
+        })
+        return render(request, 'menu.html', {'form' : basic_form})
+
+class UpdateData(LoginRequiredMixin, views.View) :
+    def get(self, request) :
+        json_path = sys.path[0].replace('web_part', r'user_data\group_post_data.json')
+        print(json_path)
+        file = open(json_path, 'r')
         data = json.load(file)
         new_data = {}
         user_data = SettingsForm(instance=request.user).__dict__['initial']
         for key in data.keys() :
             if key in user_data.keys() and user_data[key] :
                 new_data[key] = data[key]
-        # здесь должно быть отсеивание в зависимости от выбора пользователя
-        basic_form = MenuForm(data={
-            'post_text' : new_data,
-            'end_date' : request.user.subscr_end_date,
-        })
-        file.close()
-        return render(request, 'menu.html', {'form' : basic_form})
+        return JsonResponse(new_data, safe=False)
