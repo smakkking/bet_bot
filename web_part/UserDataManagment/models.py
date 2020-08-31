@@ -45,6 +45,10 @@ class StandartUser(AbstractUser):
         verbose_name='Дата окончания действия подписки',
         null=True
     )
+    chrome_dir_path = models.CharField(
+        verbose_name="Путь до папки с данными chrome",
+        null=False
+    )
     # поля для групп
     AcademiaStavok = models.BooleanField(
         default=False,
