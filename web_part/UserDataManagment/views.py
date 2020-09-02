@@ -33,7 +33,6 @@ class BotMenu(LoginRequiredMixin, views.View) :
 class UpdateData(LoginRequiredMixin, views.View) :
     def get(self, request) :
         json_path = sys.path[0].replace('web_part', r'user_data\group_post_data.json')
-        print(json_path)
         file = open(json_path, 'r')
         data = json.load(file)
         new_data = {}

@@ -3,6 +3,29 @@
     <head>
         <title> Главное меню </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script text="text/javascript">  
+            var stop_bot = false
+            var last_data = {}
+            function updateBet() {
+                console.log('Requesting JSON');
+                if (!stop_bot) {
+                    $.getJSON("{% url 'renew' %}", function(data){
+                        console.log('JSON', data);
+                        $('#lastdatafield').empty();
+                        if (data != last_data) 
+                            for (let key in data)
+                                last_data[key] = data[key]
+                            
+                        for (let key in data) {
+                            $('#lastdatafield').append(
+                                '<p><b>' + key + '</b></p>'
+                            );
+                        };
+                        setTimeout('updateBet()', 5000);
+                    })
+                }
+            };                   
+        </script>
     </head>
     <body>
         <h1> Добро пожаловать в главное меню !</h1>
@@ -10,33 +33,24 @@
             <a href="http://127.0.0.1:8000/account/settings/"> Здесь можно перейти в настройки </a>
         </p>
 
+        <button onclick="
+            stop_bot = false
+            $.ajaxSetup({cache : false});
+            updateBet();
+        ">
+            Запустить бота
+        </button>
+        <button onclick="
+            stop_bot = true
+        ">
+            Остановить бота
+        </button>
+
         {{form.as_p}}
 
         <div id="lastdatafield">
             <p> xxx </p>
         </div>
-
-        <script text="text/javascript">    
-            function updateBet() {
-                console.log('Requesting JSON');
-                $.getJSON("{% url 'renew' %}", function(data){
-                    console.log('JSON', data);
-                    $('#lastdatafield').empty();
-                    for (let key in data) {
-                        $('#lastdatafield').append(
-                            '<p><b>' + key + '</b></p>'
-                        );
-                    };
-                    //setTimeout('updateBet()', 10000);
-                })
-            };       
-            $(document).ready(function() {
-                $.ajaxSetup({cache : false});
-                updateBet();
-            });
-
-            
-        </script>
 
         <a href="{% url 'logout' %}"> ВЫХОД </a>
     </body>

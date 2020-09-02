@@ -47,7 +47,8 @@ class StandartUser(AbstractUser):
     )
     chrome_dir_path = models.CharField(
         verbose_name="Путь до папки с данными chrome",
-        null=False
+        max_length=128,
+        default='',
     )
     # поля для групп
     AcademiaStavok = models.BooleanField(
