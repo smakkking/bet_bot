@@ -6,10 +6,15 @@
         <script text="text/javascript">  
             var stop_bot = false
             var last_data = {}
+            var new_iteration = false
             function update_bet() {
                 if (!stop_bot) {
-                    $.getJSON("{% url 'renew' %}", function(data){
+                    $.getJSON(
+                        "{% url 'renew' %}", 
+                        { 'new_iteration' : new_iteration },
+                    function(data){
                         console.log(data)
+                        new_iteration = false
                         for (let key in data) {
                             if (!last_data[key] || (String(last_data[key]) != String(data[key]))) {
                                 // this happens if data[key] is new
@@ -19,7 +24,7 @@
                                 data[key] = 'old';
                             } 
                         }  
-                        try_bet(data);    
+                        //try_bet(data);    
                         setTimeout('update_bet()', 5000);
                     })
                 }
@@ -46,6 +51,7 @@
 
         <button onclick="
             stop_bot = false
+            new_iteration = true
             $.ajaxSetup({cache : false});
             update_bet();
         ">
