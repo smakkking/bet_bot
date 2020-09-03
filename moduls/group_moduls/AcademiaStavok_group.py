@@ -35,6 +35,8 @@ def parse1(photo_url, text) :
                 bet['outcome_index'] = text[2]
     return bet
 
+# получает объект поста
+
 BET_TEMPLATES = [
     (template1, parse1),
 ]

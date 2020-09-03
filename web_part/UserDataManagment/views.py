@@ -12,6 +12,7 @@ import json
 
 import sys
 
+
 class BotSettings(LoginRequiredMixin, views.View) :
     def get(self, request) :
         basic_form = SettingsForm(instance=request.user)
@@ -54,4 +55,5 @@ class BetData(LoginRequiredMixin, views.View) :
         del bet_info['_']
         parse_json(bet_info)
         return JsonResponse(bet_info, safe=False)
+
         

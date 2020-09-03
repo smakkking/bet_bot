@@ -3,6 +3,9 @@
 import os
 import sys
 
+# для правильной работы импортирования пакетов
+sys.path.append(r'C:\GitRep\bet_bot')
+
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_part.settings')

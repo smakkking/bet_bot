@@ -11,10 +11,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
 
+
 class Stavka :
     def __init__(self, bet_dict) :
-        for key in bet_dict :
-            exec('self.' + str(key) + '=bet_dict[key]')
+        for key, value in bet_dict.items() :
+            setattr(self, key, value)
             
 class Coupon() :
     def __init__(self, type_x='ordn') :
@@ -24,6 +25,7 @@ class Coupon() :
         self.bets.append(Stavka(bet))
     def change_type(self, new_type) :
         self.type = new_type
+
 
 class LastGroupPost() :
     def __init__(self) :
@@ -55,6 +57,25 @@ class LastGroupPost() :
         except common.exceptions.NoSuchElementException:
             pass
 
+class GroupInfoPost(LastGroupPost) :
+    def __init__(self, kargs) :
+        self.text = kargs['text']
+        self.photo_list = kargs['photo_list']
+    def pasrering(self, browser, group_name) :
+        # возвращает экземпляр Coupon
+        result = Coupon()
+        if (self.text.find('экспресс') != -1) :
+            result.change_type('expr')
+        
+        for photo in self.photo_list :
+            for template, parse in group_name.BET_TEMPLATES :
+                photo_text = get_text_from_image(browser, photo)
+                if template(photo_text) :
+                    result.add_bet(parse(photo, photo_text))
+                    break
+        
+        return result
+    
 def get_html(url, params=None):
     return requests.get(url, headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}, params=params).text
 
