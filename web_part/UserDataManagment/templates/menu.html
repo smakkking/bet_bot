@@ -6,25 +6,36 @@
         <script text="text/javascript">  
             var stop_bot = false
             var last_data = {}
-            function updateBet() {
-                console.log('Requesting JSON');
+            function update_bet() {
                 if (!stop_bot) {
                     $.getJSON("{% url 'renew' %}", function(data){
-                        console.log('JSON', data);
-                        $('#lastdatafield').empty();
-                        if (data != last_data) 
-                            for (let key in data)
-                                last_data[key] = data[key]
-                            
+                        console.log(data)
                         for (let key in data) {
-                            $('#lastdatafield').append(
-                                '<p><b>' + key + '</b></p>'
-                            );
-                        };
-                        setTimeout('updateBet()', 5000);
+                            if (!last_data[key] || (String(last_data[key]) != String(data[key]))) {
+                                // this happens if data[key] is new
+                                last_data[key] = data[key];
+                                data[key] = JSON.stringify(data[key]);
+                            } else {
+                                data[key] = 'old';
+                            } 
+                        }  
+                        try_bet(data);    
+                        setTimeout('update_bet()', 5000);
                     })
                 }
-            };                   
+            };
+            function try_bet(data) {
+                $('#lastdatafield').empty();
+                $.getJSON("{% url 'bet' %}",
+                    data, function(success_bet) {
+                    console.log('Congr');
+                    for (let key in success_bet) {
+                        $('#lastdatafield').append(
+                            '<p><b>' + key + '</b> : ' + success_bet[key] +'</p>'
+                        );
+                    }
+                })
+            };                
         </script>
     </head>
     <body>
@@ -36,7 +47,7 @@
         <button onclick="
             stop_bot = false
             $.ajaxSetup({cache : false});
-            updateBet();
+            update_bet();
         ">
             Запустить бота
         </button>

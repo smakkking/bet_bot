@@ -41,3 +41,17 @@ class UpdateData(LoginRequiredMixin, views.View) :
             if key in user_data.keys() and user_data[key] :
                 new_data[key] = data[key]
         return JsonResponse(new_data, safe=False)
+
+class BetData(LoginRequiredMixin, views.View) :
+    def get(self, request) :
+        def parse_json(data) :
+            expected_keys = SettingsForm(instance=request.user).__dict__['initial'].keys()
+            for key in data.keys() :
+                if key in expected_keys and data[key][0] != 'old':
+                    data[key] = json.loads(data[key][0])
+
+        bet_info = dict(request.GET)
+        del bet_info['_']
+        parse_json(bet_info)
+        return JsonResponse(bet_info, safe=False)
+        

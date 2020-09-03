@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/settings/', views.BotSettings.as_view()),
     path('account/renew', views.UpdateData.as_view(), name='renew'),
+    path('account/bet', views.BetData.as_view(), name='bet'),
     path('account/', include('django.contrib.auth.urls')),
     path('account/menu/', views.BotMenu.as_view()),
 ]
