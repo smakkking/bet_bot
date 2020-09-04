@@ -1,6 +1,7 @@
 # строка для правильной работы импортирования пакетов
 import sys
-sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
+if __name__ == "__main__":
+    sys.path.append(r'C:\GitRep\bet_bot')
 
 from moduls import manage_file
 import time
@@ -35,8 +36,6 @@ def parse1(photo_url, text) :
                 bet['outcome_index'] = text[2]
     return bet
 
-# получает объект поста
-
 BET_TEMPLATES = [
     (template1, parse1),
 ]
@@ -47,8 +46,7 @@ offset_table = {
         'ПОБЕДА В МАТЧЕ' : 'match_result',
 }
 
-    
-    
+      
 if __name__ == "__main__":
     browser = manage_file.create_webdriver()
     try :

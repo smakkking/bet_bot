@@ -1,6 +1,7 @@
 # строка для правильной работы импортирования пакетов
 import sys
-sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
+if __name__ == "__main__":
+    sys.path.append(r'C:\GitRep\bet_bot')
 
 from moduls import manage_file
 import time

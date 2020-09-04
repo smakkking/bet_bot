@@ -12,6 +12,8 @@ import json
 
 import sys
 
+#from moduls import all_scripts
+
 
 class BotSettings(LoginRequiredMixin, views.View) :
     def get(self, request) :
@@ -59,6 +61,8 @@ class BetData(LoginRequiredMixin, views.View) :
         bet_info = dict(request.GET)
         del bet_info['_']
         parse_json(bet_info)
+        # здесь и должна вызываться функция ставки
+
         return JsonResponse(bet_info, safe=False)
 
         

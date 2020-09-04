@@ -1,39 +1,14 @@
-# общие модули
+# строка для правильной работы импортирования пакетов
+import sys
+if __name__ == "__main__":
+    sys.path.append(r'C:\GitRep\bet_bot')
+
 from moduls import manage_file
 import time
-# конкретные модули
 
-WALL_GET_url = 'https://vk.com/rushbet.tips'
+WALL_URL = 'https://vk.com/rushbet.tips'
 
-# сюда помещать функции-шаблоны
-BET_TEMPLATES = [
-    template1,
-    template2,
-    template3,
-]
-
-# таблица смещений
-offset_table = {
-    # победитель по карте
-        'Победа. Карта' : 'map_winner',
-        'Победитель. Карта' : 'map_winner',
-        'Результат. Карта' : 'map_winner',
-    # фора по карте 
-        'Фора. Карта' : 'map_handicap',
-    # тотал по карте
-        'Тотал. Карта' : 'map_total',
-    # победа команды
-        'Результат матча' : 'match_result',
-        'Победа' : 'match_result',
-    # фора 
-        'Фора' : 'handicap',
-    # конкретный счет
-        'Счет' : 'score',
-    # тотал(сумма счетов)
-        'Тотал' : 'total',
-}
-
-def parse_bet(text) :
+def parse1(photo_url, text) :
     # здесь по идее иедт проверка на ставку по шаблонам
     check = False
     for check_bet in BET_TEMPLATES :
@@ -77,29 +52,36 @@ def template3(text) :
     flag = flag and text[len(text) - 1][1] == ','
     return flag
 
-def main_script(BROWSER, post_before) :
-    # что происходит:
-    # получается последнее фото со страницы, берется текст с фото, парсится ставка
-    # сам процесс ставки
-    current_post = manage_file.GroupPost()
-    current_post.get_last_post(BROWSER, WALL_GET_url)
-    if current_post == post_before :
-        return current_post
-    # здесь нужно понять, как отличать ставку от поста с другим содержанием(нужно изучить посты)
-    stavka = []
-    for photo in current_post.photo_list :
-        obj = parse_bet(manage_file.get_text_from_image(BROWSER, photo))
-        if obj != {} :
-            stavka.append(obj)
-    # получили массив ставок
+BET_TEMPLATES = [
+    (template1, parse1),
+    (template2, parse1),
+    (template3, parse1),
+]
+offset_table = {
+    # победитель по карте
+        'Победа. Карта' : 'map_winner',
+        'Победитель. Карта' : 'map_winner',
+        'Результат. Карта' : 'map_winner',
+    # фора по карте 
+        'Фора. Карта' : 'map_handicap',
+    # тотал по карте
+        'Тотал. Карта' : 'map_total',
+    # победа команды
+        'Результат матча' : 'match_result',
+        'Победа' : 'match_result',
+    # фора 
+        'Фора' : 'handicap',
+    # конкретный счет
+        'Счет' : 'score',
+    # тотал(сумма счетов)
+        'Тотал' : 'total',
+}
+
 
 if __name__ == "__main__":
     browser = manage_file.create_webdriver()
     try :
-        main_script(
-            browser, 
-            manage_file.GroupPost('', []),
-        )
+        pass
     finally :
         browser.close()
         browser.quit()
