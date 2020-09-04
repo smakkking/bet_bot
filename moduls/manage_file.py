@@ -11,12 +11,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
 
-
 class Stavka :
     def __init__(self, bet_dict) :
         for key, value in bet_dict.items() :
             setattr(self, key, value)
-            
+
+
 class Coupon() :
     def __init__(self, type_x='ordn') :
         self.type = type_x
@@ -56,6 +56,7 @@ class LastGroupPost() :
                 time.sleep(0.5)  
         except common.exceptions.NoSuchElementException:
             pass
+
 
 class GroupInfoPost(LastGroupPost) :
     def __init__(self, kargs) :
@@ -101,15 +102,15 @@ def get_text_from_image(BROWSER, url):
        text.append(item.text)
     return text
 
-def create_webdriver() :
+def create_webdriver(user_data_dir) :
     opts = Options()
-    opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
-    opts.add_argument(r'user-data-dir=C:\Users\user1\AppData\Local\Google\Chrome\Profile 1')
+    #opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
+    opts.add_argument('--user-data-dir=' + user_data_dir)
     opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
     #opts.add_argument('headless')
     opts.add_argument("--disable-gpu")
     opts.add_argument('--window-size=1024x768')
-    obj = webdriver.Chrome(executable_path=os.getcwd() + '\\chromedriver.exe', options=opts)
+    obj = webdriver.Chrome(executable_path=r'C:\GitRep\bet_bot\chromedriver.exe', options=opts)
     return obj
     
 # return 'left' or 'right'

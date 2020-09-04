@@ -20,11 +20,12 @@ GROUP_OFFSET = {
 }
 
 
-def checking_for_bets(book_name, data) :
+def checking_for_bets(user, data) :
     # решить проблему с браузером
-    browser = 1
+    if data['open_browser'] == 'true' :
+        browser = manage_file.create_webdriver(user.chrome_dir_path)
     for key in data.keys() :
-        if data[key] == 'old' :
+        if data[key] == 'old' or key == 'open_browser':
             continue
         pst = manage_file.GroupInfoPost(data[key])
         obj = pst.pasrering(browser, GROUP_OFFSET[key])
@@ -39,20 +40,5 @@ def checking_for_bets(book_name, data) :
 
     
 if __name__ == '__main__' :
-    #это скрипт для получения последних данных со ВСЕХ групп
-    browser = manage_file.create_webdriver()
-    data = {}
-    try :
-        while True :
-            post = manage_file.LastGroupPost()
-            for group in GROUP_OFFSET.values() :
-                post.get(browser, group.WALL_URL)
-                data[group.__name__.replace('moduls.group_moduls.', '').replace('_group', '')] = post.__json_repr__()
-            last_posts_json = open(sys.path[0] + r'\user_data\group_post_data.json', 'w')
-            json.dump(data, last_posts_json, indent=4)
-            last_posts_json.close()
-    finally :
-        last_posts_json.close()
-        browser.close()
-        browser.quit()
+    pass
     

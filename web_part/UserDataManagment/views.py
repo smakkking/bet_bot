@@ -12,7 +12,7 @@ import json
 
 import sys
 
-#from moduls import all_scripts
+from moduls.all_scripts import checking_for_bets
 
 
 class BotSettings(LoginRequiredMixin, views.View) :
@@ -37,7 +37,7 @@ class BotMenu(LoginRequiredMixin, views.View) :
 
 class UpdateData(LoginRequiredMixin, views.View) :
     def get(self, request) :
-        json_path = sys.path[0].replace('web_part', r'user_data\group_post_data.json')
+        json_path = r'C:\GitRep\bet_bot\user_data\group_post_data.json'
         with open(json_path, 'r') as f :
             data = json.load(f)
             new_data = {}
@@ -57,12 +57,13 @@ class BetData(LoginRequiredMixin, views.View) :
             for key in data.keys() :
                 if key in expected_keys and data[key][0] != 'old':
                     data[key] = json.loads(data[key][0])
-        
+                else :
+                    data[key] = data[key][0] 
         bet_info = dict(request.GET)
         del bet_info['_']
         parse_json(bet_info)
         # здесь и должна вызываться функция ставки
-
+        checking_for_bets(request.user, bet_info)
         return JsonResponse(bet_info, safe=False)
 
         
