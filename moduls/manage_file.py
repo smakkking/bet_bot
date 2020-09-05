@@ -16,15 +16,27 @@ class Stavka :
         for key, value in bet_dict.items() :
             setattr(self, key, value)
 
+    def __str__(self) :
+        res = []
+        for key in Stavka.__dict__ :
+            res.append((key, getattr(self, key)))
+        return str(dict(res))
+
 
 class Coupon() :
     def __init__(self, type_x='ordn') :
         self.type = type_x
         self.bets = []
+
     def add_bet(self, bet) :
         self.bets.append(Stavka(bet))
+
     def change_type(self, new_type) :
         self.type = new_type
+
+    def __str__(self) :
+        res = [('type', self.type), ('bets', self.bets)]
+        return str(dict(res))
 
 
 class LastGroupPost() :
@@ -62,8 +74,9 @@ class GroupInfoPost(LastGroupPost) :
     def __init__(self, kargs) :
         self.text = kargs['text']
         self.photo_list = kargs['photo_list']
+
+    # возвращает экземпляр Coupon
     def pasrering(self, browser, group_name) :
-        # возвращает экземпляр Coupon
         result = Coupon()
         if (self.text.find('экспресс') != -1) :
             result.change_type('expr')
@@ -106,7 +119,7 @@ def create_webdriver(user_data_dir) :
     opts = Options()
     #opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
     opts.add_argument('--user-data-dir=' + user_data_dir)
-    opts.add_argument('--profile-directory=Profile 1') # возможно заменить на другой профиль с названием Default
+    opts.add_argument('--profile-directory=Profile') # возможно заменить на другой профиль с названием Default
     #opts.add_argument('headless')
     opts.add_argument("--disable-gpu")
     opts.add_argument('--window-size=1024x768')
@@ -150,10 +163,14 @@ def define_side_winner(url) :
         return 'left'
     
 
-
 if __name__ == "__main__":
     
     try :
+        browser = create_webdriver(r'C:\CHROME_DIRS\ID_1213')
+        browser.get('https://new.parimatch.ru/ru/')
+        time.sleep(10)
+
         pass
     finally :
-        pass
+        browser.close()
+        browser.quit()

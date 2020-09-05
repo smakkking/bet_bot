@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+
+<html>
+    <head>
+        <title> Главное меню </title>
+		<meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<link rel="stylesheet" href="{% static 'test.css' %}" />
+    </head>
+    
+	<body>
+			<header class="container group">
+				<h1 class="logo">
+					<a href="test.html">BET-HELPER</a>
+				</h1>
+				
+				<nav class=" nav primary-nav">
+					
+				</nav>
+			
+			</header>
+			
+			<section class="hero container">
+				<h2>Переосмысление ставочного дела</h2>
+				<p>Если вы хотите начать зарабатывать на спорте,затрачивая минимум усилий,то этот сайт ваш лучший вариант</p>
+				 <a class="btn btn-alt" href="register.html">Зарегистрируйтесь сейчас</a>
+				 <a class="btn btn-alt" href="{% url 'login' %}">Вход</a>
+			</section>
+			
+			<section class="grid" >
+
+				<section class="col-1-3" >
+					  <h5>Аналитика и Капперы</h5>
+					<p>Наш сервис анализирует огромное количество параметров, а также собирает данные и учитывает мнение многих специалистов ставочного дела. 
+					   Благодаря этому вы в кратчайшие сроки получаете наиболее точный результат </p>
+				</section><!--
+
+				Говно
+			--><section class="col-1-3" >
+					  <h5>Автоматизация </h5>
+					<p>С этим сайтом вам не придётся больше сидеть и ловить лучший момент для своей ставки, а также постоянно мониторить различные сервисы.
+					   Приложение сделает всю работу за вас</p>
+				</section><!--
+
+				Не рабочее
+			--><section class="col-1-3" >
+					  <h5>Безопасность</h5>
+					<p>Я хз как с ней работать,поэтому возможно вас,как и нас, взломают</p>
+				</section>
+
+				
+				</section>
+		  
+	
+			<footer class="primary-footer container group">
+			
+				<small>&copy; BET-HELPER</small>
+				<nav class="nav">
+					
+				</nav>
+				
+			</footer>
+	</body>
+</html>

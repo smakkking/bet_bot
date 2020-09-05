@@ -41,7 +41,6 @@ class UpdateData(LoginRequiredMixin, views.View) :
         with open(json_path, 'r') as f :
             data = json.load(f)
             new_data = {}
-            new_data['open_browser'] = dict(request.GET)['new_iteration'][0] == 'true'
             user_data = SettingsForm(instance=request.user).__dict__['initial']
             for key in data.keys() :
                 if key in user_data.keys() and user_data[key] :

@@ -21,9 +21,7 @@ GROUP_OFFSET = {
 
 
 def checking_for_bets(user, data) :
-    # решить проблему с браузером
-    if data['open_browser'] == 'true' :
-        browser = manage_file.create_webdriver(user.chrome_dir_path)
+    browser = manage_file.create_webdriver(user.chrome_dir_path)
     for key in data.keys() :
         if data[key] == 'old' or key == 'open_browser':
             continue
@@ -31,11 +29,14 @@ def checking_for_bets(user, data) :
         obj = pst.pasrering(browser, GROUP_OFFSET[key])
         # здесь поидее обработка ошибки, если пост не ставка
         # а также процесс ставки на букмекерке
+        print(obj)
         if obj.bets :
             # тут как раз весь процесс
             data[key] = 'ok'
         else :
             data[key] = 'not bet'
+    browser.close()
+    browser.quit()
     
 
     
