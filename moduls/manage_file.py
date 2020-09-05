@@ -16,11 +16,8 @@ class Stavka :
         for key, value in bet_dict.items() :
             setattr(self, key, value)
 
-    def __str__(self) :
-        res = []
-        for key in Stavka.__dict__ :
-            res.append((key, getattr(self, key)))
-        return str(dict(res))
+    def __repr__(self) :
+        return str(self.__dict__)
 
 
 class Coupon() :
@@ -57,8 +54,11 @@ class LastGroupPost() :
         # получаем текст
         self.text = first_post.find_elements_by_tag_name('div')[1].text
         # получаем список фото
-        photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
-        # тест
+        try :
+            photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
+        except IndexError :
+            photos_click_dom = []
+
         try :
             for item in photos_click_dom :
                 item.click()
@@ -90,6 +90,7 @@ class GroupInfoPost(LastGroupPost) :
         
         return result
     
+
 def get_html(url, params=None):
     return requests.get(url, headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}, params=params).text
 
@@ -105,24 +106,25 @@ def get_html_with_browser(BROWSER, url, sec=0, scrolls=0) :
     return BROWSER.page_source
 
 def get_text_from_image(BROWSER, url):
-    url = url.replace('/', '%2F')
-    url = url.replace(':', '%3A')
-    url = 'https://yandex.ru/images/search?url=' + url + '&rpt=imageview&from=tabbar' # создание рабочей ссылки
-    soup = BeautifulSoup(get_html_with_browser(BROWSER, url, 4), 'html.parser')
+    # создание рабочей ссылки
+    url = url.replace('/', '%2F').replace(':', '%3A')
+    url = 'https://yandex.ru/images/search?url=' + url + '&rpt=imageview&from=tabbar' 
+
+    soup = BeautifulSoup(get_html_with_browser(BROWSER, url), 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
     for item in items2 :
        text.append(item.text)
     return text
 
-def create_webdriver(user_data_dir) :
+def create_webdriver(user_data_dir='') :
     opts = Options()
-    #opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
-    opts.add_argument('--user-data-dir=' + user_data_dir)
-    opts.add_argument('--profile-directory=Profile') # возможно заменить на другой профиль с названием Default
+    if user_data_dir :
+        opts.add_argument('--user-data-dir=' + user_data_dir)
+        opts.add_argument('--profile-directory=Profile')
     #opts.add_argument('headless')
     opts.add_argument("--disable-gpu")
-    opts.add_argument('--window-size=1024x768')
+    opts.add_argument('--window-size=1920x1080')
     obj = webdriver.Chrome(executable_path=r'C:\GitRep\bet_bot\chromedriver.exe', options=opts)
     return obj
     
@@ -164,13 +166,12 @@ def define_side_winner(url) :
     
 
 if __name__ == "__main__":
-    
     try :
         browser = create_webdriver(r'C:\CHROME_DIRS\ID_1213')
         browser.get('https://new.parimatch.ru/ru/')
         time.sleep(10)
-
         pass
     finally :
-        browser.close()
-        browser.quit()
+       browser.close()
+       browser.quit()
+       pass

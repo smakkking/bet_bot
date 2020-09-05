@@ -61,6 +61,7 @@ class BetData(LoginRequiredMixin, views.View) :
         bet_info = dict(request.GET)
         del bet_info['_']
         parse_json(bet_info)
+        print(bet_info)
         # здесь и должна вызываться функция ставки
         checking_for_bets(request.user, bet_info)
         return JsonResponse(bet_info, safe=False)
