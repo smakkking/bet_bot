@@ -5,8 +5,11 @@ WALL_URL = 'https://vk.com/akademiya_stavki_csgo'
 
 def template1(text) :
     flag = True
-    flag = flag and text[4] == 'vs'
-    flag = flag and text[len(text) - 1] == 'ОТМЕНИТЬ СТАВКУ'
+    try :
+        flag = flag and text[4] == 'vs'
+        flag = flag and text[len(text) - 1] == 'ОТМЕНИТЬ СТАВКУ'
+    except IndexError :
+        flag = False
     return flag
 
 def parse1(photo_url, text) :

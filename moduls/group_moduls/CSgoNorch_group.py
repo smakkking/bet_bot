@@ -5,9 +5,12 @@ WALL_URL = 'https://vk.com/csgo_norch'
 
 def template1(text) :
     flag = True
-    flag = flag and len(text) == 8
-    flag = flag and text[4] == 'Общая ставка:'
-    flag = flag and text[5] == 'заплатит:'
+    try :
+        flag = flag and len(text) == 8
+        flag = flag and text[4] == 'Общая ставка:'
+        flag = flag and text[5] == 'заплатит:'
+    except IndexError :
+        flag = False
     return flag
 
 def parse1(text) :

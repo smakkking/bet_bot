@@ -14,7 +14,7 @@ import sys
 
 from moduls.all_scripts import checking_for_bets
 
-from main_names import ALL_POSTS_JSON_PATH
+from manage import ALL_POSTS_JSON_PATH
 
 
 class BotSettings(LoginRequiredMixin, views.View) :

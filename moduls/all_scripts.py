@@ -3,10 +3,12 @@ from datetime import datetime
 
 import time
 import json
+import sys
 from datetime import datetime
 
 from moduls import manage_file
 from moduls.group_moduls import AcademiaStavok_group, CSgoNorch_group, CSgoVictory_group 
+from manage import ALL_POSTS_JSON_PATH, CHROME_DIR_PACKAGES
 
 GROUP_OFFSET = {
     'AcademiaStavok' : AcademiaStavok_group,
@@ -15,7 +17,7 @@ GROUP_OFFSET = {
 }
 
 def checking_for_bets(user, data) :
-    browser = manage_file.create_webdriver(user.chrome_dir_path)
+    browser = manage_file.create_webdriver(CHROME_DIR_PACKAGES + r'\ID_' + user.chrome_dir_path)
     for key in data.keys() :
         if data[key] == 'old' or key == 'open_browser':
             continue
@@ -23,7 +25,6 @@ def checking_for_bets(user, data) :
         obj = pst.pasrering(browser, GROUP_OFFSET[key])
         # здесь поидее обработка ошибки, если пост не ставка
         # а также процесс ставки на букмекерке
-        print(obj)
         if obj.bets :
             # тут как раз весь процесс
             data[key] = 'ok'
@@ -43,9 +44,8 @@ def load_last_data() :
     finally :
         browser.close()
         browser.quit() 
-        with open(r'C:\GitRep\bet_bot\user_data\group_post_data.json', 'w') as last_posts_json : 
+        with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json : 
             json.dump(data, last_posts_json, indent=4)
 
 if __name__ == '__main__' :
-    load_last_data()
-    
+    pass
