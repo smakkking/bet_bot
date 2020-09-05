@@ -1,4 +1,4 @@
-from moduls import manage_file
+from moduls import bet_manage
 import time
 
 WALL_URL = 'https://vk.com/rushbet.tips'
@@ -9,7 +9,7 @@ def parse1(photo_url, text) :
     for check_bet in BET_TEMPLATES :
         check = check or check_bet(text)
     if check :
-        result = manage_file.Coupon('ordn')
+        result = bet_manage.Coupon('ordn')
         bet = {}
 
         bet['winner'] = text[0]
@@ -74,7 +74,7 @@ offset_table = {
 
 
 if __name__ == "__main__":
-    browser = manage_file.create_webdriver()
+    browser = bet_manage.create_webdriver()
     try :
         pass
     finally :

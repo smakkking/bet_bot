@@ -1,4 +1,4 @@
-from moduls import manage_file
+from moduls import bet_manage
 import time
 
 WALL_URL = 'https://vk.com/csgo_norch'

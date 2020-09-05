@@ -1,10 +1,10 @@
 import time
-from moduls import manage_file
+from moduls import bet_manage
 import selenium
 
 BET_URL = 'https://new.parimatch.ru'
 
-# stavka - экземпялр класса manage_file.Coupon
+# stavka - экземпялр класса bet_manage.Coupon
 
 def search_bet(browser, stavka) :
     pass
@@ -13,7 +13,7 @@ def bet(browser, stavka) :
     #match_url = search_bet(browser, stavka)
     match_url = 'https://new.parimatch.ru/ru/event/1%7CCS%7Ce1964405daba46d99da77ba5f5046b57%7C1ffa637e9d3c4e018c4c3d3d5848aa29/1%7C5632691'
         
-    manage_file.get_html_with_browser(browser, match_url, 12)
+    bet_manage.get_html_with_browser(browser, match_url, 12)
 
     click_on_coupons(browser, stavka)
 
@@ -97,7 +97,7 @@ def spell_check(info, name) :
     
 
 if __name__ == "__main__":
-    browser = manage_file.create_webdriver()
+    browser = bet_manage.create_webdriver()
     try :
         bet(browser, {
             'type' : 'ordn',

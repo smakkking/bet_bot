@@ -23,13 +23,7 @@ def selen(data):
 
  
 if __name__ == '__main__':
-    import manage_file
-    browser = manage_file.create_webdriver()
-    browser.get('https://new.parimatch.ru')
-    time.sleep(40)
-    
-    browser.close()
-    browser.quit()
+    pass
     
 
 

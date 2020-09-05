@@ -1,4 +1,4 @@
-from moduls import manage_file
+from moduls import bet_manage
 import time
 
 WALL_URL = 'https://vk.com/victorybets_stavki'
@@ -18,7 +18,7 @@ def parse1(photo_url, text) :
     bet['match_title'] = text[1].replace('vs', '-')
     bet['summ'] = 20.0
 
-    side = manage_file.define_side_winner(photo_url)
+    side = bet_manage.define_side_winner(photo_url)
     if side == 'left' :
         bet['winner'] = text[6]
     elif side == 'right' :
@@ -46,7 +46,7 @@ offset_table = {
 }
     
 if __name__ == "__main__":
-    browser = manage_file.create_webdriver()
+    browser = bet_manage.create_webdriver()
     try :
         pass
     finally :

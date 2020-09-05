@@ -6,7 +6,7 @@ import json
 import sys
 from datetime import datetime
 
-from moduls import manage_file
+from moduls import bet_manage
 from moduls.group_moduls import AcademiaStavok_group, CSgoNorch_group, CSgoVictory_group 
 from manage import ALL_POSTS_JSON_PATH, CHROME_DIR_PACKAGES
 
@@ -17,11 +17,11 @@ GROUP_OFFSET = {
 }
 
 def checking_for_bets(user, data) :
-    browser = manage_file.create_webdriver(CHROME_DIR_PACKAGES + r'\ID_' + user.chrome_dir_path)
+    browser = bet_manage.create_webdriver(CHROME_DIR_PACKAGES + r'\ID_' + user.chrome_dir_path)
     for key in data.keys() :
         if data[key] == 'old' or key == 'open_browser':
             continue
-        pst = manage_file.GroupInfoPost(data[key])
+        pst = bet_manage.GroupInfoPost(data[key])
         obj = pst.pasrering(browser, GROUP_OFFSET[key])
         # здесь поидее обработка ошибки, если пост не ставка
         # а также процесс ставки на букмекерке
@@ -34,11 +34,11 @@ def checking_for_bets(user, data) :
     browser.quit()
     
 def load_last_data() :
-    browser = manage_file.create_webdriver()
+    browser = bet_manage.create_webdriver()
     data = {}
     try :
         for (group_name, group) in GROUP_OFFSET.items() :
-            post = manage_file.LastGroupPost()
+            post = bet_manage.LastGroupPost()
             post.get(browser, group.WALL_URL)
             data[group_name] = post.__json_repr__()
     finally :
