@@ -14,6 +14,8 @@ import sys
 
 from moduls.all_scripts import checking_for_bets
 
+from main_names import ALL_POSTS_JSON_PATH
+
 
 class BotSettings(LoginRequiredMixin, views.View) :
     def get(self, request) :
@@ -28,7 +30,6 @@ class BotSettings(LoginRequiredMixin, views.View) :
 
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
-        # задать константный путь к файлу json
         basic_form = MenuForm(data={
             'end_date' : request.user.subscr_end_date,
         })
@@ -37,8 +38,7 @@ class BotMenu(LoginRequiredMixin, views.View) :
 
 class UpdateData(LoginRequiredMixin, views.View) :
     def get(self, request) :
-        json_path = r'C:\GitRep\bet_bot\user_data\group_post_data.json'
-        with open(json_path, 'r') as f :
+        with open(ALL_POSTS_JSON_PATH, 'r') as f :
             data = json.load(f)
             new_data = {}
             user_data = SettingsForm(instance=request.user).__dict__['initial']
@@ -61,7 +61,6 @@ class BetData(LoginRequiredMixin, views.View) :
         bet_info = dict(request.GET)
         del bet_info['_']
         parse_json(bet_info)
-        print(bet_info)
         # здесь и должна вызываться функция ставки
         checking_for_bets(request.user, bet_info)
         return JsonResponse(bet_info, safe=False)

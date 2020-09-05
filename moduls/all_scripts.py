@@ -1,8 +1,3 @@
-# строка для правильной работы импортирования пакетов
-import sys
-if __name__ == "__main__":
-    sys.path.append(r'C:\GitRep\bet_bot')
-
 from selenium import webdriver
 from datetime import datetime
 

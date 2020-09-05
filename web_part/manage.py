@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
+from main_names import BET_PROJECT_ROOT
 
-# для правильной работы импортирования пакетов
-sys.path.append(r'C:\GitRep\bet_bot')
+sys.path.append(BET_PROJECT_ROOT)
 
 
 def main():

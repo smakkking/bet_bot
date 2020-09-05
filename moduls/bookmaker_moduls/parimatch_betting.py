@@ -1,14 +1,10 @@
-# строка для правильной работы импортирования пакетов
-import sys
-sys.path[0] = sys.path[0][ : sys.path[0].find('bet_bot') + 7]
-
 import time
 from moduls import manage_file
 import selenium
 
 BET_URL = 'https://new.parimatch.ru'
 
-# ввели чутка ооп. stavka - экземпялр класса manage_file.Coupon
+# stavka - экземпялр класса manage_file.Coupon
 
 def search_bet(browser, stavka) :
     pass
