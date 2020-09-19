@@ -8,7 +8,7 @@ BET_PROJECT_ROOT    = r'C:\GitRep\bet_bot'
 CHROME_DIR_PACKAGES = r'C:\Users\user1\AppData\Local\Google\Chrome'
 
 # путь к файлу с инфой о всех последних постах
-ALL_POSTS_JSON_PATH = BET_PROJECT_ROOT + r'\user_data\group_post_data.json'
+ALL_POSTS_JSON_PATH = BET_PROJECT_ROOT + r'\web_part\user_data\group_post_data.json'
 
 # путь до chrome_driver
 CHROME_DRIVER_PATH = BET_PROJECT_ROOT + r'\chromedriver.exe'

@@ -9,11 +9,9 @@ from .forms import SettingsForm, MenuForm
 from .models import StandartUser
 
 import json
-
 import sys
 
 from moduls.all_scripts import checking_for_bets
-
 from manage import ALL_POSTS_JSON_PATH
 
 
