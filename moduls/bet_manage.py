@@ -10,6 +10,8 @@ import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
+from manage import CHROME_DRIVER_PATH
+
 
 class Stavka :
     def __init__(self, bet_dict) :
@@ -125,7 +127,7 @@ def create_webdriver(user_data_dir='') :
     #opts.add_argument('headless')
     opts.add_argument("--disable-gpu")
     opts.add_argument('--window-size=1920x1080')
-    obj = webdriver.Chrome(executable_path=r'C:\GitRep\bet_bot\chromedriver.exe', options=opts)
+    obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
     return obj
     
 # return 'left' or 'right'

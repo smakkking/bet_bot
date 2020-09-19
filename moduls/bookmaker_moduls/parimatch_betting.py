@@ -76,7 +76,6 @@ def reform_winner(bet, name) :
     elif bet['winner'].find(team2) != -1 :
         bet['winner'] = name[0] + '2' + bet['winner'].replace(team2, '')
     
-
 def spell_check(info, name) :
     # здесь задаеся конкретное отображение общая форма -> бк
     offset_table = {

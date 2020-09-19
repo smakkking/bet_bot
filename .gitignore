@@ -1,4 +1,3 @@
-chromedriver.exe
 user_data/database.xlsx
 user_data/group_urls.txt
 moduls/__pycache__/manage_file.cpython-38.pyc
