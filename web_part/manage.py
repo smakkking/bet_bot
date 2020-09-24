@@ -11,7 +11,7 @@ CHROME_DIR_PACKAGES = r'C:\Users\user1\AppData\Local\Google\Chrome'
 ALL_POSTS_JSON_PATH = BET_PROJECT_ROOT + r'\web_part\user_data\group_post_data.json'
 
 # путь до chrome_driver
-CHROME_DRIVER_PATH = BET_PROJECT_ROOT + r'\chromedriver.exe'
+CHROME_DRIVER_PATH  = BET_PROJECT_ROOT + r'\chromedriver.exe'
 
 sys.path.append(BET_PROJECT_ROOT)
 

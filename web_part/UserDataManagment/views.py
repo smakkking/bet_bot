@@ -31,7 +31,9 @@ class BotMenu(LoginRequiredMixin, views.View) :
         basic_form = MenuForm(data={
             'end_date' : request.user.subscr_end_date,
         })
-        return render(request, 'menu.html', {'form' : basic_form})
+        response = render(request, 'menu.html', {'form' : basic_form})
+        response.set_cookie('sub_status', request.user.subscribe_status)
+        return response
 
 
 class UpdateData(LoginRequiredMixin, views.View) :
@@ -63,4 +65,8 @@ class BetData(LoginRequiredMixin, views.View) :
         checking_for_bets(request.user, bet_info)
         return JsonResponse(bet_info, safe=False)
 
-        
+
+class BuySubscribe(LoginRequiredMixin, views.View) :
+    def get(self, request) :
+        print('ahah')
+        return render(request, 'subscribe.html')

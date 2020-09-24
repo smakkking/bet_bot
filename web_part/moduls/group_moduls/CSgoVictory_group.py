@@ -44,11 +44,3 @@ offset_table = {
     # победа команды
         'ПОБЕДА В МАТЧЕ' : 'match_result',
 }
-    
-if __name__ == "__main__":
-    browser = bet_manage.create_webdriver()
-    try :
-        pass
-    finally :
-        browser.close()
-        browser.quit()

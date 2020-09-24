@@ -46,9 +46,13 @@ class StandartUser(AbstractUser):
         null=True
     )
     chrome_dir_path = models.CharField(
-        verbose_name="Путь до папки с данными chrome",
+        verbose_name="id папки с chrome-профилем",
         max_length=128,
         default='',
+    )
+    subscribe_status = models.BooleanField(
+        verbose_name='статус подписки 1 - активна, 0 -нет',
+        default=False,
     )
     # поля для групп
     AcademiaStavok = models.BooleanField(

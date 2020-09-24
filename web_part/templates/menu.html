@@ -1,70 +1,31 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
     <head>
         <title> Главное меню </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script text="text/javascript">  
-            var stop_bot = false
-            var last_data = {}
-            var WAIT_TIME = 60
-            function update_bet() {
-                if (!stop_bot) {
-                    $.getJSON(
-                        "{% url 'renew' %}", 
-                    function(data){
-                        console.log(data)
-                        for (let key in data) {
-                            if (!last_data[key] || (String(last_data[key]) != String(data[key]))) {
-                                // this happens if data[key] is new
-                                last_data[key] = data[key];
-                                data[key] = JSON.stringify(data[key]);
-                            } else {
-                                data[key] = 'old';
-                            } 
-                        }  
-                        try_bet(data);    
-                        setTimeout('update_bet()', WAIT_TIME * 1000);
-                    })
-                }
-            };
-            function try_bet(data) {
-                $('#lastdatafield').empty();
-                $.getJSON("{% url 'bet' %}",
-                    data, function(success_bet) {
-                    console.log('Congr');
-                    for (let key in success_bet) {
-                        $('#lastdatafield').append(
-                            '<p><b>' + key + '</b> : ' + success_bet[key] +'</p>'
-                        );
-                    }
-                })
-            };                
-        </script>
+        <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+        
+        <script type="text/javascript" src="{% static 'js/menu.js' %}"></script>
     </head>
     <body>
         <h1> Добро пожаловать в главное меню !</h1>
         <p> 
-            <a href="http://127.0.0.1:8000/account/settings/"> Здесь можно перейти в настройки </a>
+            <a href="{% url 'settings' %}"> Здесь можно перейти в настройки </a>
         </p>
-
-        <button onclick="
-            stop_bot = false
-            new_iteration = true
-            $.ajaxSetup({cache : false});
-            update_bet();
-        ">
+        <p><a href="{% url 'subscribe' %}">Здесь можно купить подписку</a></p>
+            
+        
+        <button onclick="create_bot();">
             Запустить бота
         </button>
-        <button onclick="
-            stop_bot = true
-        ">
+        <button onclick="stop_bot = true">
             Остановить бота
         </button>
 
         {{form.as_p}}
 
         <div id="lastdatafield">
-            <p> xxx </p>
         </div>
 
         <a href="{% url 'logout' %}"> ВЫХОД </a>
