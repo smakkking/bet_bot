@@ -1,82 +1,152 @@
-from moduls import bet_manage
-import time
+import nltk
+import re
 
-WALL_URL = 'https://vk.com/rushbet.tips'
-
-def parse1(photo_url, text) :
-    # здесь по идее иедт проверка на ставку по шаблонам
-    check = False
-    for check_bet in BET_TEMPLATES :
-        check = check or check_bet(text)
-    if check :
-        result = bet_manage.Coupon('ordn')
-        bet = {}
-
-        bet['winner'] = text[0]
-        bet['summ'] = 20.0
-        bet['match_title'] = text[3][text[3].find(':') + 4 : ]
-
-        for key in offset_table.keys() :
-            #print(text[2].find(key))
-            if text[2].find(key) != -1 :
-                if offset_table[key].find('map') > 0 :
-                    bet['outcome_index'] = (offset_table[key], int(text[2][-1]))
-                else :
-                    bet['outcome_index'] = offset_table[key]
-                break
-        result.add_bet(bet)
-    return result
-
-def template1(text) :
-    flag = True
-    flag = flag and len(text) == 7
-    flag = flag and text[4] == 'Сумма пари'
-    flag = flag and text[6].find('Возможный выигрыш') != -1
-    return flag
-
-def template2(text) :
-    flag = True
-    flag = flag and len(text) == 6
-    data_time = text[1].replace(' ', '')
-    flag = flag and data_time.find(':') == (len(data_time) - 3)
-    return flag
-
-def template3(text) :
-    flag = True
-    flag = flag and (len(text) == 4 or len(text) == 3)
-    flag = flag and text[len(text) - 1][1] == ','
-    return flag
-
-BET_TEMPLATES = [
-    (template1, parse1),
-    (template2, parse1),
-    (template3, parse1),
-]
-offset_table = {
-    # победитель по карте
-        'Победа. Карта' : 'map_winner',
-        'Победитель. Карта' : 'map_winner',
-        'Результат. Карта' : 'map_winner',
-    # фора по карте 
-        'Фора. Карта' : 'map_handicap',
-    # тотал по карте
-        'Тотал. Карта' : 'map_total',
-    # победа команды
-        'Результат матча' : 'match_result',
-        'Победа' : 'match_result',
-    # фора 
-        'Фора' : 'handicap',
-    # конкретный счет
-        'Счет' : 'score',
-    # тотал(сумма счетов)
-        'Тотал' : 'total',
+OFFSET_TABLE = {
+    'Победа в матче' : 'match_win',
+    'Карта Победа' : 'map_win'
 }
 
 
-if __name__ == "__main__":
-    browser = bet_manage.create_webdriver()
-    try :
-        pass
-    finally :
-        browser.close()
-        browser.quit()
+text = [
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+
+"""
+""",
+]
+
+def find_vs(words, idx) :
+    right_team = ''
+    left_team = ''
+    ndx = idx + 1
+    while (re.search('[A-Za-z\']+', words[ndx])) :
+        if (right_team.upper().find(words[ndx].upper()) < 0) :
+            right_team = right_team + ' ' + words[ndx]
+            ndx += 1
+        else :
+            break
+
+    ndx = idx - 1
+    while (re.search('[A-Za-z\']+', words[ndx]) and ndx >= 0) :
+        if (left_team.upper().find(words[ndx].upper()) < 0) :
+            left_team = words[ndx] + ' ' + left_team
+            ndx -= 1
+        else :
+            break
+
+    return left_team + words[idx] + right_team
+
+def find_winner(words, start_idx, match_title) :
+    ndx = start_idx - 1
+    result = words[ndx]
+    lst_word = words[ndx]
+    ndx -= 1
+    while (re.search('[A-Za-z]+', words[ndx]) and ndx >= 0) :
+        if (match_title.find(words[ndx]) and lst_word != words[ndx]) :
+            result = words[ndx] + ' ' + result
+            lst_word = words[ndx]
+            ndx -= 1
+        else :
+            break
+    return result
+
+def tmp1(text) :
+    temp = [
+        '\[Карта\s#\d]\s+Победа',
+        'Ставка\s+сделана',
+    ]
+    not_temp = [
+        'Выигрыш',
+        'Проигрыш',
+    ]
+    flag = True
+    for x in temp :
+        flag = flag and re.search(x, text)
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse1(words) :
+    dic1 = {}
+    map_index = words.index('Карта')
+
+    dic1['match_title'] = find_vs(words, words.index('vs'))
+    
+    dic1['winner'] = words[words.index('[') - 1]
+    dic1['outcome_index'] = ('map_winner', words[words.index('#') + 1])
+
+    return dic1
+
+def tmp2(text) :
+    temp = [
+        'Победа\s+в\s+матче',
+        'Ставка\s+сделана',
+    ]
+    not_temp = [
+        'Выигрыш',
+        'Проигрыш'
+    ]
+    flag = True
+    for x in temp :
+        flag = flag and re.search(x, text)
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse2(words) :
+    dic = {}
+    dic['match_title'] = find_vs(words, words.index('vs'))
+
+    dic['winner'] = find_winner(words, words.index('Победа'), dic['match_title'])
+    dic['outcome_index'] = OFFSET_TABLE['Победа в матче']
+
+    return dic
+
+BET_TEMPLATES = [
+    (tmp1, parse1),
+    (tmp2, parse2),
+]
+    
+
+
+for sent in text :
+    for (tmp, par) in BET_TEMPLATES :
+        if (tmp(sent)) :
+            print(par(nltk.word_tokenize(sent)))
+    
+

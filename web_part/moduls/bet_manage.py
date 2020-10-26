@@ -99,12 +99,12 @@ def get_html(url, params=None):
 def get_html_with_browser(BROWSER, url, sec=0, scrolls=0) :
     if url != 'none' :
         BROWSER.get(url)
-    time.sleep(sec // 2)
+    time.sleep(sec)
     if scrolls > 1 :
         for i in range(scrolls) :
             BROWSER.execute_script("window.scrollBy(0, document.body.scrollHeight);")
             time.sleep(1)
-    time.sleep(sec // 2)
+    time.sleep(sec)
     return BROWSER.page_source
 
 def get_text_from_image(BROWSER, url):
@@ -112,7 +112,7 @@ def get_text_from_image(BROWSER, url):
     url = url.replace('/', '%2F').replace(':', '%3A')
     url = 'https://yandex.ru/images/search?url=' + url + '&rpt=imageview&from=tabbar' 
 
-    soup = BeautifulSoup(get_html_with_browser(BROWSER, url), 'html.parser')
+    soup = BeautifulSoup(get_html_with_browser(BROWSER, url, 0.5), 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
     for item in items2 :

@@ -24,9 +24,9 @@ def parse1(photo_url, text) :
     elif side == 'right' :
         bet['winner'] = text[7]
     
-    for key in offset_table.keys() :
+    for key in OFFSET_TABLE.keys() :
         if text[2].find(key) != -1 :
-            if offset_table[key].find('map') != -1 :
+            if OFFSET_TABLE[key].find('map') != -1 :
                 pos = text[2].find('#')
                 map_number = int(text[2][pos + 1])
                 bet['outcome_index'] = (text[2][pos + 4 : ], map_number)
@@ -37,18 +37,10 @@ def parse1(photo_url, text) :
 BET_TEMPLATES = [
     (template1, parse1),
 ]
-offset_table = {
+OFFSET_TABLE = {
     # победитель по карте
         'ПОБЕДА НА КАРТЕ' : 'map_winner',
     # победа команды
         'ПОБЕДА В МАТЧЕ' : 'match_result',
 }
 
-      
-if __name__ == "__main__":
-    browser = bet_manage.create_webdriver()
-    try :
-        pass
-    finally :
-        browser.close()
-        browser.quit()

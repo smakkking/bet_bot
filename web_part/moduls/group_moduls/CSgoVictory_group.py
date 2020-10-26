@@ -1,46 +1,8 @@
-from moduls import bet_manage
-import time
-
 WALL_URL = 'https://vk.com/victorybets_stavki'
 
-def template1(text) :
-    flag = True
-    try :
-        flag = flag and text[4] == 'vs'
-        flag = flag and text[len(text) - 1] == 'ОТМЕНИТЬ СТАВКУ'
-    except IndexError :
-        flag = False
-    return flag
+from moduls.bookmaker_moduls import BETSCSGO_betting 
 
-def parse1(photo_url, text) :
-    bet = {}
+BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 
-    bet['match_title'] = text[1].replace('vs', '-')
-    bet['summ'] = 20.0
-
-    side = bet_manage.define_side_winner(photo_url)
-    if side == 'left' :
-        bet['winner'] = text[6]
-    elif side == 'right' :
-        bet['winner'] = text[7]
-    
-    for key in offset_table.keys() :
-        if text[2].find(key) != -1 :
-            if offset_table[key].find('map') != -1 :
-                pos = text[2].find('#')
-                map_number = int(text[2][pos + 1])
-                bet['outcome_index'] = (text[2][pos + 4 : ], map_number)
-            else :
-                bet['outcome_index'] = text[2]
-    return bet
-
-
-BET_TEMPLATES = [
-    (template1, parse1),
-]
-offset_table = {
-    # победитель по карте
-        'ПОБЕДА НА КАРТЕ' : 'map_winner',
-    # победа команды
-        'ПОБЕДА В МАТЧЕ' : 'match_result',
-}
+# here may be other speciefic templates, so add them to BET_TEMPLATES
+# like BET_TEMPLATES += [(template, parse)]
