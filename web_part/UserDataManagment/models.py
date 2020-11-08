@@ -70,6 +70,11 @@ class StandartUser(AbstractUser):
         verbose_name="CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2",
         help_text='<a href="https://vk.com/victorybets_stavki"> подробнее </a>',
     )
+    ExpertMnenie = models.BooleanField(
+        default=False,
+        verbose_name="Экспертное мнение CSGO | Прогнозы CS:GO & DOTA 2", 
+        help_text='<a href="https://vk.com/csgo_expert_dota"> подробнее </a>'
+    )
 
     def __str__(self):
         return self.username

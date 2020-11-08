@@ -1,6 +1,7 @@
 from django.forms import ModelForm, CheckboxSelectMultiple
 from .models import StandartUser
 from django import forms
+from moduls.bet_manage import GROUP_OFFSET
 
 class SettingsForm(ModelForm) :
     class Meta :
@@ -11,10 +12,8 @@ class SettingsForm(ModelForm) :
             'bookmaker_password',
             'max_bet_count',
             'balance_coefficient',
-            'AcademiaStavok',
-            'CSgoNorch',
-            'CSgoVictory',
         )
+        fields += tuple(GROUP_OFFSET.keys())
 
 class MenuForm(forms.Form) :
     end_date = forms.DateField(

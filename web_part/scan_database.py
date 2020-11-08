@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
-from moduls.group_moduls import AcademiaStavok_group, CSgoNorch_group
-from manage import DATABASE_PATH, GROUP_OFFSET
+from moduls.bet_manage import GROUP_OFFSET
+from manage import DATABASE_PATH
 
 
 def create_connection(path):

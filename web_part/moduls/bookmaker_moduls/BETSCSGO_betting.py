@@ -3,6 +3,7 @@ import re
 from moduls import bet_manage
 
 # templates parsing
+NAME = 'betscsgo'
 
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
@@ -107,10 +108,10 @@ PHOTO_PARSING_TEMPLATES = [
 
 # betting process
 
-def find_bet(stavka) :
+def find_bet(browser, stavka) :
     # возвращает ссылку на матч
     pass
 
-def make_bet(stavka, match_url) :
+def make_bet(browser, stavka, match_url) :
     # делает ставку 
     pass

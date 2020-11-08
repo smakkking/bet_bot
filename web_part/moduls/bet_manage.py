@@ -11,6 +11,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
 from manage import CHROME_DRIVER_PATH
+from moduls.bookmaker_moduls import BETSCSGO_betting
+from moduls.group_moduls import ExpertMnenie_group
+
+GROUP_OFFSET = {
+    ExpertMnenie_group.NAME : ExpertMnenie_group,
+
+}
+
+BOOKMAKER_OFFSET = {
+    BETSCSGO_betting.NAME : BETSCSGO_betting,
+    
+}
 
 
 class Stavka :
@@ -23,10 +35,18 @@ class Stavka :
 
 
 class Coupon() :
-    def __init__(self, type_x='ordn') :
-        self.type = type_x
+    def __init__(self, type_x='ordn', coup_data = None) :
         self.bets = []
+        if (coup_data == None) :
+            self.type = type_x
+        else :
+            self.type = coup_data['type']
+            for bet in coup_data['bets'] :
+                self.bets.append(Stavka(bet))
 
+    def __json_repr__(self) :
+        return dict([('type', self.type), ('bets', self.bets)])
+        
     def add_bet(self, bet) :
         self.bets.append(Stavka(bet))
 
@@ -49,7 +69,7 @@ class LastGroupPost() :
         self.photo_list.append(photo)
 
     def __json_repr__(self) :
-        return dict([('text', self.text), ('photo_list', self.photo_list), ('parse_bet', self.parse_bet), ('coupon', self.coupon)])
+        return dict([('text', self.text), ('photo_list', self.photo_list), ('parse_bet', self.parse_bet), ('coupon', self.coupon.__json_repr__())])
         
     def get(self, BROWSER, url) :
         get_html_with_browser(BROWSER, url)
@@ -72,28 +92,6 @@ class LastGroupPost() :
                 time.sleep(0.5)  
         except common.exceptions.NoSuchElementException:
             pass
-
-# нужно объеденить классы GroupInfoPost и LastGroupPost
-
-class GroupInfoPost(LastGroupPost) :
-    def __init__(self, kargs) :
-        self.text = kargs['text']
-        self.photo_list = kargs['photo_list']
-
-    # возвращает экземпляр Coupon
-    def pasrering(self, browser, group_name) :
-        result = Coupon()
-        if (self.text.find('экспресс') != -1) :
-            result.change_type('expr')
-        
-        for photo in self.photo_list :
-            for template, parse in group_name.BET_TEMPLATES :
-                photo_text = get_text_from_image(browser, photo)
-                if template(photo_text) :
-                    result.add_bet(parse(photo, photo_text))
-                    break
-        
-        return result
     
 
 def get_html(url, params=None):
@@ -139,7 +137,6 @@ def get_text_from_image(BROWSER, url):
     for item in items2 :
        text.append(item.text)
     return text
-
 
 def create_webdriver(user_data_dir='') :
     opts = Options()
@@ -188,8 +185,6 @@ def define_side_winner(url) :
     elif  count_left == len(green_array) :
         return 'left'
     
-
-
 
 if __name__ == "__main__":
     try :

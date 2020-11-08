@@ -1,0 +1,13 @@
+1. Создается файл ..._group по описанным правилам
+2. Модуль группы импортируется в bet_manage и добавляется в GROUP_OFFSET по правилу: 
+    ..._group.NAME : ..._group
+3. Группу нужно добавить в качестве дополнения к модели
+В /web_part/UserDataManagment/models.py после комментария поля для групп добавить поле с именем группы по правилу:
+
+    NAME = models.BooleanField(
+        default=False,
+        verbose_name=Описание группы(можно просто взять шапку),
+        help_text='<a href="ссылка на группу"> подробнее </a>',
+    )                  
+4. Прописываем manage.py makemigrations
+5. Прописываем manage.py migrate

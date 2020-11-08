@@ -1,5 +1,6 @@
 from moduls import bet_manage
-from manage import ALL_POSTS_JSON_PATH, CHROME_DIR_PACKAGES, GROUP_OFFSET
+from manage import ALL_POSTS_JSON_PATH, CHROME_DIR_PACKAGES
+from moduls.bet_manage import GROUP_OFFSET
 
 import json
 from multiprocessing import Pool
@@ -26,6 +27,7 @@ def load_last_data(group_off) :
 def check_templates(BROWSER, group_module, post) :
         for photo in post.photo_list :
             text = bet_manage.get_text_from_image(BROWSER, photo)
+            text = ' '.join(text)
             for (tmp, parse) in group_module.BET_TEMPLATES :
                 if (tmp(text)) :
                     post.coupon.add_bet(parse(photo, nltk.word_tokenize(text)))
@@ -33,12 +35,14 @@ def check_templates(BROWSER, group_module, post) :
             post.parse_bet = False
 
 def main() :
-    for i in range(2) :
-        with Pool(processes=len(GROUP_OFFSET)) as pool :
+    for i in range(1) :
+        with Pool(processes=len(GROUP_OFFSET.values())) as pool :
             with open(ALL_POSTS_JSON_PATH, 'r') as last_posts_json :
                 OLD_DATA = json.load(last_posts_json)
             new_data = dict(pool.map(load_last_data, GROUP_OFFSET.keys()))
             with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
                 json.dump(dict(new_data), last_posts_json, indent=4)
-        
+
+if __name__ == "__main__":
+    main()
     

@@ -1,4 +1,13 @@
 {
-    "aaa" : 1,
-    "bbb" : 2
+    "ExpertMnenie": {
+        "text": "\u0412\u041e\u0422 \u041e\u041d\u0418, \u041f\u041e\u0427\u0415\u041c\u0423 \u041d\u0415\u041b\u042c\u0417\u042f \u0411\u042b\u041b\u041e \u0421\u0422\u0410\u0420\u0422\u041e\u0412\u0410\u0422\u042c \u0422\u0410\u041a \u0416\u0415 \u041d\u0410 \u041f\u0420\u041e\u0428\u041b\u041e\u0419 \u041a\u0410\u0420\u0422\u0415?",
+        "photo_list": [
+            "https://sun9-46.userapi.com/impg/wjZmdfg-Sz_SCR31s-ff445JV9IL_0P4T6HZ0Q/w9r4mkz3VGE.jpg?size=1080x1054&quality=96&proxy=1&sign=f411a450e8861e8660897cca1f0180e1"
+        ],
+        "parse_bet": false,
+        "coupon": {
+            "type": "ordn",
+            "bets": []
+        }
+    }
 }
