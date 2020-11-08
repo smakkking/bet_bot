@@ -33,19 +33,6 @@ def checking_for_bets(user, data) :
     browser.close()
     browser.quit()
     
-def load_last_data() :
-    browser = bet_manage.create_webdriver()
-    data = {}
-    try :
-        for (group_name, group) in GROUP_OFFSET.items() :
-            post = bet_manage.LastGroupPost()
-            post.get(browser, group.WALL_URL)
-            data[group_name] = post.__json_repr__()
-    finally :
-        browser.close()
-        browser.quit() 
-        with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json : 
-            json.dump(data, last_posts_json, indent=4)
 
 if __name__ == '__main__' :
     pass

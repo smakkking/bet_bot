@@ -1,5 +1,7 @@
 import os
 import sys
+from moduls.group_moduls import AcademiaStavok_group, CSgoNorch_group
+from moduls.bookmaker_moduls import BETSCSGO_betting
 
 # путь к папке bet_bot
 BET_PROJECT_ROOT    = r'C:\GitRep\bet_bot'
@@ -12,6 +14,21 @@ ALL_POSTS_JSON_PATH = BET_PROJECT_ROOT + r'\web_part\user_data\group_post_data.j
 
 # путь до chrome_driver
 CHROME_DRIVER_PATH  = BET_PROJECT_ROOT + r'\chromedriver.exe'
+
+#путь до базы данных
+DATABASE_PATH = BET_PROJECT_ROOT + r'\web_part\db.sqlite3'
+
+# список с модулями групп
+GROUP_OFFSET = {
+    # (модуль группы, бит валидности: 0 - запрос отправлять не нужно, 1 - иначе)
+    AcademiaStavok_group.NAME : AcademiaStavok_group,
+    CSgoNorch_group.NAME : CSgoNorch_group,
+}
+
+BOOKMAKER_OFFSET = {
+    'betcsgo' : BETSCSGO_betting,
+    'parimatch' : '1',
+}
 
 sys.path.append(BET_PROJECT_ROOT)
 
@@ -30,4 +47,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    pass

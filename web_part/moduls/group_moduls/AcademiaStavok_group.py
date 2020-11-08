@@ -2,6 +2,7 @@ from moduls import bet_manage
 import time
 
 WALL_URL = 'https://vk.com/akademiya_stavki_csgo'
+NAME = 'AcademiaStavok'
 
 def template1(text) :
     flag = True

@@ -1,4 +1,5 @@
 WALL_URL = 'https://vk.com/csgo_expert_dota'
+NAME = 'ExpertMnenie'
 
 from moduls.bookmaker_moduls import BETSCSGO_betting 
   

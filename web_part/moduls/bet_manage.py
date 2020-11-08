@@ -42,12 +42,14 @@ class LastGroupPost() :
     def __init__(self) :
         self.text = ''
         self.photo_list = []
+        self.parse_bet = True
+        self.coupon = Coupon()
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
 
     def __json_repr__(self) :
-        return dict([('text', self.text), ('photo_list', self.photo_list)])
+        return dict([('text', self.text), ('photo_list', self.photo_list), ('parse_bet', self.parse_bet), ('coupon', self.coupon)])
         
     def get(self, BROWSER, url) :
         get_html_with_browser(BROWSER, url)
@@ -71,6 +73,7 @@ class LastGroupPost() :
         except common.exceptions.NoSuchElementException:
             pass
 
+# нужно объеденить классы GroupInfoPost и LastGroupPost
 
 class GroupInfoPost(LastGroupPost) :
     def __init__(self, kargs) :
@@ -108,16 +111,35 @@ def get_html_with_browser(BROWSER, url, sec=0, scrolls=0) :
     return BROWSER.page_source
 
 def get_text_from_image(BROWSER, url):
-    # создание рабочей ссылки
-    url = url.replace('/', '%2F').replace(':', '%3A')
-    url = 'https://yandex.ru/images/search?url=' + url + '&rpt=imageview&from=tabbar' 
+    base_url = 'https://yandex.ru/images'
+    get_html_with_browser(BROWSER, base_url, 1)
+    try :
+        btn1 = BROWSER.find_element_by_xpath("/html/body/header/div/div[2]/div[1]/form/div[1]/span/span/div[2]/button")
+        btn1.click()
+    except :
+        assert False, "Can't find btn1"
+    time.sleep(0.5)
+    try :
+        inp = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/span/span/input")
+        inp.send_keys(url)
+    except :
+        assert False, "Can't find input"
+    time.sleep(0.5)
+    try :
+        btn2 = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/button")
+        btn2.click()
+    except:
+        assert False, "Can't find btn2"
 
-    soup = BeautifulSoup(get_html_with_browser(BROWSER, url, 0.5), 'html.parser')
+    time.sleep(3)
+
+    soup = BeautifulSoup(BROWSER.page_source, 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
     for item in items2 :
        text.append(item.text)
     return text
+
 
 def create_webdriver(user_data_dir='') :
     opts = Options()
@@ -167,11 +189,13 @@ def define_side_winner(url) :
         return 'left'
     
 
+
+
 if __name__ == "__main__":
     try :
-        browser = create_webdriver(r'C:\CHROME_DIRS\ID_1213')
-        browser.get('https://new.parimatch.ru/ru/')
-        time.sleep(10)
+        browser = create_webdriver()
+        #browser.get('https://new.parimatch.ru/ru/')
+        
         pass
     finally :
        browser.close()

@@ -106,3 +106,11 @@ PHOTO_PARSING_TEMPLATES = [
 ]
 
 # betting process
+
+def find_bet(stavka) :
+    # возвращает ссылку на матч
+    pass
+
+def make_bet(stavka, match_url) :
+    # делает ставку 
+    pass
