@@ -110,8 +110,11 @@ PHOTO_PARSING_TEMPLATES = [
 
 def find_bet(browser, stavka) :
     # возвращает ссылку на матч
+
     pass
 
 def make_bet(browser, stavka, match_url) :
     # делает ставку 
+    bet_manage.get_html_with_browser(browser, match_url, 1)
+    
     pass

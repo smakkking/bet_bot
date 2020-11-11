@@ -1,11 +1,12 @@
 # здесь тестируем все модули по группам и букмекеркам
 
 import manage
-from moduls.bet_manage import get_text_from_image, create_webdriver
+from moduls.bet_manage import get_text_from_image, create_webdriver, get_html_with_browser
 
 from moduls.group_moduls import ExpertMnenie_group
 from manage import BET_PROJECT_ROOT
 import nltk
+import time
 
 
 def testing_group() :
@@ -52,8 +53,9 @@ def testing_group() :
 browser = create_webdriver()
 
 try :
-    urlll = 'https://sun9-26.userapi.com/impg/A1wT0GJ2oMcIxJfiA53QRDL7buK7pJnJ9xYqpA/Buawr6JypXs.jpg?size=1080x1006&quality=96&proxy=1&sign=a1f480fa6573b63755a6ee109841bbd8'
-    print(get_text_from_image(browser, urlll))
+    urll = 'https://betscsgo.in/'
+    get_html_with_browser(browser, urll)
+    time.sleep(300)
 finally :
     browser.close()
     browser.quit()

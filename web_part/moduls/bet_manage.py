@@ -10,7 +10,7 @@ import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
-from manage import CHROME_DRIVER_PATH
+from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES
 from moduls.bookmaker_moduls import BETSCSGO_betting
 from moduls.group_moduls import ExpertMnenie_group
 
@@ -138,11 +138,11 @@ def get_text_from_image(BROWSER, url):
        text.append(item.text)
     return text
 
-def create_webdriver(user_data_dir='') :
+def create_webdriver(user_id='') :
     opts = Options()
-    if user_data_dir :
-        opts.add_argument('--user-data-dir=' + user_data_dir)
-        opts.add_argument('--profile-directory=Profile')
+    if user_id :
+        opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
+        opts.add_argument('--profile-directory=Profile' + user_id)
     #opts.add_argument('headless')
     opts.add_argument("--disable-gpu")
     opts.add_argument('--window-size=1920x1080')
@@ -184,15 +184,3 @@ def define_side_winner(url) :
         return 'right'
     elif  count_left == len(green_array) :
         return 'left'
-    
-
-if __name__ == "__main__":
-    try :
-        browser = create_webdriver()
-        #browser.get('https://new.parimatch.ru/ru/')
-        
-        pass
-    finally :
-       browser.close()
-       browser.quit()
-       pass
