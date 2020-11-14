@@ -1,9 +1,13 @@
 import nltk
 import re
+import time
 from moduls import bet_manage
 
 # templates parsing
 NAME = 'betscsgo'
+WALL_URL = 'https://betscsgo.in'
+
+CURRENT_CF_CLEARANCE = '609e09155652a528ec720157decb827b12bb7fb1-1605276868-0-1z20a49547z9321ccadz91a5e051-150'
 
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
@@ -108,10 +112,37 @@ PHOTO_PARSING_TEMPLATES = [
 
 # betting process
 
-def find_bet(browser, stavka) :
+def find_bet(browser, stavka) -> str:
     # возвращает ссылку на матч
+    # на вход подается браузер + объект класса Stavka
 
-    pass
+    xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
+
+    bet_manage.get_html_with_browser(browser, WALL_URL, 2)
+    browser.add_cookie({'name' : 'cf_clearance', 'value' : CURRENT_CF_CLEARANCE})
+    time.sleep(10) # подумать над временем ожидания
+    bbb = []
+    matches = browser.find_elements_by_xpath(xPath_matches)
+    try :
+        for a in matches :
+            if a == matches[len(matches) - 1] :
+                continue
+            left_team = a.find_element_by_class_name('bet-team_left').find_element_by_class_name('bet-team__name')
+            right_team = a.find_element_by_class_name('bet-team_right').find_element_by_class_name('bet-team__name')
+            bbb.append({
+                'link' : a.find_element_by_class_name('sys-matchlink').get_attribute('href'),
+                'match_name' : left_team.text.replace(left_team.find_element_by_tag_name('div').text, '') + ' | ' + right_team.text.replace(right_team.find_element_by_tag_name('div').text, '')
+            })
+    except Exception:
+        # проблема - не закрываются браузеры(точнее закрываются, но из-за этого ничего не работает)
+        print('unpredictable error... STOP!')
+    for b in bbb :
+        if b['match_name'] == stavka.match_title :
+            return b['link']
+    return 'not_valid'
+
+
+# нужна функция логина!!!!!!!!!!!!!!
 
 def make_bet(browser, stavka, match_url) :
     # делает ставку 

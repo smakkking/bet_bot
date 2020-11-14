@@ -26,6 +26,7 @@ BOOKMAKER_OFFSET = {
 
 
 class Stavka :
+    
     def __init__(self, bet_dict) :
         for key, value in bet_dict.items() :
             setattr(self, key, value)
@@ -142,8 +143,11 @@ def create_webdriver(user_id='') :
     opts = Options()
     if user_id :
         opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
-        opts.add_argument('--profile-directory=Profile' + user_id)
+        opts.add_argument('--profile-directory=Profile_' + user_id)
     #opts.add_argument('headless')
+    opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\User Data')
+    opts.add_argument('--profile-directory=Default')
+    opts.add_argument('user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36')
     opts.add_argument("--disable-gpu")
     opts.add_argument('--window-size=1920x1080')
     obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
