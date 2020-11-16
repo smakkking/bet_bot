@@ -11,7 +11,7 @@ OLD_DATA = {}
 def load_last_data(group_off) :
     # загружает данные с группы
     browser = bet_manage.create_webdriver()
-    # изменить бит уникальности в зависимости от old_data, бит уникальноси нужно определить в классе LastGroupPost
+    # изменить бит уникальности в зависимости от old_data
     post = bet_manage.LastGroupPost()
     post.get(browser, GROUP_OFFSET[group_off].WALL_URL)
 
@@ -35,14 +35,10 @@ def check_templates(BROWSER, group_module, post) :
             post.parse_bet = False
 
 def main() :
-    for i in range(1) :
-        with Pool(processes=len(GROUP_OFFSET.values())) as pool :
-            with open(ALL_POSTS_JSON_PATH, 'r') as last_posts_json :
-                OLD_DATA = json.load(last_posts_json)
-            new_data = dict(pool.map(load_last_data, GROUP_OFFSET.keys()))
-            with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
-                json.dump(dict(new_data), last_posts_json, indent=4)
-
-if __name__ == "__main__":
-    main()
+    with Pool(processes=len(GROUP_OFFSET.values())) as pool :
+        with open(ALL_POSTS_JSON_PATH, 'r') as last_posts_json :
+            OLD_DATA = json.load(last_posts_json)
+        new_data = dict(pool.map(load_last_data, GROUP_OFFSET.keys()))
+        with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
+            json.dump(dict(new_data), last_posts_json, indent=4)
     

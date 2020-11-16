@@ -6,6 +6,8 @@ import json
 def main(betting_array) :
     # в кач входных данных - результат работы scan_database.main()
     # делаем допущение - в купоне все элементы находятся в разных матчах и работаем с ординаром
+
+    # сейчас работает неправильно
     with open(ALL_POSTS_JSON_PATH, 'r') as last_posts_json :
         data = json.load(last_posts_json)
     for peruser_data in betting_array :

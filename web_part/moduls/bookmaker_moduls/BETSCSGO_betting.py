@@ -14,7 +14,7 @@ OFFSET_TABLE = {
     'Победа в матче' : 'game_winner',
 }
 
-def find_vs(words, idx) :
+def find_vs(words : list, idx : int) :
     right_team = ''
     left_team = ''
     ndx = idx + 1
@@ -34,7 +34,7 @@ def find_vs(words, idx) :
             break
 
     return left_team + words[idx] + right_team
-def find_winner(words, start_idx, match_title) :
+def find_winner(words : list, start_idx : int, match_title : str) :
     ndx = start_idx - 1
     result = words[ndx]
     lst_word = words[ndx]
@@ -48,7 +48,7 @@ def find_winner(words, start_idx, match_title) :
             break
     return result
 
-def template1(text) :
+def template1(text : str) :
     temp = [
         'ПОБЕДА НА КАРТЕ',
     ]
@@ -62,7 +62,7 @@ def template1(text) :
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
-def parse1(photo_url, words) :
+def parse1(photo_url : str, words : list) :
     dic = {}
     dic['match_title'] = find_vs(words, words.index('vs'))
 
@@ -76,7 +76,7 @@ def parse1(photo_url, words) :
 
     return dic
 
-def template2(text) :
+def template2(text : str) :
     temp = [
         'ПОБЕДА\s+В\s+МАТЧЕ',
         'ОТМЕНИТЬ\s+СТАВКУ',
@@ -91,7 +91,7 @@ def template2(text) :
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
-def parse2(photo_url, words) :
+def parse2(photo_url : str, words : list) :
     bet = {}
     bet['match_title'] = find_vs(words, words.index('vs'))
 
@@ -119,7 +119,10 @@ def find_bet(browser, stavka) -> str:
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
     bet_manage.get_html_with_browser(browser, WALL_URL, 2)
-    browser.add_cookie({'name' : 'cf_clearance', 'value' : CURRENT_CF_CLEARANCE})
+    browser.add_cookie({
+        'name' : 'cf_clearance',
+        'value' : CURRENT_CF_CLEARANCE
+    })
     time.sleep(10) # подумать над временем ожидания
     bbb = []
     matches = browser.find_elements_by_xpath(xPath_matches)
@@ -141,11 +144,36 @@ def find_bet(browser, stavka) -> str:
             return b['link']
     return 'not_valid'
 
-
-# нужна функция логина!!!!!!!!!!!!!!
-
-def make_bet(browser, stavka, match_url) :
+def make_bet(browser, stavka : bet_manage.Stavka, match_url) :
     # делает ставку 
-    bet_manage.get_html_with_browser(browser, match_url, 1)
+    bet_manage.get_html_with_browser(browser, match_url)
+    browser..add_cookie({
+        'name' : 'cf_clearance', 
+        'value' : CURRENT_CF_CLEARANCE
+    })
+    time.sleep(5) # подумать над временем ожидания
+
+    xPath_summinput = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/div/div/div[2]/div/input'
+    xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
+
+    # подумать над более эффективной обработке
+    if stavka.match_outcome == OFFSET_TABLE['Победа в матче'] :
+        win_btns = driver.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
+        if win_btns[0].text.find(stavka['winner']) >= 0 :
+            win_btns[0].click()
+        elif win_btns[1].text.find(stavka['winner']) >= 0 :
+            win_btns[0].click()
+    elif stavka['match_outcome'] is tuple and stavka['match_outcome'][0] == OFFSET_TABLE['Карта Победа'] :
+        win_btns = driver.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
+        map_number = int(stavka['match_outcome'][1])
+        if win_btns[2 * (map_number - 1)].text.find(stavka['winner']) >= 0 :
+            win_btns[2 * (map_number - 1)].click()
+        elif win_btns[1 + 2 * (map_number - 1)].text.find(stavka['winner']) >= 0:
+            win_btns[1 + 2 * (map_number - 1)].click()
+    time.sleep(1) # подумать над временем ожидания
     
-    pass
+    driver.find_element_by_xpath(xPath_summinput).send_keys(stavka['summ'])
+    time.sleep(1) # подумать над временем ожидания
+    driver.find_element_by_xpath(xPath_bet).click()
+
+

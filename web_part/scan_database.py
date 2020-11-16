@@ -3,7 +3,6 @@ from sqlite3 import Error
 from moduls.bet_manage import GROUP_OFFSET
 from manage import DATABASE_PATH
 
-
 def create_connection(path):
     connection = None
     try:
@@ -53,14 +52,11 @@ def SQL_request(connection, *args) :
 
 def main() :
     connection = create_connection(DATABASE_PATH)
+    # возвращает list из записей вида
     # {
     #   'chrome_id' : str
     #   'bkm' : str
     #   'groups' : list
     # }
+
     return SQL_request(connection, 'chrome_dir_path', 'bookmaker')
-    
-
-if __name__ == "__main__":
-    main()
-

@@ -1,14 +1,19 @@
 # общие модули
-import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium import common
+
 import sys
 import time
 from datetime import datetime
 import os
+
+# light selenium
+from selenium import webdriver
+from selenium import common
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+
+# dark selenium
+import undetected_chromedriver as uc
 
 from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES
 from moduls.bookmaker_moduls import BETSCSGO_betting
@@ -24,12 +29,11 @@ BOOKMAKER_OFFSET = {
     
 }
 
-
 class Stavka :
-    
     def __init__(self, bet_dict) :
-        for key, value in bet_dict.items() :
-            setattr(self, key, value)
+        self.
+        #for key, value in bet_dict.items() :
+        #    setattr(self, key, value)
 
     def __repr__(self) :
         return str(self.__dict__)
@@ -46,6 +50,7 @@ class Coupon() :
                 self.bets.append(Stavka(bet))
 
     def __json_repr__(self) :
+        
         return dict([('type', self.type), ('bets', self.bets)])
         
     def add_bet(self, bet) :
@@ -53,10 +58,6 @@ class Coupon() :
 
     def change_type(self, new_type) :
         self.type = new_type
-
-    def __str__(self) :
-        res = [('type', self.type), ('bets', self.bets)]
-        return str(dict(res))
 
 
 class LastGroupPost() :
@@ -94,18 +95,9 @@ class LastGroupPost() :
         except common.exceptions.NoSuchElementException:
             pass
     
-
-def get_html(url, params=None):
-    return requests.get(url, headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}, params=params).text
-
-def get_html_with_browser(BROWSER, url, sec=0, scrolls=0) :
+def get_html_with_browser(BROWSER, url, sec=0) :
     if url != 'none' :
         BROWSER.get(url)
-    time.sleep(sec)
-    if scrolls > 1 :
-        for i in range(scrolls) :
-            BROWSER.execute_script("window.scrollBy(0, document.body.scrollHeight);")
-            time.sleep(1)
     time.sleep(sec)
     return BROWSER.page_source
 
@@ -139,19 +131,25 @@ def get_text_from_image(BROWSER, url):
        text.append(item.text)
     return text
 
-def create_webdriver(user_id='') :
-    opts = Options()
-    if user_id :
-        opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
-        opts.add_argument('--profile-directory=Profile_' + user_id)
-    #opts.add_argument('headless')
-    opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\User Data')
-    opts.add_argument('--profile-directory=Default')
-    opts.add_argument('user-agent=Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36')
-    opts.add_argument("--disable-gpu")
-    opts.add_argument('--window-size=1920x1080')
-    obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
-    return obj
+def create_webdriver(user_id='', undetected_mode=False) :
+    if undetected_mode :
+        opts = uc.ChromeOptions()
+        if user_id :
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
+        else :
+            opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\TEST')
+        opts.add_argument('--profile-directory=Profile_1')
+        obj = uc.Chrome(options=opts, enable_console_log=False)
+        return obj
+    else :
+        opts = Options()
+        if user_id :
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
+        else :
+            opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\TEST')
+        opts.add_argument('--profile-directory=Profile_1') 
+        obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
+        return obj
     
 # return 'left' or 'right'
 def define_side_winner(url) :
