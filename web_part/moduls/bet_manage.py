@@ -30,10 +30,18 @@ BOOKMAKER_OFFSET = {
 }
 
 class Stavka :
-    def __init__(self, bet_dict) :
-        self.
-        #for key, value in bet_dict.items() :
-        #    setattr(self, key, value)
+    def __init__(self, bets=None) :
+        if bets == None :
+            self.summ = '0'
+            self.match_title = ''
+            self.winner = ''
+            self.outcome_index = ''
+        else :
+            for key, value in bets.items() :
+                setattr(self, key, value)
+
+    def change_summ(self, s : int) :
+        self.summ = str(s)
 
     def __repr__(self) :
         return str(self.__dict__)
@@ -50,11 +58,10 @@ class Coupon() :
                 self.bets.append(Stavka(bet))
 
     def __json_repr__(self) :
-        
-        return dict([('type', self.type), ('bets', self.bets)])
+        return self.__dict__
         
     def add_bet(self, bet) :
-        self.bets.append(Stavka(bet))
+        self.bets.append(bet)
 
     def change_type(self, new_type) :
         self.type = new_type
@@ -88,10 +95,10 @@ class LastGroupPost() :
         try :
             for item in photos_click_dom :
                 item.click()
-                time.sleep(0.5)
+                time.sleep(0.5) # подумать над временем
                 self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
                 BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-                time.sleep(0.5)  
+                time.sleep(0.5) # подумать над временем
         except common.exceptions.NoSuchElementException:
             pass
     
@@ -101,7 +108,8 @@ def get_html_with_browser(BROWSER, url, sec=0) :
     time.sleep(sec)
     return BROWSER.page_source
 
-def get_text_from_image(BROWSER, url):
+def get_text_from_image(BROWSER, url) :
+    # нужны ли исключения?
     base_url = 'https://yandex.ru/images'
     get_html_with_browser(BROWSER, base_url, 1)
     try :

@@ -63,18 +63,17 @@ def template1(text : str) :
         flag = flag and text.find(x) < 0
     return flag
 def parse1(photo_url : str, words : list) :
-    dic = {}
-    dic['match_title'] = find_vs(words, words.index('vs'))
+    res = bet_manage.Stavka()
+    res.match_title = find_vs(words, words.index('vs'))
 
     side = bet_manage.define_side_winner(photo_url)
     if (side == 'left') :
-        dic['winner'] = dic['match_title'][: dic['match_title'].find('vs') - 1]
+        res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
-        dic['winner'] = dic['match_title'][dic['match_title'].find('vs') + 3 : ]
+        res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
+    res.outcome_index = ('map_winner', words[words.index('#') + 1])
 
-    dic['outcome_index'] = ('map_winner', words[words.index('#') + 1])
-
-    return dic
+    return res
 
 def template2(text : str) :
     temp = [
@@ -92,18 +91,18 @@ def template2(text : str) :
         flag = flag and text.find(x) < 0
     return flag
 def parse2(photo_url : str, words : list) :
-    bet = {}
-    bet['match_title'] = find_vs(words, words.index('vs'))
+
+    res = bet_manage.Stavka()
+    res.match_title = find_vs(words, words.index('vs'))
 
     side = bet_manage.define_side_winner(photo_url)
     if (side == 'left') :
-        bet['winner'] = bet['match_title'][: bet['match_title'].find('vs') - 1]
+        res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
-        bet['winner'] = bet['match_title'][bet['match_title'].find('vs') + 3 : ]
+        res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
+    res.outcome_index = OFFSET_TABLE['Победа в матче']
 
-    bet['outcome_index'] = OFFSET_TABLE['Победа в матче']
-
-    return bet
+    return res
     
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
@@ -144,10 +143,10 @@ def find_bet(browser, stavka) -> str:
             return b['link']
     return 'not_valid'
 
-def make_bet(browser, stavka : bet_manage.Stavka, match_url) :
+def make_bet(browser, stavka, match_url) :
     # делает ставку 
     bet_manage.get_html_with_browser(browser, match_url)
-    browser..add_cookie({
+    browser.add_cookie({
         'name' : 'cf_clearance', 
         'value' : CURRENT_CF_CLEARANCE
     })

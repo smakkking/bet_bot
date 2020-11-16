@@ -40,5 +40,5 @@ def main() :
             OLD_DATA = json.load(last_posts_json)
         new_data = dict(pool.map(load_last_data, GROUP_OFFSET.keys()))
         with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
-            json.dump(dict(new_data), last_posts_json, indent=4)
+            json.dump(new_data, last_posts_json, indent=4)
     

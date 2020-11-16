@@ -58,5 +58,6 @@ def main() :
     #   'bkm' : str
     #   'groups' : list
     # }
+    # возможно нужно добавить сюда пароли(но это доп время на обработку)
 
     return SQL_request(connection, 'chrome_dir_path', 'bookmaker')
