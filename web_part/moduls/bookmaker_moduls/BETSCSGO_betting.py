@@ -3,7 +3,6 @@ import re
 import time
 from moduls import bet_manage
 
-# templates parsing
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 
@@ -13,6 +12,8 @@ OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
     'Победа в матче' : 'game_winner',
 }
+
+# templates parsing
 
 def find_vs(words : list, idx : int) :
     right_team = ''
@@ -157,13 +158,13 @@ def make_bet(browser, stavka, match_url, bet_summ) :
 
     # подумать над более эффективной обработке
     if stavka.match_outcome == OFFSET_TABLE['Победа в матче'] :
-        win_btns = driver.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
+        win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
         if win_btns[0].text.find(stavka['winner']) >= 0 :
             win_btns[0].click()
         elif win_btns[1].text.find(stavka['winner']) >= 0 :
             win_btns[0].click()
     elif stavka['match_outcome'] is tuple and stavka['match_outcome'][0] == OFFSET_TABLE['Карта Победа'] :
-        win_btns = driver.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
+        win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = int(stavka['match_outcome'][1])
         if win_btns[2 * (map_number - 1)].text.find(stavka['winner']) >= 0 :
             win_btns[2 * (map_number - 1)].click()
@@ -171,9 +172,9 @@ def make_bet(browser, stavka, match_url, bet_summ) :
             win_btns[1 + 2 * (map_number - 1)].click()
     time.sleep(1) # подумать над временем ожидания
     
-    driver.find_element_by_xpath(xPath_summinput).send_keys(bet_summ)
+    browser.find_element_by_xpath(xPath_summinput).send_keys(bet_summ)
     time.sleep(1) # подумать над временем ожидания
-    driver.find_element_by_xpath(xPath_bet).click()
+    browser.find_element_by_xpath(xPath_bet).click()
 
 def init_config(single_user_data=None) :
     # о структуре словаря см scan_database.py
@@ -181,4 +182,4 @@ def init_config(single_user_data=None) :
         driver = bet_manage.create_webdriver(undetected_mode=True)
     else :
         driver = bet_manage.create_webdriver(user_id=single_user_data['chrome_id'], undetected_mode=True)
-
+    return driver

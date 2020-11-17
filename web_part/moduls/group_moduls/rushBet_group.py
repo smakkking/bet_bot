@@ -6,52 +6,6 @@ OFFSET_TABLE = {
     'Карта Победа' : 'map_win'
 }
 
-
-text = [
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-
-"""
-""",
-]
-
 def find_vs(words, idx) :
     right_team = ''
     left_team = ''
@@ -72,7 +26,6 @@ def find_vs(words, idx) :
             break
 
     return left_team + words[idx] + right_team
-
 def find_winner(words, start_idx, match_title) :
     ndx = start_idx - 1
     result = words[ndx]
@@ -141,12 +94,5 @@ BET_TEMPLATES = [
     (tmp1, parse1),
     (tmp2, parse2),
 ]
-    
-
-
-for sent in text :
-    for (tmp, par) in BET_TEMPLATES :
-        if (tmp(sent)) :
-            print(par(nltk.word_tokenize(sent)))
     
 

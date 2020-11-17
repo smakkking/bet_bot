@@ -14,5 +14,5 @@ if __name__ == "__main__" :
     now = time.time()
     load_last_data.main()
     client_data = scan_database.main()
-    #all_bet.main(client_data)
+    all_bet.main(client_data)
     time_loop(now)

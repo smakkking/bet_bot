@@ -7,7 +7,7 @@ def create_connection(path):
     connection = None
     try:
         connection = sqlite3.connect(path)
-    except Error as e:
+    except Error:
         pass
     return connection
 
@@ -18,7 +18,7 @@ def execute_read_query(connection, query):
         cursor.execute(query)
         result = cursor.fetchall()
         return result
-    except Error as e:
+    except Error:
         pass
 
 def SQL_request(connection, *args) :

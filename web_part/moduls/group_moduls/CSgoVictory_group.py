@@ -1,4 +1,5 @@
 WALL_URL = 'https://vk.com/victorybets_stavki'
+NAME = 'CSgoVictory'
 
 from moduls.bookmaker_moduls import BETSCSGO_betting 
 

@@ -11,16 +11,20 @@ from selenium import webdriver
 from selenium import common
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # dark selenium
 import undetected_chromedriver as uc
 
 from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES
 from moduls.bookmaker_moduls import BETSCSGO_betting
-from moduls.group_moduls import ExpertMnenie_group
+from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group
 
 GROUP_OFFSET = {
     ExpertMnenie_group.NAME : ExpertMnenie_group,
+    CSgoVictory_group.NAME : CSgoVictory_group,
 
 }
 
@@ -43,8 +47,8 @@ class Stavka :
     def change_summ(self, s : int) :
         self.summ = str(s)
 
-    def __repr__(self) :
-        return str(self.__dict__)
+    def __json_repr__(self) :
+        return self.__dict__
 
 
 class Coupon() :
@@ -58,7 +62,7 @@ class Coupon() :
                 self.bets.append(Stavka(bet))
 
     def __json_repr__(self) :
-        return self.__dict__
+        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets])])
         
     def add_bet(self, bet) :
         self.bets.append(bet)
@@ -131,9 +135,7 @@ def get_text_from_image(BROWSER, url) :
         btn2.click()
     except:
         assert False, "Can't find btn2"
-
-    time.sleep(3)
-
+    time.sleep(5)
     soup = BeautifulSoup(BROWSER.page_source, 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
@@ -146,8 +148,6 @@ def create_webdriver(user_id='', undetected_mode=False) :
         opts = uc.ChromeOptions()
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
-        else :
-            opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\TEST')
         opts.add_argument('--profile-directory=Profile_1')
         obj = uc.Chrome(options=opts, enable_console_log=False)
         return obj
@@ -155,9 +155,7 @@ def create_webdriver(user_id='', undetected_mode=False) :
         opts = Options()
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
-        else :
-            opts.add_argument('--user-data-dir=' + r'C:\Users\user1\AppData\Local\Google\Chrome\TEST')
-        opts.add_argument('--profile-directory=Profile_1') 
+        opts.add_argument('--profile-directory=Profile_1')         
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
         return obj
     

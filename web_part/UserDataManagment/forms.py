@@ -10,8 +10,7 @@ class SettingsForm(ModelForm) :
             'bookmaker',
             'bookmaker_login',
             'bookmaker_password',
-            'max_bet_count',
-            'balance_coefficient',
+            'bet_summ',
         )
         fields += tuple(GROUP_OFFSET.keys())
 

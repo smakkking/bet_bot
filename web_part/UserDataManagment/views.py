@@ -11,7 +11,6 @@ from .models import StandartUser
 import json
 import sys
 
-from moduls.all_scripts import checking_for_bets
 from manage import ALL_POSTS_JSON_PATH
 
 
@@ -62,7 +61,7 @@ class BetData(LoginRequiredMixin, views.View) :
         del bet_info['_']
         parse_json(bet_info)
         # здесь и должна вызываться функция ставки
-        checking_for_bets(request.user, bet_info)
+        #checking_for_bets(request.user, bet_info)
         return JsonResponse(bet_info, safe=False)
 
 
