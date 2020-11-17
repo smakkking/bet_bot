@@ -60,4 +60,6 @@ def main() :
     # }
     # возможно нужно добавить сюда пароли(но это доп время на обработку)
 
+
+    # Что добавить в поиск : сумму ставки
     return SQL_request(connection, 'chrome_dir_path', 'bookmaker')

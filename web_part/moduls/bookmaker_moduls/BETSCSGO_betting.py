@@ -143,7 +143,7 @@ def find_bet(browser, stavka) -> str:
             return b['link']
     return 'not_valid'
 
-def make_bet(browser, stavka, match_url) :
+def make_bet(browser, stavka, match_url, bet_summ) :
     # делает ставку 
     bet_manage.get_html_with_browser(browser, match_url)
     browser.add_cookie({
@@ -171,8 +171,14 @@ def make_bet(browser, stavka, match_url) :
             win_btns[1 + 2 * (map_number - 1)].click()
     time.sleep(1) # подумать над временем ожидания
     
-    driver.find_element_by_xpath(xPath_summinput).send_keys(stavka['summ'])
+    driver.find_element_by_xpath(xPath_summinput).send_keys(bet_summ)
     time.sleep(1) # подумать над временем ожидания
     driver.find_element_by_xpath(xPath_bet).click()
 
+def init_config(single_user_data=None) :
+    # о структуре словаря см scan_database.py
+    if single_user_data == None :
+        driver = bet_manage.create_webdriver(undetected_mode=True)
+    else :
+        driver = bet_manage.create_webdriver(user_id=single_user_data['chrome_id'], undetected_mode=True)
 

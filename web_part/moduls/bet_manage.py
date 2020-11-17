@@ -102,6 +102,8 @@ class LastGroupPost() :
         except common.exceptions.NoSuchElementException:
             pass
     
+
+
 def get_html_with_browser(BROWSER, url, sec=0) :
     if url != 'none' :
         BROWSER.get(url)
