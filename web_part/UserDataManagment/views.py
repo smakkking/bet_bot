@@ -28,10 +28,10 @@ class BotSettings(LoginRequiredMixin, views.View) :
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
         basic_form = MenuForm(data={
-            'end_date' : request.user.subscr_end_date,
+            'end_date' : request.user.sub_end_date,
         })
         response = render(request, 'menu.html', {'form' : basic_form})
-        response.set_cookie('sub_status', request.user.subscribe_status)
+        response.set_cookie('sub_status', request.user.sub_status)
         return response
 
 

@@ -9,17 +9,16 @@ import nltk
 OLD_DATA = {}
 
 def load_last_data(group_off) :
-    # загружает данные с группы
-    browser = bet_manage.create_webdriver()
-    # изменить бит уникальности в зависимости от old_data
     post = bet_manage.LastGroupPost()
-    post.get(browser, GROUP_OFFSET[group_off].WALL_URL)
-
-    if (GROUP_OFFSET[group_off].NAME in OLD_DATA.keys()) and OLD_DATA[GROUP_OFFSET[group_off].NAME]['text'] == post.text :
+    browser = bet_manage.create_webdriver()
+    try :
+        post.get(browser, GROUP_OFFSET[group_off].WALL_URL)
+        if (GROUP_OFFSET[group_off].NAME in OLD_DATA.keys()) and OLD_DATA[GROUP_OFFSET[group_off].NAME]['text'] == post.text :
+            post.parse_bet = False
+        else :
+            check_templates(browser, GROUP_OFFSET[group_off], post)
+    except :
         post.parse_bet = False
-    else :
-        check_templates(browser, GROUP_OFFSET[group_off], post)
-
     browser.close()
     browser.quit()
     return (GROUP_OFFSET[group_off].NAME, post.__json_repr__())
@@ -39,9 +38,9 @@ def main() :
         OLD_DATA = json.load(last_posts_json)
     with Pool(processes=len(GROUP_OFFSET.values())) as pool :
         new_data = dict(pool.map(load_last_data, GROUP_OFFSET.keys()))
-        with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
-            json.dump(new_data, last_posts_json, indent=4)
-
+    with open(ALL_POSTS_JSON_PATH, 'w') as last_posts_json :
+        json.dump(new_data, last_posts_json, indent=4)
+    
 if __name__ == "__main__":
     main()
     

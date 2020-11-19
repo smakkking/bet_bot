@@ -5,6 +5,8 @@ import sys
 import time
 from datetime import datetime
 import os
+import sqlite3
+from sqlite3 import Error
 
 # light selenium
 from selenium import webdriver
@@ -18,7 +20,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # dark selenium
 import undetected_chromedriver as uc
 
-from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES
+from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 from moduls.bookmaker_moduls import BETSCSGO_betting
 from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group
 
@@ -32,6 +34,8 @@ BOOKMAKER_OFFSET = {
     BETSCSGO_betting.NAME : BETSCSGO_betting,
     
 }
+
+LOAD_TIMEOUT = 30 # sec
 
 class Stavka :
     def __init__(self, bets=None) :
@@ -82,7 +86,12 @@ class LastGroupPost() :
         self.photo_list.append(photo)
 
     def __json_repr__(self) :
-        return dict([('text', self.text), ('photo_list', self.photo_list), ('parse_bet', self.parse_bet), ('coupon', self.coupon.__json_repr__())])
+        return dict([
+            ('text', self.text), 
+            ('photo_list', self.photo_list), 
+            ('parse_bet', self.parse_bet), 
+            ('coupon', self.coupon.__json_repr__()),
+        ])
         
     def get(self, BROWSER, url) :
         get_html_with_browser(BROWSER, url)
@@ -91,51 +100,106 @@ class LastGroupPost() :
         # получаем текст
         self.text = first_post.find_elements_by_tag_name('div')[1].text
         # получаем список фото
-        try :
-            photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
-        except IndexError :
-            photos_click_dom = []
-
-        try :
-            for item in photos_click_dom :
-                item.click()
-                time.sleep(0.5) # подумать над временем
-                self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
-                BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-                time.sleep(0.5) # подумать над временем
-        except common.exceptions.NoSuchElementException:
-            pass
+        photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
+        for item in photos_click_dom :
+            item.click()
+            self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
+            BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
     
+
+class SQL_DB():
+
+    MODEL_NAME = 'UserDataManagment_standartuser'
+
+    def __init__(self) :
+        self.connection = sqlite3.connect(DATABASE_PATH)
+
+    def execute_query(self, query) :
+        cursor = self.connection.cursor()
+        result = None
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+        except Error as e:
+            print(f"query is not correct, because of {e}")
+        self.connection.commit()
+        return result
+    
+    def SQL_SELECT(self, select_cond : list, where_cond : str=None, groups_query=False) :
+        select_users = "SELECT"
+        for arg in select_cond :
+            select_users += ', ' + arg
+        if groups_query :
+            for group in GROUP_OFFSET.keys() :
+                select_users += ', ' + group
+        select_users = select_users.replace(',', '', 1) + '\n'
+
+        select_users += 'FROM ' + SQL_DB.MODEL_NAME + '\n'
+
+        if where_cond != None :
+            select_users += 'WHERE ' + where_cond.replace('and', 'AND').replace('or', 'OR')
+    
+        users = self.execute_query(select_users)
+
+        result = []
+        for user in users :
+            dic = {}
+            for i in range(len(select_cond)) :
+                dic[select_cond[i]] = user[i]
+
+            if groups_query :
+                p = []
+                i = 0
+                for value in GROUP_OFFSET.keys() :
+                    if user[i + len(select_cond)] :
+                        p.append(value)
+                    i += 1
+                dic['groups'] = p
+            result.append(dic)  
+
+        return result
+
+    def SQL_UPDATE(self, set_cond : str, where_cond : str) :
+
+        if where_cond == '' or set_cond == '' :
+            return
+
+        query = "UPDATE " + SQL_DB.MODEL_NAME + '\n'
+        query += "SET " + set_cond + '\n'
+        query += "WHERE " + where_cond.replace('and', 'AND').replace('or', 'OR')
+        
+        self.execute_query(query)
+
+    def __del__(self) :
+        self.connection.close()
 
 
 def get_html_with_browser(BROWSER, url, sec=0) :
     if url != 'none' :
         BROWSER.get(url)
-    time.sleep(sec)
     return BROWSER.page_source
 
 def get_text_from_image(BROWSER, url) :
     # нужны ли исключения?
     base_url = 'https://yandex.ru/images'
-    get_html_with_browser(BROWSER, base_url, 1)
+    get_html_with_browser(BROWSER, base_url)
     try :
         btn1 = BROWSER.find_element_by_xpath("/html/body/header/div/div[2]/div[1]/form/div[1]/span/span/div[2]/button")
         btn1.click()
     except :
         assert False, "Can't find btn1"
-    time.sleep(0.5)
     try :
         inp = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/span/span/input")
         inp.send_keys(url)
     except :
         assert False, "Can't find input"
-    time.sleep(0.5)
     try :
         btn2 = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/button")
         btn2.click()
     except:
         assert False, "Can't find btn2"
-    time.sleep(5)
+    # здесь ждем загрузки страницы
+    BROWSER.find_element_by_class_name('CbirOcr-Controls')
     soup = BeautifulSoup(BROWSER.page_source, 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
@@ -149,15 +213,15 @@ def create_webdriver(user_id='', undetected_mode=False) :
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')
-        obj = uc.Chrome(options=opts, enable_console_log=False)
-        return obj
+        obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
     else :
         opts = Options()
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')         
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
-        return obj
+    obj.implicitly_wait(LOAD_TIMEOUT)
+    return obj
     
 # return 'left' or 'right'
 def define_side_winner(url) :

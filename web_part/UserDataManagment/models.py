@@ -1,11 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from moduls.bet_manage import BOOKMAKER_OFFSET
+
 BOOKMAKER_CHOICES = (
     ('parimatch', 'Parimatch'),
     ('gg_bet', 'GG.bet'),
     ('phon_bet', 'Фонбет'),
 )
+
 
 class StandartUser(AbstractUser):
     # поля по букмекерам
@@ -26,11 +29,11 @@ class StandartUser(AbstractUser):
         verbose_name='Пароль от аккаунта букмекерской конторы',     
     )
     # поля по пользователю
-    bet_summ = models.FloatField(
-        default=1.0,
+    bet_summ = models.IntegerField(
+        default=100,
         verbose_name='Cумма для ставки',
     )
-    subscr_end_date = models.DateField(
+    sub_end_date = models.DateField(
         verbose_name='Дата окончания действия подписки',
         null=True
     )
@@ -39,7 +42,7 @@ class StandartUser(AbstractUser):
         max_length=128,
         default='',
     )
-    subscribe_status = models.BooleanField(
+    sub_status = models.BooleanField(
         verbose_name='статус подписки 1 - активна, 0 -нет',
         default=False,
     )

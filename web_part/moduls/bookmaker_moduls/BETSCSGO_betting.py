@@ -181,5 +181,5 @@ def init_config(single_user_data=None) :
     if single_user_data == None :
         driver = bet_manage.create_webdriver(undetected_mode=True)
     else :
-        driver = bet_manage.create_webdriver(user_id=single_user_data['chrome_id'], undetected_mode=True)
+        driver = bet_manage.create_webdriver(user_id=single_user_data['chrome_dir_path'], undetected_mode=True)
     return driver
