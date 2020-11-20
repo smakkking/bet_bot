@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-{% load static %}
+
 <html>
     <head>
         <title> Главное меню </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
-        
-        <script type="text/javascript" src="{% static 'js/menu.js' %}"></script>
     </head>
     <body>
         <h1> Добро пожаловать в главное меню !</h1>
@@ -15,11 +12,10 @@
         </p>
         <p><a href="{% url 'subscribe' %}">Здесь можно купить подписку</a></p>
             
-        
-        <button onclick="create_bot();">
+        <button onclick="">
             Запустить бота
         </button>
-        <button onclick="stop_bot = true">
+        <button onclick="">
             Остановить бота
         </button>
 

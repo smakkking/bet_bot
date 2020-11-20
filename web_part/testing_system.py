@@ -11,32 +11,13 @@ import time
 
 def testing_group() :
     images_array = [
-        'https://sun9-10.userapi.com/fOz3vp3MkaivuRrcpsypIXSq_nwEX7NUTi5NFg/ILNc9Xl71Nw.jpg',
-        'https://sun9-73.userapi.com/UbKGnPO22hOmTvbIpNbIAeQKme6ObLE3tWMerw/SwMyMoH8yZU.jpg',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
+        'https://sun9-32.userapi.com/-ab-W8ZmG-MtryE8cn8rPOro-HndYWgdSFlZrQ/NZ1aNgG1IqM.jpg',
     ]
     browser = create_webdriver()
     try :
         leng = 0
         for x in images_array :
-            if (x == '') :
-                continue
+            now = time.time()
             leng += 1
             text = '\n'.join(get_text_from_image(browser, x))
             flag = False
@@ -45,13 +26,12 @@ def testing_group() :
                     print(par(x, nltk.word_tokenize(text))) 
                     flag = True
             assert flag, 'FAILED ON TEST {}'.format(leng) 
+            print(f'{time.time() - now} seconds spent on test{leng}')
         print('ALL {} TESTS ARE CLEAR!'.format(leng))
     finally :
         browser.close()
         browser.quit()
     
-browser = create_webdriver()
-
-if __name__ == "__main__":
+if __name__ == "__main__" :
     testing_group()
 

@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import sqlite3
 from sqlite3 import Error
+import requests
 
 # light selenium
 from selenium import webdriver
@@ -76,6 +77,10 @@ class Coupon() :
 
 
 class LastGroupPost() :
+
+    token = 'b43bde71b43bde71b43bde7135b44ed5a0bb43bb43bde71eb83d753b1a8f54e925ecaec'
+    ver = 5.92
+
     def __init__(self) :
         self.text = ''
         self.photo_list = []
@@ -94,6 +99,7 @@ class LastGroupPost() :
         ])
         
     def get(self, BROWSER, url) :
+        # browser version
         get_html_with_browser(BROWSER, url)
         # первый пост
         first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
@@ -105,7 +111,7 @@ class LastGroupPost() :
             item.click()
             self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
             BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
-    
+
 
 class SQL_DB():
 
@@ -181,25 +187,17 @@ def get_html_with_browser(BROWSER, url, sec=0) :
 
 def get_text_from_image(BROWSER, url) :
     # нужны ли исключения?
-    base_url = 'https://yandex.ru/images'
-    get_html_with_browser(BROWSER, base_url)
-    try :
-        btn1 = BROWSER.find_element_by_xpath("/html/body/header/div/div[2]/div[1]/form/div[1]/span/span/div[2]/button")
-        btn1.click()
-    except :
-        assert False, "Can't find btn1"
-    try :
-        inp = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/span/span/input")
-        inp.send_keys(url)
-    except :
-        assert False, "Can't find input"
-    try :
-        btn2 = BROWSER.find_element_by_xpath("/html/body/div[2]/div/div[1]/div/form[2]/button")
-        btn2.click()
-    except:
-        assert False, "Can't find btn2"
-    # здесь ждем загрузки страницы
-    BROWSER.find_element_by_class_name('CbirOcr-Controls')
+    base_url = 'https://yandex.ru/images/search'
+
+    response = requests.get(base_url, params= {
+        'source' : 'collections',
+        'rpt' : 'imageview',
+        'url' : url
+    })
+    
+    get_html_with_browser(BROWSER, response.url)
+    BROWSER.find_element_by_class_name('Fold-Body')
+
     soup = BeautifulSoup(BROWSER.page_source, 'html.parser')
     items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
     text = []
@@ -207,15 +205,17 @@ def get_text_from_image(BROWSER, url) :
        text.append(item.text)
     return text
 
-def create_webdriver(user_id='', undetected_mode=False) :
+def create_webdriver(user_id='', undetected_mode=False, hdless=True) :
     if undetected_mode :
         opts = uc.ChromeOptions()
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')
+        opts.set_headless(headless=hdless)
         obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
     else :
-        opts = Options()
+        opts = webdriver.ChromeOptions()
+        opts.set_headless(headless=hdless)
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')         
