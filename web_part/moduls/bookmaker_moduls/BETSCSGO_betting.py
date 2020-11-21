@@ -6,7 +6,7 @@ from moduls import bet_manage
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 
-CURRENT_CF_CLEARANCE = '609e09155652a528ec720157decb827b12bb7fb1-1605276868-0-1z20a49547z9321ccadz91a5e051-150'
+CURRENT_CF_CLEARANCE = 'e112a88f17bfc124538aa73d04eca7193e5ad1f6-1605892639-0-150'
 
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',

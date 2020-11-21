@@ -12,7 +12,8 @@ def load_last_data(group_off) :
     post = bet_manage.LastGroupPost()
     browser = bet_manage.create_webdriver()
     try :
-        post.get(browser, GROUP_OFFSET[group_off].WALL_URL)
+        post.change_wall(GROUP_OFFSET[group_off].WALL_URL)
+        post.get()
         if (GROUP_OFFSET[group_off].NAME in OLD_DATA.keys()) and OLD_DATA[GROUP_OFFSET[group_off].NAME]['text'] == post.text :
             post.parse_bet = False
         else :

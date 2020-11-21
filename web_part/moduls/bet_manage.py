@@ -87,6 +87,9 @@ class LastGroupPost() :
         self.parse_bet = True
         self.coupon = Coupon()
 
+    def change_wall(self, wall_url : str) :
+        self.wall_domain = wall_url[wall_url.rfind('/') + 1 : ]
+
     def add_photo(self, photo) :
         self.photo_list.append(photo)
 
@@ -97,20 +100,31 @@ class LastGroupPost() :
             ('parse_bet', self.parse_bet), 
             ('coupon', self.coupon.__json_repr__()),
         ])
+
+    def __str__(self) :
+        return str(self.__dict__)
         
-    def get(self, BROWSER, url) :
-        # browser version
-        get_html_with_browser(BROWSER, url)
-        # первый пост
-        first_post = BROWSER.find_element_by_id('page_wall_posts').find_element_by_tag_name('div').find_element_by_class_name('wall_text')
-        # получаем текст
-        self.text = first_post.find_elements_by_tag_name('div')[1].text
-        # получаем список фото
-        photos_click_dom = first_post.find_elements_by_tag_name('div')[2].find_elements_by_tag_name('a')
-        for item in photos_click_dom :
-            item.click()
-            self.add_photo(BROWSER.find_element_by_xpath('//*[@id="pv_photo"]/img').get_attribute('src'))
-            BROWSER.find_element_by_class_name('pv_close_btn').click() # нужно закрыть фото
+    def get(self) :
+        base_url = 'https://api.vk.com/method/wall.get'
+
+        resp = requests.get(base_url, params={
+            'access_token' : LastGroupPost.token,
+            'v' : LastGroupPost.ver,
+            'domain' : self.wall_domain,
+            'count' : 2
+        })
+
+        posts = resp.json()['response']['items']
+
+        if 'is_pinned' in posts[0].keys() and posts[0]['is_pinned'] :
+            p = posts[1]
+        else :
+            p = posts[0]
+        self.text = p['text']
+        for at in p['attachments'] :
+            if at['type'] == 'photo' :
+                self.photo_list.append(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
+
 
 
 class SQL_DB():
@@ -205,7 +219,7 @@ def get_text_from_image(BROWSER, url) :
        text.append(item.text)
     return text
 
-def create_webdriver(user_id='', undetected_mode=False, hdless=True) :
+def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
     if undetected_mode :
         opts = uc.ChromeOptions()
         if user_id :

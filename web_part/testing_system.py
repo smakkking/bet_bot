@@ -1,12 +1,14 @@
 # здесь тестируем все модули по группам и букмекеркам
 
 import manage
-from moduls.bet_manage import get_text_from_image, create_webdriver, get_html_with_browser
+from moduls.bet_manage import get_text_from_image, create_webdriver, get_html_with_browser, Stavka
 
 from moduls.group_moduls import CSgoVictory_group
-from manage import BET_PROJECT_ROOT
+from moduls.bookmaker_moduls import BETSCSGO_betting
+from manage import BET_PROJECT_ROOT, ALL_POSTS_JSON_PATH
 import nltk
 import time
+import json
 
 
 def testing_group() :
@@ -26,12 +28,15 @@ def testing_group() :
                     print(par(x, nltk.word_tokenize(text))) 
                     flag = True
             assert flag, 'FAILED ON TEST {}'.format(leng) 
-            print(f'{time.time() - now} seconds spent on test{leng}')
+            print(f'{time.time() - now} seconds spent on test_{leng}')
         print('ALL {} TESTS ARE CLEAR!'.format(leng))
     finally :
         browser.close()
         browser.quit()
     
 if __name__ == "__main__" :
-    testing_group()
+    browser = BETSCSGO_betting.init_config()
+    BETSCSGO_betting.find_bet(browser, Stavka())
+    browser.close()
+    browser.quit()
 
