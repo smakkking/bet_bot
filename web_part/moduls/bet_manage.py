@@ -1,13 +1,11 @@
 # общие модули
 from bs4 import BeautifulSoup
-
-import sys
-import time
+import sys, time
 from datetime import datetime
-import os
-import sqlite3
+import sqlite3, os
 from sqlite3 import Error
-import requests
+import requests, urllib, base64
+import re
 
 # light selenium
 from selenium import webdriver
@@ -79,13 +77,11 @@ class LastGroupPost() :
     token = 'b43bde71b43bde71b43bde7135b44ed5a0bb43bb43bde71eb83d753b1a8f54e925ecaec'
     ver = 5.92
 
-    def __init__(self) :
+    def __init__(self, wall_url : str) :
         self.text = ''
         self.photo_list = []
         self.parse_bet = True
         self.coupon = Coupon()
-
-    def change_wall(self, wall_url : str) :
         self.wall_domain = wall_url[wall_url.rfind('/') + 1 : ]
 
     def add_photo(self, photo) :
@@ -109,19 +105,27 @@ class LastGroupPost() :
             'access_token' : LastGroupPost.token,
             'v' : LastGroupPost.ver,
             'domain' : self.wall_domain,
-            'count' : 2
+            'count' : count,
+            'offset' : offset,
         })
 
         posts = resp.json()['response']['items']
-
-        if 'is_pinned' in posts[0].keys() and posts[0]['is_pinned'] :
-            p = posts[1]
-        else :
-            p = posts[0]
-        self.text = p['text']
-        for at in p['attachments'] :
-            if at['type'] == 'photo' :
-                self.photo_list.append(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
+        if count == 2 :
+            if 'is_pinned' in posts[0].keys() and posts[0]['is_pinned'] :
+                p = posts[1]
+            else :
+                p = posts[0]
+            self.text = p['text']
+            if 'attachments' in p.keys() :
+                for at in p['attachments'] :
+                    if at['type'] == 'photo' :
+                        self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
+        else :           
+            for p in posts :
+                if 'attachments' in p.keys() :
+                    for at in p['attachments'] :
+                        if at['type'] == 'photo' :
+                            self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
 
 
 class SQL_DB():
@@ -189,6 +193,55 @@ class SQL_DB():
 
     def __del__(self) :
         self.connection.close()
+
+
+class YandexAPI_detection() :
+
+    iam_token = ''
+    oAuth_token = 'AgAAAAApv9blAATuwWZGhGvmrkzMm3hoRBzKIuE'
+    folder_id = 'b1goeg4e1h56agdp1q9d'
+    
+    @classmethod
+    def create_new_token(cls) :
+        data = {
+            "yandexPassportOauthToken" : cls.oAuth_token
+        }
+        response = requests.post('https://iam.api.cloud.yandex.net/iam/v1/tokens', json=data)
+        cls.iam_token = response.json()['iamToken']
+    
+    def __init__(self, photo_url) :
+        resource = urllib.request.urlopen(photo_url)
+        self.base64_img = base64.b64encode(resource.read())
+        
+    def text_detection(self) -> str :
+
+        def get_text_from_response(resp : str) -> list :
+            x = re.findall('\"text\":\s\".*\"', resp)
+            return [k[k.find(':') + 3 : len(k) - 1] for k in x]
+    
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + YandexAPI_detection.iam_token,
+        }
+        now = time.time()
+        response = requests.post('https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze', headers=headers, json={
+                'folderId': YandexAPI_detection.folder_id,
+                'analyzeSpecs': [
+                    {
+                        'content': self.base64_img.decode('utf-8'),
+                        'features': [
+                            {
+                                'type': 'TEXT_DETECTION',
+                                'textDetectionConfig': {'languageCodes': ['*']}
+                            }
+                        ],
+                    }
+                ]})
+
+        print(f'detected in {time.time() - now} sec')
+        return ' '.join(get_text_from_response(response.text))
+
+
 
 
 def get_html_with_browser(BROWSER, url, sec=0) :

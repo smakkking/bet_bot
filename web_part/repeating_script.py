@@ -11,9 +11,8 @@ def time_loop(last) :
         time.sleep(RETIME_CYCLE * 60 - sec)
 
 if __name__ == "__main__" :
-    for _ in range(1) :
-        now = time.time()
-        load_last_data.main()
-        #client_data = scan_database.main()
-        #all_bet.main(client_data)
-        time_loop(now)
+    now = time.time()
+    load_last_data.main()
+    #client_data = scan_database.main()
+    #all_bet.main(client_data)
+    #time_loop(now)
