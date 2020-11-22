@@ -41,6 +41,7 @@ class Stavka :
             self.match_title = ''
             self.winner = ''
             self.outcome_index = ''
+            self.dogon = False
         else :
             for key, value in bets.items() :
                 setattr(self, key, value)
@@ -86,6 +87,10 @@ class LastGroupPost() :
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
+
+    def find_dogon(self) :
+        s = self.text.lower()
+        return s.find('догон') >= 0 or s.find('увеличу') >= 0 # дополняется
 
     def __json_repr__(self) :
         return dict([
@@ -223,7 +228,7 @@ class YandexAPI_detection() :
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + YandexAPI_detection.iam_token,
         }
-        now = time.time()
+        now = time.time() # замер времени
         response = requests.post('https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze', headers=headers, json={
                 'folderId': YandexAPI_detection.folder_id,
                 'analyzeSpecs': [
@@ -238,7 +243,7 @@ class YandexAPI_detection() :
                     }
                 ]})
 
-        print(f'detected in {time.time() - now} sec')
+        print(f'text detected in {time.time() - now : .2f} sec')
         return ' '.join(get_text_from_response(response.text))
 
 

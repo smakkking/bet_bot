@@ -27,7 +27,10 @@ def check_templates(group_module, post) :
         text = obj.text_detection()
         for (tmp, parse) in group_module.BET_TEMPLATES :
             if (tmp(text.upper())) :
-                post.coupon.add_bet(parse(photo_url, nltk.word_tokenize(text)))
+                st = parse(photo_url, nltk.word_tokenize(text))
+                if st.match_title.find('map') >= 0 and post.find_dogon() :
+                    st.dogon = True
+                post.coupon.add_bet(st)
     if post.coupon.bets == [] :
         post.parse_bet = False
 
