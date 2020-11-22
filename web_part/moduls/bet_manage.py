@@ -28,12 +28,10 @@ from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group
 GROUP_OFFSET = {
     ExpertMnenie_group.NAME : ExpertMnenie_group,
     CSgoVictory_group.NAME : CSgoVictory_group,
-
 }
 
 BOOKMAKER_OFFSET = {
     BETSCSGO_betting.NAME : BETSCSGO_betting,
-    
 }
 
 LOAD_TIMEOUT = 30 # sec
@@ -104,7 +102,7 @@ class LastGroupPost() :
     def __str__(self) :
         return str(self.__dict__)
         
-    def get(self) :
+    def get(self, offset=0, count=2) :
         base_url = 'https://api.vk.com/method/wall.get'
 
         resp = requests.get(base_url, params={
@@ -124,7 +122,6 @@ class LastGroupPost() :
         for at in p['attachments'] :
             if at['type'] == 'photo' :
                 self.photo_list.append(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
-
 
 
 class SQL_DB():
