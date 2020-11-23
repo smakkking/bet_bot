@@ -7,7 +7,6 @@ import json, nltk, time, functools
 from multiprocessing import Pool
 
 def load_last_data(OLD_DATA, token, group_off) :
-    # где создавать токен?
     post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL)
     try :
         post.get()
@@ -22,7 +21,7 @@ def load_last_data(OLD_DATA, token, group_off) :
 def check_templates(group_module, post, token) :
     for photo_url in post.photo_list :
         obj = YandexAPI_detection(photo_url, token)
-        text = obj.text_detection(debug=True)
+        text = obj.text_detection()
         for (tmp, parse) in group_module.BET_TEMPLATES :
             if (tmp(text.upper())) :
                 st = parse(photo_url, nltk.word_tokenize(text))

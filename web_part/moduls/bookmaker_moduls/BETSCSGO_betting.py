@@ -5,6 +5,7 @@ from moduls import bet_manage
 
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
+HAS_API = False
 
 CURRENT_CF_CLEARANCE = 'e112a88f17bfc124538aa73d04eca7193e5ad1f6-1605892639-0-150'
 

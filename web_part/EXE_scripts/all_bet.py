@@ -10,19 +10,25 @@ def find_all_links(key_g) :
     for stavka in DATA[key_g]['coupon'] :
         if stavka['parse_bet'] :
             for key in BOOKMAKER_OFFSET.keys() :
-                browser = BOOKMAKER_OFFSET[key].init_config()
-                stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, stavka)
-                browser.close()
-                browser.quit()
+                if BOOKMAKER_OFFSET[key].HAS_API :
+                    pass
+                else :
+                    browser = BOOKMAKER_OFFSET[key].init_config()
+                    stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, stavka)
+                    browser.close()
+                    browser.quit()
 
 def bbet_all(client) :
     for group in client['groups'] :
         if DATA[group]['parse_bet'] :
-            browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client)
-            for stavka in DATA[group]['coupon']['bets'] :
-                BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, stavka, stavka[client['bookmaker']], client['bet_summ'])
-            browser.close()
-            browser.quit()
+            if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
+                pass
+            else :
+                browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client)
+                for stavka in DATA[group]['coupon']['bets'] :
+                    BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, stavka, stavka[client['bookmaker']], client['bet_summ'])
+                browser.close()
+                browser.quit()
 
 DATA = {}
 

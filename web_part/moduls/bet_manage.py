@@ -208,11 +208,17 @@ class YandexAPI_detection() :
     folder_id = 'b1goeg4e1h56agdp1q9d'
     
     @classmethod
-    def create_new_token(cls) :
+    def create_new_token(cls, debug=False) :
         data = {
             "yandexPassportOauthToken" : cls.oAuth_token
         }
+        if debug :
+            now = time.time() # замер времени
+
         response = requests.post('https://iam.api.cloud.yandex.net/iam/v1/tokens', json=data)
+
+        if debug :
+            print(f'token collected in {time.time() - now : .2f} sec')       
         cls.iam_token = response.json()['iamToken']
     
     def __init__(self, photo_url, iam_token=None) :
