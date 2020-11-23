@@ -32,7 +32,7 @@ BOOKMAKER_OFFSET = {
     BETSCSGO_betting.NAME : BETSCSGO_betting,
 }
 
-LOAD_TIMEOUT = 30 # sec
+LOAD_TIMEOUT = 20 # sec
 
 class Stavka :
     def __init__(self, bets=None) :
@@ -125,7 +125,8 @@ class LastGroupPost() :
                 for at in p['attachments'] :
                     if at['type'] == 'photo' :
                         self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
-        else :           
+        else : 
+            # для большого числа постов сохраяются только фото         
             for p in posts :
                 if 'attachments' in p.keys() :
                     for at in p['attachments'] :
@@ -218,7 +219,7 @@ class YandexAPI_detection() :
         resource = urllib.request.urlopen(photo_url)
         self.base64_img = base64.b64encode(resource.read())
         
-    def text_detection(self) -> str :
+    def text_detection(self, debug=False) -> str :
 
         def get_text_from_response(resp : str) -> list :
             x = re.findall('\"text\":\s\".*\"', resp)
@@ -228,7 +229,8 @@ class YandexAPI_detection() :
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + YandexAPI_detection.iam_token,
         }
-        now = time.time() # замер времени
+        if debug :
+            now = time.time() # замер времени
         response = requests.post('https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze', headers=headers, json={
                 'folderId': YandexAPI_detection.folder_id,
                 'analyzeSpecs': [
@@ -241,38 +243,18 @@ class YandexAPI_detection() :
                             }
                         ],
                     }
-                ]})
+                ]
+            })
 
-        print(f'text detected in {time.time() - now : .2f} sec')
+        if debug :
+            print(f'text detected in {time.time() - now : .2f} sec')
         return ' '.join(get_text_from_response(response.text))
-
-
 
 
 def get_html_with_browser(BROWSER, url, sec=0) :
     if url != 'none' :
         BROWSER.get(url)
     return BROWSER.page_source
-
-def get_text_from_image(BROWSER, url) :
-    # нужны ли исключения?
-    base_url = 'https://yandex.ru/images/search'
-
-    response = requests.get(base_url, params= {
-        'source' : 'collections',
-        'rpt' : 'imageview',
-        'url' : url
-    })
-    
-    get_html_with_browser(BROWSER, response.url)
-    BROWSER.find_element_by_class_name('Fold-Body')
-
-    soup = BeautifulSoup(BROWSER.page_source, 'html.parser')
-    items2 = soup.find_all('div', class_='CbirOcr-TextBlock CbirOcr-TextBlock_level_text')
-    text = []
-    for item in items2 :
-       text.append(item.text)
-    return text
 
 def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
     if undetected_mode :
