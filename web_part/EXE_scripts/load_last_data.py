@@ -3,7 +3,7 @@ from manage import ALL_POSTS_JSON_PATH, CHROME_DIR_PACKAGES
 from moduls.bet_manage import GROUP_OFFSET
 from moduls.bet_manage import YandexAPI_detection
 
-import json, nltk, time
+import json, nltk, time, functools
 from multiprocessing import Pool
 
 OLD_DATA = {}
