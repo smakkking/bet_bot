@@ -12,12 +12,13 @@
         </p>
         <p><a href="{% url 'subscribe' %}">Здесь можно купить подписку</a></p>
             
+        <form method="POST">
+            {% csrf_token %}
         <button onclick="">
-            Запустить бота
+            BOT
         </button>
-        <button onclick="">
-            Остановить бота
-        </button>
+        </form>
+
 
         {{form.as_p}}
 

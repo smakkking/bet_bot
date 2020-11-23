@@ -3,20 +3,13 @@ from django.db import models
 
 from moduls.bet_manage import BOOKMAKER_OFFSET
 
-BOOKMAKER_CHOICES = (
-    ('parimatch', 'Parimatch'),
-    ('gg_bet', 'GG.bet'),
-    ('phon_bet', 'Фонбет'),
-)
-
-
 class StandartUser(AbstractUser):
     # поля по букмекерам
     bookmaker = models.CharField(
         max_length=128, 
         default='',
         verbose_name='Букмекер',
-        choices=BOOKMAKER_CHOICES,
+        choices=tuple([(key, key) for key in BOOKMAKER_OFFSET.keys()]),
     )
     bookmaker_login = models.CharField(
         max_length=128, 
@@ -45,6 +38,9 @@ class StandartUser(AbstractUser):
     sub_status = models.BooleanField(
         verbose_name='статус подписки 1 - активна, 0 -нет',
         default=False,
+    )
+    bot_status = models.BooleanField(
+        default=False
     )
     # поля для групп
     CSgoVictory = models.BooleanField(

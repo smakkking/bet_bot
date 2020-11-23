@@ -9,6 +9,7 @@ from django.contrib.auth import views as v
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name="test.html")),
+    path('account/registration', views.BotRegistration.as_view(), name='registration'),
     path('account/settings/', views.BotSettings.as_view(), name='settings'),
     path('account/', include('django.contrib.auth.urls')),
     path('account/menu/', views.BotMenu.as_view(), name='menu'),
