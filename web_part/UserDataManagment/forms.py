@@ -11,15 +11,30 @@ class SettingsForm(ModelForm) :
         )
         fields += tuple(GROUP_OFFSET.keys())
 
-class MenuForm(forms.Form) :
-    end_date = forms.DateField(
-        label='Дата окончания действия подписки'
-    )
+class MenuForm(ModelForm) :
+    class Meta :
+        model = StandartUser
+        fields = (
+            'sub_end_date',
+            #'bot_status',
+        )
+
+class SubscribeForm(ModelForm) :
+    class Meta :
+        model = StandartUser
+        fields = (
+            'max_group_count',
+            'bookmaker',
+            'bookmaker_login',
+            'bookmaker_password',
+            
+        )
+        
 
 class RegistrationForm(ModelForm) :
-    no_bookmaker = forms.BooleanField(
-        label='no_bookmaker'
-    )
+    #no_bkm = forms.BooleanField(
+    #    label='Регистрация без букмекера'
+    #)
     password = forms.CharField(
         label='Password', 
         widget=forms.PasswordInput

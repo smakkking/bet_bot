@@ -1,23 +1,29 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
-from moduls.bet_manage import BOOKMAKER_OFFSET
+from moduls.bet_manage import BOOKMAKER_OFFSET, GROUP_OFFSET
 
 class StandartUser(AbstractUser):
     # поля по букмекерам
     bookmaker = models.CharField(
         max_length=128, 
-        default='',
+        null=True,
+        blank=True,
         verbose_name='Букмекер',
         choices=tuple([(key, key) for key in BOOKMAKER_OFFSET.keys()]),
     )
     bookmaker_login = models.CharField(
         max_length=128, 
+        null=True,
+        blank=True,
         default='',
         verbose_name='Логин для аккаунта букмекерской конторы',
     )
     bookmaker_password = models.CharField(
         max_length=128,
+        null=True,
+        blank=True,
         default='',
         verbose_name='Пароль от аккаунта букмекерской конторы',     
     )
@@ -33,14 +39,22 @@ class StandartUser(AbstractUser):
     chrome_dir_path = models.CharField(
         verbose_name="id папки с chrome-профилем",
         max_length=128,
-        default='',
+        null=True,
+        unique=True,
     )
     sub_status = models.BooleanField(
-        verbose_name='статус подписки 1 - активна, 0 -нет',
         default=False,
     )
     bot_status = models.BooleanField(
-        default=False
+        default=False,
+    )
+    max_group_count = models.IntegerField(
+        default=0,
+        validators=[
+            MaxValueValidator(len(GROUP_OFFSET.keys())),
+            MinValueValidator(0)
+        ],
+        verbose_name="Количество групп"
     )
     # поля для групп
     CSgoVictory = models.BooleanField(

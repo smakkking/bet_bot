@@ -10,11 +10,19 @@
                 Переход в главное меню
             </a>
         </p>
-        <p><button>Подписка на 7 дней</button></p>
+        <form method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
 
-        <p><button>Подписка на 15 дней</button></p>
-
-        <p><button>Подписка на 31 день</button></p>
+            <p>
+                
+                <div>Период оплаты:<input type="radio" name="week", value="1"> 1 неделя
+                <input type="radio" name="week", value="2"> 2 недели 
+                <input type="radio" name="week", value="4"> 1 месяц
+                <input type="radio" name="week", value="12"> 3 месяца </div>
+            </p>
+            <input type="submit" value="Оформить подписку">
+        </form>
         
     </body>
 

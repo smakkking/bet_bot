@@ -8,22 +8,22 @@
     <body>
         <h1> Добро пожаловать в главное меню !</h1>
         <p> 
-            <a href="{% url 'settings' %}"> Здесь можно перейти в настройки </a>
+            <a href="{% url 'settings' %}"> НАСТРОЙКИ </a>
         </p>
-        <p><a href="{% url 'subscribe' %}">Здесь можно купить подписку</a></p>
+        <p><a href="{% url 'subscribe' %}"> КУПИТЬ ПОДПИСКУ </a></p>
             
         <form method="POST">
             {% csrf_token %}
-        <button onclick="">
-            BOT
-        </button>
+            {% if bot_status %}
+                <input type="submit" value="ОСТАНОВИТЬ БОТА"/>
+            {% else %}
+                <input type="submit" value="АКТИВИРОВАТЬ БОТА"/>
+            {% endif %}
+            
         </form>
 
-
         {{form.as_p}}
-
-        <div id="lastdatafield">
-        </div>
+        
 
         <a href="{% url 'logout' %}"> ВЫХОД </a>
     </body>
