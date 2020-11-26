@@ -6,6 +6,7 @@ import sqlite3, os
 from sqlite3 import Error
 import requests, urllib, base64
 import re
+from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 
 # light selenium
 from selenium import webdriver
@@ -19,9 +20,12 @@ from selenium.webdriver.support import expected_conditions as EC
 # dark selenium
 import undetected_chromedriver as uc
 
-from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
+# bookmakers
 from moduls.bookmaker_moduls import BETSCSGO_betting
-from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group
+
+# groups
+from moduls.group_moduls import ExpertMnenie_group
+from moduls.group_moduls import CSgoVictory_group
 
 GROUP_OFFSET = {
     ExpertMnenie_group.NAME : ExpertMnenie_group,

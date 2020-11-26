@@ -24,7 +24,7 @@ def bbet_all(client) :
             if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
                 pass
             else :
-                browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client)
+                browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client['chrome_dir_path'])
                 for stavka in DATA[group]['coupon']['bets'] :
                     BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, stavka, stavka[client['bookmaker']], client['bet_summ'])
                 browser.close()

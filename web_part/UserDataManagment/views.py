@@ -7,8 +7,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import SettingsForm, MenuForm, RegistrationForm, SubscribeForm
 from .models import StandartUser
+from moduls.bet_manage import BOOKMAKER_OFFSET
 
-import json, sys
+import json, sys, time
 from datetime import datetime, timedelta
 
 
@@ -45,11 +46,17 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
         basic_form = SubscribeForm(instance=request.user, data=request.POST)
         if basic_form.is_valid() :
             basic_form.save()
-            # получаем время окончания подписки
+
             now = datetime.today()
             request.user.sub_end_date = now + timedelta(days=int(request.POST['week']) * 7)
             request.user.sub_status = True
+            
             request.user.save()
+            if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :
+                request.user.chrome_dir_path = str(time.time()).replace('.', '')
+                BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
+            request.user.save()
+
         else :
             return self.get(request)
         return redirect('menu')

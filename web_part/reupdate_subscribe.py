@@ -5,8 +5,9 @@ from moduls.bet_manage import SQL_DB
 from datetime import datetime
 
 if __name__ == "__main__":
+    # возможно лучше переделать с интерфейсом django
     a = SQL_DB()
-    d = a.SQL_SELECT(where_cond=['sub_end_date', 'chrome_dir_path', 'id'], groups_query=False, where_cond='sub_status=1')
+    d = a.SQL_SELECT(select_cond=['sub_end_date', 'chrome_dir_path', 'id'], groups_query=False, where_cond='sub_status=1 and bot_status=1')
 
     change_sub_status = ''
     for rec in d :
