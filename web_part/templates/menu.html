@@ -10,7 +10,9 @@
         <p> 
             <a href="{% url 'settings' %}"> НАСТРОЙКИ </a>
         </p>
+        {% if not sub_status %}
         <p><a href="{% url 'subscribe' %}"> КУПИТЬ ПОДПИСКУ </a></p>
+        {% endif %}
             
         <form method="POST">
             {% csrf_token %}

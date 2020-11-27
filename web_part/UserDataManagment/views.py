@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django import views
 from django.middleware.csrf import get_token
+from django.contrib.auth import authenticate
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -21,22 +22,32 @@ class BotSettings(LoginRequiredMixin, views.View) :
         # поменять настройки у usera
         basic_form = SettingsForm(instance=request.user, data=request.POST)
         
+        # настроить, чтобы нельзя было выбрать больше групп, чем указано в подписке
         if basic_form.is_valid() :
-            basic_form.save()
+            if basic_form.valid_groups(request.user.max_group_count) :
+                basic_form.save()
         return render(request, 'bot_set.html', {'form' : basic_form})
 
 
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
         basic_form = MenuForm(instance=request.user)
-        return render(request, 'menu.html', {'form' : basic_form})
+        return render(request, 'menu.html', {
+            'form' : basic_form, 
+            'bot_status' : request.user.bot_status, 
+            'sub_status' : request.user.sub_status,
+        })
 
     def post(self, request) :
         request.user.bot_status = not request.user.bot_status
         request.user.save()
 
         basic_form = MenuForm(instance=request.user)
-        return render(request, 'menu.html', {'form' : basic_form, 'bot_status' : request.user.bot_status})
+        return render(request, 'menu.html', {
+            'form' : basic_form, 
+            'bot_status' : request.user.bot_status, 
+            'sub_status' : request.user.sub_status,
+        })
 
 
 class BuySubscribe(LoginRequiredMixin, views.View) :
@@ -54,7 +65,8 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
             request.user.save()
             if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :
                 request.user.chrome_dir_path = str(time.time()).replace('.', '')
-                BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
+                
+                #BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
             request.user.save()
 
         else :
@@ -70,9 +82,14 @@ class BotRegistration(views.View) :
     def post(self, request) :
         user_form = RegistrationForm(data=request.POST)
         if user_form.is_valid() :
-            new_user = user_form.save(commit=False)
-            new_user.set_password(user_form['password'])
-            new_user.save()
-            # переделать на подтверждение по почте(сейчас просто переикдывает на страницу логина)
+            user = user_form.save(commit=False)
+
+            user.set_password(user_form.cleaned_data['password'])
+            user.save()
             return redirect('login')
+            #  переделать на подтверждение по почте(сейчас просто переикдывает на страницу логина)
+        else :
+            return self.get(request)
+
+        
 

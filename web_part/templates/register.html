@@ -6,27 +6,12 @@
     </head>
 
     <body>
-        <p><label for="id_no_bkm">Регистрация без букмекера:</label> <input type="checkbox" name="no_bkm" required="" id="id_no_bkm"></p>
         <form method="POST">
             {% csrf_token %}
             {{ user_form.as_p }}
             <p><input type="submit" value="Create my account"></p>
         </form>
 
-        <script>
-            $('#id_no_bkm').click(function(){
-                if ($(this).is(':checked')){
-                    $('#id_bookmaker').hide(100);
-                    $('#id_bookmaker_login').hide(100);
-                    $('#id_bookmaker_password').hide(100);
-                    $('label[for*="bookmaker"]').hide(100);
-                } else {
-                    $('#id_bookmaker').show(100);
-                    $('#id_bookmaker_login').show(100);
-                    $('#id_bookmaker_password').show(100);
-                    $('label[for*="bookmaker"]').show(100);
-                }
-            });    
-        </script>
+
     </body>
 </html>

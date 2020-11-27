@@ -1,7 +1,7 @@
 from moduls.bet_manage import BOOKMAKER_OFFSET, Coupon, create_webdriver
-from manage import ALL_POSTS_JSON_PATH
+from manage import ALL_POSTS_JSON_PATH, BET_PROJECT_ROOT
 
-# еще не тестировано
+# нужны тесты
 
 import json
 from multiprocessing import Pool
@@ -12,11 +12,18 @@ def find_all_links(key_g) :
             for key in BOOKMAKER_OFFSET.keys() :
                 if BOOKMAKER_OFFSET[key].HAS_API :
                     pass
-                else :
+                elif BOOKMAKER_OFFSET[key].TAKES_MATHES_LIVE :
                     browser = BOOKMAKER_OFFSET[key].init_config()
                     stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, stavka)
                     browser.close()
                     browser.quit()
+                else :
+                    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + BOOKMAKER_OFFSET[key].NAME + '.json', 'r') as f :
+                        dat = json.load(f)
+                    for x in dat :
+                        # совпадает ли название матча
+                        if stavka.match_title.find(x['team1']) >= 0 and stavka.match_title.find(x['team2']) >= 0 :
+                            stavka[key] = x['link']
 
 def bbet_all(client) :
     for group in client['groups'] :

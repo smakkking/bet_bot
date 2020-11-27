@@ -4,6 +4,9 @@ import time
 
 RETIME_CYCLE = 1 # min
 
+# осуществляет непосредственно ставочный процесс для всех клиентов
+# работает круглосуточно
+
 def time_loop(last) :
     sec = time.time() - last
     print(f'{sec} seconds passed after beggining of a script-run.')

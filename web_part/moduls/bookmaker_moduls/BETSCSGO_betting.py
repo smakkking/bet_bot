@@ -1,12 +1,11 @@
-import nltk
-import re
-import time
+import nltk, re, time, json
 from moduls import bet_manage
-from manage import 
+from manage import BET_PROJECT_ROOT
 
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
+TAKES_MATHES_LIVE = False
 
 CURRENT_CF_CLEARANCE = 'ff16f7a09d4f3c0c7454ef021e41466cf546e2b7-1606418394-0-150'
 
@@ -36,7 +35,7 @@ def find_vs(words : list, idx : int) :
         else :
             break
 
-    return left_team + words[idx] + right_team
+    return bet_manage.reform_team_name(left_team) + ' | ' + bet_manage.reform_team_name(right_team)
 def find_winner(words : list, start_idx : int, match_title : str) :
     ndx = start_idx - 1
     result = words[ndx]
@@ -114,9 +113,8 @@ PHOTO_PARSING_TEMPLATES = [
 
 # betting process
 
-def find_bet(browser, stavka) -> str:
-    # возвращает ссылку на матч
-    # на вход подается браузер + объект класса Stavka
+def find_bet(browser, stavka=None) -> str:
+    # в начале дня собирает инфу о матчах и класдет в словарь
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
@@ -125,7 +123,7 @@ def find_bet(browser, stavka) -> str:
         'name' : 'cf_clearance',
         'value' : CURRENT_CF_CLEARANCE
     })
-    time.sleep(10) # подумать над временем ожидания
+    time.sleep(5) # подумать над временем ожидания
     bbb = []
     matches = browser.find_elements_by_xpath(xPath_matches)
     try :
@@ -136,14 +134,15 @@ def find_bet(browser, stavka) -> str:
             right_team = a.find_element_by_class_name('bet-team_right').find_element_by_class_name('bet-team__name')
             bbb.append({
                 'link' : a.find_element_by_class_name('sys-matchlink').get_attribute('href'),
-                'match_name' : left_team.text.replace(left_team.find_element_by_tag_name('div').text, '') + ' | ' + right_team.text.replace(right_team.find_element_by_tag_name('div').text, '')
+                'team1' : bet_manage.reform_team_name(left_team.text.replace(left_team.find_element_by_tag_name('div').text, '')),
+                'team2' : bet_manage.reform_team_name(right_team.text.replace(right_team.find_element_by_tag_name('div').text, '')),
+
             })
     except Exception:
         print('unpredictable error... STOP!')
-    for b in bbb :
-        if b['match_name'] == stavka.match_title :
-            return b['link']
-    return 'not_valid'
+
+    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'w') as f :
+        json.dump(bbb, f, indent=4)
 
 def make_bet(browser, stavka, match_url, bet_summ) :
     # делает ставку 
@@ -189,7 +188,7 @@ def login(user) :
     # на вход подается запись из таблицы бд со всеми доступными полями(доступ по .)
     browser = init_config(user.chrome_dir_path)
     
-    bet_manage.get_html_with_browser(browser, 'https://betscsgo.in/')
+    bet_manage.get_html_with_browser(browser, 'https://betscsgo.in/login')
     browser.add_cookie({
         'name' : 'cf_clearance',
         'value' : CURRENT_CF_CLEARANCE

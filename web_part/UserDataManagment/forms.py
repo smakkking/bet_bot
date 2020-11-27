@@ -10,14 +10,24 @@ class SettingsForm(ModelForm) :
             'bet_summ',
         )
         fields += tuple(GROUP_OFFSET.keys())
+    def valid_groups(self, count) :
+        cd = self.cleaned_data
+        k = 0
+        for x in tuple(GROUP_OFFSET.keys()) :
+            if cd[x] :
+                k += 1
+        if k > count :
+            raise forms.ValidationError(f'Вы не можете выбрать более {count} групп.')
+        
+
 
 class MenuForm(ModelForm) :
     class Meta :
         model = StandartUser
         fields = (
             'sub_end_date',
-            #'bot_status',
         )
+
 
 class SubscribeForm(ModelForm) :
     class Meta :
@@ -27,16 +37,16 @@ class SubscribeForm(ModelForm) :
             'bookmaker',
             'bookmaker_login',
             'bookmaker_password',
-            
         )
         
 
 class RegistrationForm(ModelForm) :
-    #no_bkm = forms.BooleanField(
-    #    label='Регистрация без букмекера'
-    #)
     password = forms.CharField(
         label='Password', 
+        widget=forms.PasswordInput
+    )
+    password2 = forms.CharField(
+        label='Password again', 
         widget=forms.PasswordInput
     )
     class Meta :
@@ -44,10 +54,12 @@ class RegistrationForm(ModelForm) :
         fields = (
             'username',
             'email',
-            'bookmaker',
-            'bookmaker_login',
-            'bookmaker_password'
         )
+    def clean_password2(self):
+        cd = self.cleaned_data
+        if cd['password'] != cd['password2']:
+            raise forms.ValidationError('Passwords don\'t match.')
+        return cd['password2']
 
 
     

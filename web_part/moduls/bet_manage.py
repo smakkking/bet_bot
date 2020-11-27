@@ -288,6 +288,7 @@ def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
     
 # return 'left' or 'right'
 def define_side_winner(url) :
+
     from PIL import Image
     import requests
 
@@ -321,3 +322,8 @@ def define_side_winner(url) :
         return 'right'
     elif  count_left == len(green_array) :
         return 'left'
+
+def reform_team_name(s : str) :
+    s = s.replace(' ', '')
+    s = s.upper()
+    return s
