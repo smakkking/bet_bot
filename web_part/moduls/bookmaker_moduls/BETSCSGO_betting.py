@@ -190,12 +190,14 @@ def login(user) :
     # на вход подается запись из таблицы бд со всеми доступными полями(доступ по .)
     browser = init_config(user.chrome_dir_path)
     
-    bet_manage.get_html_with_browser(browser, 'https://betscsgo.in/login')
+    bet_manage.get_html_with_browser(browser, WALL_URL)
     browser.add_cookie({
         'name' : 'cf_clearance',
         'value' : CURRENT_CF_CLEARANCE
     })
-    time.sleep(20)
+    # по-другому на вход не пускает - с этим БУДУТ проблемы
+    btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
+    btn.click()
 
     login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
     pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
@@ -204,12 +206,8 @@ def login(user) :
     pass_form.send_keys(user.bookmaker_password)
 
     browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
-    # как сохранить пароль? и нужно ли это делать?
-    #browser.add_cookie({
-    #    'name' : 'cf_clearance',
-    #    'value' : CURRENT_CF_CLEARANCE
-    #})
-    time.sleep(20)
 
+    time.sleep(5)
+    
     browser.close()
     browser.quit()

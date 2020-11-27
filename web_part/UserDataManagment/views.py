@@ -26,6 +26,11 @@ class BotSettings(LoginRequiredMixin, views.View) :
         if basic_form.is_valid() :
             if basic_form.valid_groups(request.user.max_group_count) :
                 basic_form.save()
+                print('way1')
+            else :
+                print('way2')
+                basic_form = SettingsForm(instance=request.user)
+
         return render(request, 'bot_set.html', {'form' : basic_form})
 
 
@@ -61,13 +66,12 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
             now = datetime.today()
             request.user.sub_end_date = now + timedelta(days=int(request.POST['week']) * 7)
             request.user.sub_status = True
-            
-            request.user.save()
-            if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :
+            if request.user.chrome_dir_path is None :
                 request.user.chrome_dir_path = str(time.time()).replace('.', '')
-                
-                #BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
             request.user.save()
+            if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :                
+                BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
+
 
         else :
             return self.get(request)

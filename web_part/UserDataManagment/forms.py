@@ -17,7 +17,8 @@ class SettingsForm(ModelForm) :
             if cd[x] :
                 k += 1
         if k > count :
-            raise forms.ValidationError(f'Вы не можете выбрать более {count} групп.')
+            raise forms.ValidationError('Вы не можете выбрать больше k групп')
+        return True
         
 
 

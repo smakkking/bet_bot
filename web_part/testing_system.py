@@ -4,7 +4,7 @@ import manage
 from moduls.bet_manage import Stavka, LastGroupPost, YandexAPI_detection
 
 from moduls.group_moduls import BETSPEDIA_group
-
+from moduls.bookmaker_moduls import BETSCSGO_betting
 
 from manage import ALL_POSTS_JSON_PATH
 import nltk, time, json
@@ -87,7 +87,16 @@ if __name__ == "__main__" :
         'https://sun9-38.userapi.com/impf/2k4YRTdUlwqSwuXRfAnmoaH7cxILL9dHum-VEA/tk-8V7adqJk.jpg?size=500x423&quality=96&proxy=1&sign=7a3d67aa1372dd55246e155c707f5479&c_uniq_tag=CntqyXN_qjYEnKbDSqMbRFnWPsUDTEBLSfXr9gq4CCw',
     ]
 
-    #print(get_stavka('https://sun9-68.userapi.com/impf/xVxuE1-Eh-NZyeD9JtL1vxb5Pc9fgO-8cZC5Yw/jJQD9FdFF0Q.jpg?size=760x154&quality=96&proxy=1&sign=c962540dcffda50ccde06b27558ae64c&c_uniq_tag=_-PRHZH4Z_WkagbucgkPl0dzQWn2Yol1uQ8Bma2iXfI', BETSPEDIA_group))
+    class u() :
+        def __init__(self, a, b, c) :
+            self.chrome_dir_path = a
+            self.bookmaker_login = b
+            self.bookmaker_password = c
+
+    a = u('0001', 'Karkadav', ';:9N8;,Emg@LkQ[')
+
+    BETSCSGO_betting.login(a)
+
 
 
 
