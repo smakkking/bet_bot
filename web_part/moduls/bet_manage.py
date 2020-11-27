@@ -226,7 +226,12 @@ class YandexAPI_detection() :
         cls.iam_token = response.json()['iamToken']
     
     def __init__(self, photo_url, iam_token=None) :
-        resource = urllib.request.urlopen(photo_url)
+        resource = None
+        while resource is None :
+            try :
+                resource = urllib.request.urlopen(photo_url)
+            except urllib.error.URLError :
+                resource = None
         self.base64_img = base64.b64encode(resource.read())
         if iam_token :
             YandexAPI_detection.iam_token = iam_token

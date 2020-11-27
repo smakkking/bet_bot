@@ -35,7 +35,7 @@ def find_vs(words : list, idx : int) :
         else :
             break
 
-    return bet_manage.reform_team_name(left_team) + ' | ' + bet_manage.reform_team_name(right_team)
+    return bet_manage.reform_team_name(left_team) + ' vs ' + bet_manage.reform_team_name(right_team)
 def find_winner(words : list, start_idx : int, match_title : str) :
     ndx = start_idx - 1
     result = words[ndx]
@@ -52,7 +52,8 @@ def find_winner(words : list, start_idx : int, match_title : str) :
 
 def template1(text : str) :
     temp = [
-        'ПОБЕДА\s+НА\s+КАРТЕ',
+        'ПОБЕДА\s*НА\s*КАРТЕ',
+        'ОТМЕНИТЬ\s*СТАВКУ',
     ]
     not_temp = [
 
@@ -79,8 +80,9 @@ def parse1(photo_url : str, words : list) :
 
 def template2(text : str) :
     temp = [
-        'ПОБЕДА\s+В\s+МАТЧЕ',
-        'ОТМЕНИТЬ\s+СТАВКУ',
+        # добавить \s*
+        'ПОБЕДА\s*В\s*МАТЧЕ',
+        'ОТМЕНИТЬ\s*СТАВКУ',
     ]
     not_temp = [
 
