@@ -32,6 +32,7 @@ def check_templates(group_module, post, token) :
         post.parse_bet = False
 
 def main() :
+    # проблемы с кодировкой
     YandexAPI_detection.create_new_token()
 
     with open(ALL_POSTS_JSON_PATH, 'r') as last_posts_json :

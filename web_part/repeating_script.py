@@ -10,6 +10,6 @@ if __name__ == "__main__" :
     now = time.time()
     #load_last_data.main()
     client_data = scan_database.main()
-    #print(client_data)
+    print(client_data)
     all_bet.main(client_data)
 

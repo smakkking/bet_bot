@@ -11,6 +11,7 @@ TAKES_MATHES_LIVE = False
 # менять, когда меняешь сеть, см в куках
 CURRENT_CF_CLEARANCE = 'e1c408ca9bebacb24b1e7edc7583a34077e59da5-1606575106-0-150'
 
+
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
     'Победа в матче' : 'game_winner',
@@ -192,6 +193,8 @@ def init_config(chrome_dir_path=None) :
     return driver
 
 def login(user) :
+    # аккаунт должен быть без steam_guard
+
     # на вход подается запись из таблицы бд со всеми доступными полями(доступ по .)
     browser = init_config(user.chrome_dir_path)
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE),])
@@ -208,7 +211,7 @@ def login(user) :
 
     browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
 
-    time.sleep(6)
+    time.sleep(100)
     
     browser.close()
     browser.quit()

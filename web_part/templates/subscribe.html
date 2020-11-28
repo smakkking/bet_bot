@@ -2,6 +2,7 @@
 <html>
     <head>
         <title> Покупка подписки </title>
+        <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -13,16 +14,30 @@
         <form method="POST">
             {% csrf_token %}
             {{form.as_p}}
-
+            <div id="result"></div>
             <p>
-                
                 <div>Период оплаты:<input type="radio" name="week", value="1"> 1 неделя
                 <input type="radio" name="week", value="2"> 2 недели 
                 <input type="radio" name="week", value="4"> 1 месяц
                 <input type="radio" name="week", value="12"> 3 месяца </div>
             </p>
+            
             <input type="submit" value="Оформить подписку">
         </form>
+
+        <script>
+            $(document).ready(function(){
+                $('#id_bookmaker').change(function(){
+                    if ($('#id_bookmaker option:selected').attr("value") == "betscsgo") {
+                        $("#result").html("<b> ВНИМАНИЕ: аккаунт должен быть без Steam Guard! </b>")
+                    }
+                    // скрыть эти комменты
+                    // сюда добавлять дополнительное отображение при выборе из bookmaker
+                    
+                });
+            
+            });
+        </script>
         
     </body>
 

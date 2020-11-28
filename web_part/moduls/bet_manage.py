@@ -210,6 +210,7 @@ class SQL_DB():
 
 class YandexAPI_detection() :
 
+    # иногда случается, что запрос на токен длится более 20 сек, как отлавливать - хз
     iam_token = ''
     oAuth_token = 'AgAAAAApv9blAATuwWZGhGvmrkzMm3hoRBzKIuE'
     folder_id = 'b1goeg4e1h56agdp1q9d'
