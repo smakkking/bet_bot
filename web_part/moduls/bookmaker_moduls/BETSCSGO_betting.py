@@ -8,7 +8,7 @@ WALL_URL = 'https://betscsgo.in'
 HAS_API = False
 TAKES_MATHES_LIVE = False
 
-# менять, когда меняешь сеть
+# менять, когда меняешь сеть, см в куках
 CURRENT_CF_CLEARANCE = 'e1c408ca9bebacb24b1e7edc7583a34077e59da5-1606575106-0-150'
 
 OFFSET_TABLE = {
@@ -76,7 +76,7 @@ def parse1(photo_url : str, words : list) :
         res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
         res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
-    res.outcome_index = ('map_winner', words[words.index('#') + 1])
+    res.outcome_index = (OFFSET_TABLE['Карта Победа'], words[words.index('#') + 1])
 
     return res
 
@@ -125,10 +125,6 @@ def find_bet() :
     browser = init_config()
     # тест
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
-    #browser.add_cookie({
-    #    'name' : 'cf_clearance',
-    #    'value' : CURRENT_CF_CLEARANCE
-    #})
     bbb = []
     matches = browser.find_elements_by_xpath(xPath_matches)
 
@@ -157,41 +153,35 @@ def find_bet() :
     browser.close()
     browser.quit()
 
-def make_bet(browser, stavka, match_url, bet_summ) :
+def make_bet(browser, stavka, match_url) :
     # делает ставку 
+    # stavka <--> экземпляр класса Stavka
 
-    # нужно исправить, так как в stavka winner записан caps'ом
-    bet_manage.get_html_with_browser(browser, match_url)
-    browser.add_cookie({
-        'name' : 'cf_clearance', 
-        'value' : CURRENT_CF_CLEARANCE
-    })
-    time.sleep(5) # подумать над временем ожидания
+    bet_manage.get_html_with_browser(browser, match_url, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
     xPath_summinput = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/div/div/div[2]/div/input'
     xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
 
     # подумать над более эффективной обработке
-    if stavka['outcome_index'] == OFFSET_TABLE['Победа в матче'] :
+    if stavka.outcome_index == OFFSET_TABLE['Победа в матче'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
-        if bet_manage.reform_team_name(win_btns[0].text).find(stavka['winner']) >= 0 :
+        if bet_manage.reform_team_name(win_btns[0].text).find(stavka.winner) >= 0 :
             win_btns[0].click()
-        elif bet_manage.reform_team_name(win_btns[1].text).find(stavka['winner']) >= 0 :
+        elif bet_manage.reform_team_name(win_btns[1].text).find(stavka.winner) >= 0 :
             win_btns[0].click()
-    elif stavka['outcome_index'] is tuple and stavka['outcome_index'][0] == OFFSET_TABLE['Карта Победа'] :
+    elif stavka.outcome_index is tuple and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
-        map_number = int(stavka['outcome_index'][1])
-        if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka['winner']) >= 0 :
+        map_number = int(stavka.outcome_index[1])
+        if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
             win_btns[2 * (map_number - 1)].click()
-        elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka['winner']) >= 0:
+        elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka.winner) >= 0:
             win_btns[1 + 2 * (map_number - 1)].click()
     time.sleep(1) # подумать над временем ожидания
     
-    browser.find_element_by_xpath(xPath_summinput).send_keys(bet_summ)
+    browser.find_element_by_xpath(xPath_summinput).send_keys(stavka.summ)
     time.sleep(1) # подумать над временем ожидания
     browser.find_element_by_xpath(xPath_bet).click()
-    time.sleep(2)
-    
+    time.sleep(1)
 
 def init_config(chrome_dir_path=None) :
     # о структуре словаря см scan_database.py

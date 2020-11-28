@@ -1,4 +1,4 @@
-from moduls.bet_manage import BOOKMAKER_OFFSET, Coupon, create_webdriver, GROUP_OFFSET
+from moduls.bet_manage import BOOKMAKER_OFFSET, create_webdriver, GROUP_OFFSET, Stavka
 from manage import ALL_POSTS_JSON_PATH, BET_PROJECT_ROOT
 
 import json, functools
@@ -16,7 +16,7 @@ def find_all_links(DATA, key_g) :
                         pass
                     elif BOOKMAKER_OFFSET[key].TAKES_MATHES_LIVE :
                         browser = BOOKMAKER_OFFSET[key].init_config()
-                        stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, stavka)
+                        stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, Stavka(bets=stavka))
                         browser.close()
                         browser.quit()
                     else :
@@ -41,7 +41,7 @@ def bbet_all(DATA, client) :
                 for stavka in DATA[group]['coupon']['bets'] :
                     # вопрос - нужно ли здесь инициализировать экземпляр класса Stavka?
                     # и дальше работать с ним, а не со словарем
-                    BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, stavka, stavka[client['bookmaker']], client['bet_summ'])
+                    BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, Stavka(bets=stavka, summ=client['bet_summ']), stavka[client['bookmaker']])
                 browser.close()
                 browser.quit()
 
@@ -53,12 +53,12 @@ def main(clients_DATA : dict) :
         DATA = json.load(last_posts_json)
 
     # здесь :
+    # в DATA записываются ссылки на матчи в разных бк для каждой ставки
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(find_all_links, DATA), GROUP_OFFSET.keys()))
 
-    #print(DATA)
-
     # здесь :
+    # для каждого клиента происходит процесс ставки
     with Pool(processes=len(clients_DATA)) as pool : 
         pool.map(functools.partial(bbet_all, DATA), clients_DATA)   
 
