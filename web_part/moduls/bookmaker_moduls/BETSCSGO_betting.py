@@ -2,12 +2,14 @@ import nltk, re, time, json
 from moduls import bet_manage
 from manage import BET_PROJECT_ROOT
 
+# управляющие константы, для других модулей
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
 TAKES_MATHES_LIVE = False
 
-CURRENT_CF_CLEARANCE = 'ff16f7a09d4f3c0c7454ef021e41466cf546e2b7-1606418394-0-150'
+# менять, когда меняешь сеть
+CURRENT_CF_CLEARANCE = 'e1c408ca9bebacb24b1e7edc7583a34077e59da5-1606575106-0-150'
 
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
@@ -115,39 +117,50 @@ PHOTO_PARSING_TEMPLATES = [
 
 # betting process
 
-def find_bet(browser, stavka=None) -> str:
-    # в начале дня собирает инфу о матчах и класдет в словарь
+def find_bet() :
+    # в начале дня собирает инфу о матчах и кладет в словарь
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
-    bet_manage.get_html_with_browser(browser, WALL_URL, 2)
-    browser.add_cookie({
-        'name' : 'cf_clearance',
-        'value' : CURRENT_CF_CLEARANCE
-    })
-    time.sleep(5) # подумать над временем ожидания
+    browser = init_config()
+    # тест
+    bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
+    #browser.add_cookie({
+    #    'name' : 'cf_clearance',
+    #    'value' : CURRENT_CF_CLEARANCE
+    #})
     bbb = []
     matches = browser.find_elements_by_xpath(xPath_matches)
+
+    # почему-то иногда падает и не ищет left_team и right_team. суууууккаааааааааааааа?????????????????????????????
     try :
         for a in matches :
             if a == matches[len(matches) - 1] :
                 continue
-            left_team = a.find_element_by_class_name('bet-team_left').find_element_by_class_name('bet-team__name')
-            right_team = a.find_element_by_class_name('bet-team_right').find_element_by_class_name('bet-team__name')
+
+            left_team   = a.find_element_by_class_name('bet-team_left ').find_element_by_class_name('bet-team__name')
+            right_team  = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
+            #print(left_team, right_team)
             bbb.append({
-                'link' : a.find_element_by_class_name('sys-matchlink').get_attribute('href'),
+                'link'  : a.find_element_by_class_name('sys-matchlink').get_attribute('href'),
                 'team1' : bet_manage.reform_team_name(left_team.text.replace(left_team.find_element_by_tag_name('div').text, '')),
                 'team2' : bet_manage.reform_team_name(right_team.text.replace(right_team.find_element_by_tag_name('div').text, '')),
-
             })
-    except Exception:
-        print('unpredictable error... STOP!')
+    except Exception as e:
+        print(f'unpredictable error {e}... STOP!')
 
     with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'w') as f :
         json.dump(bbb, f, indent=4)
 
+    #time.sleep(1000)
+
+    browser.close()
+    browser.quit()
+
 def make_bet(browser, stavka, match_url, bet_summ) :
     # делает ставку 
+
+    # нужно исправить, так как в stavka winner записан caps'ом
     bet_manage.get_html_with_browser(browser, match_url)
     browser.add_cookie({
         'name' : 'cf_clearance', 
@@ -159,24 +172,26 @@ def make_bet(browser, stavka, match_url, bet_summ) :
     xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
 
     # подумать над более эффективной обработке
-    if stavka.match_outcome == OFFSET_TABLE['Победа в матче'] :
+    if stavka['outcome_index'] == OFFSET_TABLE['Победа в матче'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
-        if win_btns[0].text.find(stavka['winner']) >= 0 :
+        if bet_manage.reform_team_name(win_btns[0].text).find(stavka['winner']) >= 0 :
             win_btns[0].click()
-        elif win_btns[1].text.find(stavka['winner']) >= 0 :
+        elif bet_manage.reform_team_name(win_btns[1].text).find(stavka['winner']) >= 0 :
             win_btns[0].click()
-    elif stavka['match_outcome'] is tuple and stavka['match_outcome'][0] == OFFSET_TABLE['Карта Победа'] :
+    elif stavka['outcome_index'] is tuple and stavka['outcome_index'][0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
-        map_number = int(stavka['match_outcome'][1])
-        if win_btns[2 * (map_number - 1)].text.find(stavka['winner']) >= 0 :
+        map_number = int(stavka['outcome_index'][1])
+        if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka['winner']) >= 0 :
             win_btns[2 * (map_number - 1)].click()
-        elif win_btns[1 + 2 * (map_number - 1)].text.find(stavka['winner']) >= 0:
+        elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka['winner']) >= 0:
             win_btns[1 + 2 * (map_number - 1)].click()
     time.sleep(1) # подумать над временем ожидания
     
     browser.find_element_by_xpath(xPath_summinput).send_keys(bet_summ)
     time.sleep(1) # подумать над временем ожидания
     browser.find_element_by_xpath(xPath_bet).click()
+    time.sleep(2)
+    
 
 def init_config(chrome_dir_path=None) :
     # о структуре словаря см scan_database.py
@@ -189,12 +204,8 @@ def init_config(chrome_dir_path=None) :
 def login(user) :
     # на вход подается запись из таблицы бд со всеми доступными полями(доступ по .)
     browser = init_config(user.chrome_dir_path)
-    
-    bet_manage.get_html_with_browser(browser, WALL_URL)
-    browser.add_cookie({
-        'name' : 'cf_clearance',
-        'value' : CURRENT_CF_CLEARANCE
-    })
+    bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE),])
+
     # по-другому на вход не пускает - с этим БУДУТ проблемы
     btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
     btn.click()
@@ -207,7 +218,7 @@ def login(user) :
 
     browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
 
-    time.sleep(5)
+    time.sleep(6)
     
     browser.close()
     browser.quit()

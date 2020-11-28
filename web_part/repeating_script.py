@@ -2,6 +2,7 @@ from EXE_scripts import load_last_data, scan_database, all_bet
 import manage
 import time
 
+# если честно, не имеет смысла ставить цикл задержки, т.к скрипт работает 10 минут
 RETIME_CYCLE = 1 # min
 
 # осуществляет непосредственно ставочный процесс для всех клиентов
@@ -15,7 +16,8 @@ def time_loop(last) :
 
 if __name__ == "__main__" :
     now = time.time()
-    load_last_data.main()
-    #client_data = scan_database.main()
-    #all_bet.main(client_data)
+    #load_last_data.main()
+    client_data = scan_database.main()
+    #print(client_data)
+    all_bet.main(client_data)
     #time_loop(now)

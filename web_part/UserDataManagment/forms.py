@@ -10,16 +10,16 @@ class SettingsForm(ModelForm) :
             'bet_summ',
         )
         fields += tuple(GROUP_OFFSET.keys())
-    def valid_groups(self, count) :
-        cd = self.cleaned_data
+        
+    def validate_groups(self, count) :
+        cd = self.clean()
         k = 0
         for x in tuple(GROUP_OFFSET.keys()) :
-            if cd[x] :
+            if cd.get(x) :
                 k += 1
         if k > count :
-            raise forms.ValidationError('Вы не можете выбрать больше k групп')
+            return False
         return True
-        
 
 
 class MenuForm(ModelForm) :

@@ -79,6 +79,18 @@ def get_stavka(photo_url, group) :
     else :
         return stavka.__json_repr__()
 
+def llogin(bookmaker) :
+    class u() :
+        def __init__(self, a, b, c) :
+            self.chrome_dir_path = a
+            self.bookmaker_login = b
+            self.bookmaker_password = c
+
+    a = u('16065607583527613', 'Karkadav', ';:9N8;,Emg@LkQ[')
+
+    bookmaker.login(a)
+
+
 if __name__ == "__main__" :
     #testing_group(BETSPEDIA_group, 50)
 
@@ -87,16 +99,7 @@ if __name__ == "__main__" :
         'https://sun9-38.userapi.com/impf/2k4YRTdUlwqSwuXRfAnmoaH7cxILL9dHum-VEA/tk-8V7adqJk.jpg?size=500x423&quality=96&proxy=1&sign=7a3d67aa1372dd55246e155c707f5479&c_uniq_tag=CntqyXN_qjYEnKbDSqMbRFnWPsUDTEBLSfXr9gq4CCw',
     ]
 
-    class u() :
-        def __init__(self, a, b, c) :
-            self.chrome_dir_path = a
-            self.bookmaker_login = b
-            self.bookmaker_password = c
-
-    a = u('0001', 'Karkadav', ';:9N8;,Emg@LkQ[')
-
-    BETSCSGO_betting.login(a)
-
+    llogin(BETSCSGO_betting)
 
 
 

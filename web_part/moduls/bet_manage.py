@@ -36,19 +36,22 @@ BOOKMAKER_OFFSET = {
     BETSCSGO_betting.NAME : BETSCSGO_betting,
 }
 
-LOAD_TIMEOUT = 20 # sec
+LOAD_TIMEOUT = 10 # sec
 
 class Stavka :
-    def __init__(self, bets=None) :
-        if bets == None :
-            self.summ = '0'
+    def __init__(self, bets=None, summ=0) :
+        self.summ = summ
+        self.dogon = False
+        if bets is None :
             self.match_title = ''
             self.winner = ''
             self.outcome_index = ''
-            self.dogon = False
         else :
-            for key, value in bets.items() :
-                setattr(self, key, value)
+            self.match_title = bets['match_title']
+            self.winner = bets['winner']
+            self.outcome_index = bets['outcome_index']
+        
+
 
     def change_summ(self, s : int) :
         self.summ = str(s)
@@ -268,9 +271,17 @@ class YandexAPI_detection() :
         return ' '.join(get_text_from_response(response.text))
 
 
-def get_html_with_browser(BROWSER, url, sec=0) :
+def get_html_with_browser(BROWSER, url, sec=0, cookies=None) :
     if url != 'none' :
         BROWSER.get(url)
+    if cookies :
+        for cok in cookies :
+            BROWSER.add_cookie({
+                'name' : cok[0],
+                'value' : cok[1],
+            })
+    time.sleep(sec)
+
     return BROWSER.page_source
 
 def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
@@ -289,6 +300,7 @@ def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
         opts.add_argument('--profile-directory=Profile_1')         
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
     obj.implicitly_wait(LOAD_TIMEOUT)
+
     return obj
     
 # return 'left' or 'right'

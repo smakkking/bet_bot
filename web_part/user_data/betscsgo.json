@@ -1,132 +1,127 @@
 [
     {
-        "link": "https://betscsgo.in/match/258851/",
-        "left_team": "HEROIC",
-        "right_team": "ENDPOINT"
+        "link": "https://betscsgo.in/match/259600/",
+        "team1": "NA'VIJUNIOR",
+        "team2": "AGO"
     },
     {
-        "link": "https://betscsgo.in/match/259382/",
-        "left_team": "FLOWSKOLA",
-        "right_team": "AGF"
-    },
-    {
-        "link": "https://betscsgo.in/match/259392/",
-        "left_team": "ILLUMINAR",
-        "right_team": "KOVA"
-    },
-    {
-        "link": "https://betscsgo.in/match/259126/",
-        "left_team": "UNICORNSOFLOVE",
-        "right_team": "TTC"
-    },
-    {
-        "link": "https://betscsgo.in/match/259402/",
-        "left_team": "SPIRIT",
-        "right_team": "TBD"
-    },
-    {
-        "link": "https://betscsgo.in/match/259065/",
-        "left_team": "SKADE",
-        "right_team": "SJGAMING"
-    },
-    {
-        "link": "https://betscsgo.in/match/259412/",
-        "left_team": "GAMBIT",
-        "right_team": "TBD"
-    },
-    {
-        "link": "https://betscsgo.in/match/259165/",
-        "left_team": "SPROUT",
-        "right_team": "TBD"
-    },
-    {
-        "link": "https://betscsgo.in/match/259175/",
-        "left_team": "VP",
-        "right_team": "FURIA"
-    },
-    {
-        "link": "https://betscsgo.in/match/259191/",
-        "left_team": "BIG",
-        "right_team": "TBD"
-    },
-    {
-        "link": "https://betscsgo.in/match/259201/",
-        "left_team": "MIBR",
-        "right_team": "TBD"
+        "link": "https://betscsgo.in/match/259646/",
+        "team1": "LILMIX",
+        "team2": "FATE"
     },
     {
         "link": "https://betscsgo.in/match/259211/",
-        "left_team": "EAGLES",
-        "right_team": "BLINK"
+        "team1": "EAGLES",
+        "team2": "BLINK"
     },
     {
-        "link": "https://betscsgo.in/match/259222/",
-        "left_team": "MOUSESPORTS",
-        "right_team": "TBD"
+        "link": "https://betscsgo.in/match/259657/",
+        "team1": "SPROUT",
+        "team2": "UNICORNSOFLOVE"
+    },
+    {
+        "link": "https://betscsgo.in/match/259668/",
+        "team1": "WINSTRIKE",
+        "team2": "GAMERLEGION"
+    },
+    {
+        "link": "https://betscsgo.in/match/259201/",
+        "team1": "MIBR",
+        "team2": "LIQUID"
+    },
+    {
+        "link": "https://betscsgo.in/match/259612/",
+        "team1": "SPIRIT",
+        "team2": "ILLUMINAR"
     },
     {
         "link": "https://betscsgo.in/match/259232/",
-        "left_team": "4GLORY",
-        "right_team": "LVLUP"
+        "team1": "4GLORY",
+        "team2": "LVLUP"
+    },
+    {
+        "link": "https://betscsgo.in/match/259679/",
+        "team1": "ALTERNATEATTAX",
+        "team2": "BIG"
+    },
+    {
+        "link": "https://betscsgo.in/match/259694/",
+        "team1": "1W",
+        "team2": "CYBERLEGACY"
     },
     {
         "link": "https://betscsgo.in/match/259244/",
-        "left_team": "COL",
-        "right_team": "CLOUD9"
+        "team1": "COL",
+        "team2": "CLOUD9"
+    },
+    {
+        "link": "https://betscsgo.in/match/259705/",
+        "team1": "GAMBIT",
+        "team2": "AGF"
     },
     {
         "link": "https://betscsgo.in/match/259255/",
-        "left_team": "STMN",
-        "right_team": "ESTRAL"
+        "team1": "STMN",
+        "team2": "ESTRAL"
     },
     {
         "link": "https://betscsgo.in/match/259267/",
-        "left_team": "INFINITY(COLOMB)",
-        "right_team": "SUPREMACY(LATAM)"
+        "team1": "INFINITY(COLOMB)",
+        "team2": "SUPREMACY(LATAM)"
     },
     {
         "link": "https://betscsgo.in/match/259278/",
-        "left_team": "ESPADA",
-        "right_team": "NA'VIJUNIOR"
+        "team1": "ESPADA",
+        "team2": "NA'VIJUNIOR"
+    },
+    {
+        "link": "https://betscsgo.in/match/259716/",
+        "team1": "FURIA",
+        "team2": "TBD"
+    },
+    {
+        "link": "https://betscsgo.in/match/259727/",
+        "team1": "MOUSESPORTS",
+        "team2": "TBD"
     },
     {
         "link": "https://betscsgo.in/match/259311/",
-        "left_team": "HEROIC",
-        "right_team": "C0NTACT"
+        "team1": "HEROIC",
+        "team2": "C0NTACT"
     },
     {
         "link": "https://betscsgo.in/match/259322/",
-        "left_team": "FAZE",
-        "right_team": "SPIRIT"
+        "team1": "FAZE",
+        "team2": "SPIRIT"
     },
     {
         "link": "https://betscsgo.in/match/259289/",
-        "left_team": "MADLIONS",
-        "right_team": "VP"
+        "team1": "MADLIONS",
+        "team2": "VP"
     },
     {
         "link": "https://betscsgo.in/match/259333/",
-        "left_team": "ASTRALIS",
-        "right_team": "GODSENT"
+        "team1": "ASTRALIS",
+        "team2": "GODSENT"
     },
     {
         "link": "https://betscsgo.in/match/259344/",
-        "left_team": "LIQUID",
-        "right_team": "MOUSESPORTS"
+        "team1": "LIQUID",
+        "team2": "MOUSESPORTS"
     },
     {
         "link": "https://betscsgo.in/match/259300/",
-        "left_team": "BIG",
-        "right_team": "ENVY"
+        "team1": "BIG",
+        "team2": "ENVY"
     },
     {
         "link": "https://betscsgo.in/match/259356/",
-        "left_team": "COL",
-        "right_team": "ENCE"
+        "team1": "COL",
+        "team2": "ENCE"
     },
     {
         "link": "https://betscsgo.in/match/259367/",
-        "left_team": "CLOUD9",
-        "right_team": "GAMBIT"
+        "team1": "CLOUD9",
+        "team2": "GAMBIT"
     }
 ]
