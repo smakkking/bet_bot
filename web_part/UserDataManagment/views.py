@@ -71,7 +71,11 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
             request.user.save()
 
             if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :                
-                BOOKMAKER_OFFSET[request.user.bookmaker].login(user=request.user)
+                BOOKMAKER_OFFSET[request.user.bookmaker].login(
+                    chdp=request.user.chrome_dir_path,
+                    bkm_login=request.user.bookmaker_login,
+                    bkm_password=request.user.bookmaker_password
+                )
         else :
             return self.get(request)
         return redirect('menu')

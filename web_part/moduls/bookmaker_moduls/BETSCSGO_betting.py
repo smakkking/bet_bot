@@ -1,6 +1,8 @@
-import nltk, re, time, json
+import re, time, json
 from moduls import bet_manage
-from manage import BET_PROJECT_ROOT
+from manage import BET_PROJECT_ROOT, MATCHES_UPDATE_TIMEh
+
+from datetime import datetime, timedelta
 
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
@@ -9,7 +11,7 @@ HAS_API = False
 TAKES_MATHES_LIVE = False
 
 # менять, когда меняешь сеть, см в куках
-CURRENT_CF_CLEARANCE = 'e1c408ca9bebacb24b1e7edc7583a34077e59da5-1606575106-0-150'
+CURRENT_CF_CLEARANCE = '1df0a716c47ea4a275b394288de60fa6a34e6095-1607113067-0-150'
 
 
 OFFSET_TABLE = {
@@ -55,8 +57,8 @@ def find_winner(words : list, start_idx : int, match_title : str) :
 
 def template1(text : str) :
     temp = [
-        'ПОБЕДА\s*НА\s*КАРТЕ',
-        'ОТМЕНИТЬ\s*СТАВКУ',
+        r'ПОБЕДА\s*НА\s*КАРТЕ',
+        r'ОТМЕНИТЬ\s*СТАВКУ',
     ]
     not_temp = [
 
@@ -65,6 +67,7 @@ def template1(text : str) :
     flag = True
     for x in temp :
         flag = flag and re.search(x, text)
+
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
@@ -84,8 +87,8 @@ def parse1(photo_url : str, words : list) :
 def template2(text : str) :
     temp = [
         # добавить \s*
-        'ПОБЕДА\s*В\s*МАТЧЕ',
-        'ОТМЕНИТЬ\s*СТАВКУ',
+        r'ПОБЕДА\s*В\s*МАТЧЕ',
+        r'ОТМЕНИТЬ\s*СТАВКУ',
     ]
     not_temp = [
 
@@ -94,6 +97,7 @@ def template2(text : str) :
     flag = True
     for x in temp :
         flag = flag and re.search(x, text)
+
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
@@ -119,9 +123,14 @@ PHOTO_PARSING_TEMPLATES = [
 # betting process
 
 def find_bet() :
-    # в начале дня собирает инфу о матчах и кладет в словарь
+    # TODO exceptions and logging
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
+
+    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'r') as f :
+        x = json.load(f)
+        if 'last_update' in x.keys() and time.time() - x['last_update'] < MATCHES_UPDATE_TIMEh * 3600 :
+            return None
 
     browser = init_config()
     # тест
@@ -146,10 +155,14 @@ def find_bet() :
     except Exception as e:
         print(f'unpredictable error {e}... STOP!')
 
-    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'w') as f :
-        json.dump(bbb, f, indent=4)
+    final = {
+        'events' : bbb,
+        'last_update' : time.time()
+    }
 
-    #time.sleep(1000)
+    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'w') as f :
+        json.dump(final, f, indent=4)
+
 
     browser.close()
     browser.quit()
@@ -157,6 +170,8 @@ def find_bet() :
 def make_bet(browser, stavka, match_url) :
     # делает ставку 
     # stavka <--> экземпляр класса Stavka
+
+    # TODO exceptions and logging
 
     bet_manage.get_html_with_browser(browser, match_url, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
@@ -187,16 +202,19 @@ def make_bet(browser, stavka, match_url) :
 def init_config(chrome_dir_path=None) :
     # о структуре словаря см scan_database.py
     if chrome_dir_path == None :
-        driver = bet_manage.create_webdriver(undetected_mode=True)
+        driver = bet_manage.create_webdriver()
     else :
-        driver = bet_manage.create_webdriver(user_id=chrome_dir_path, undetected_mode=True)
+        driver = bet_manage.create_webdriver(user_id=chrome_dir_path)
     return driver
 
-def login(user) :
+def login(chdp=None, bkm_login=None, bkm_password=None) :
     # аккаунт должен быть без steam_guard
 
     # на вход подается запись из таблицы бд со всеми доступными полями(доступ по .)
-    browser = init_config(user.chrome_dir_path)
+
+    # TODO exceptions and logging
+
+    browser = init_config(chdp)
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE),])
 
     # по-другому на вход не пускает - с этим БУДУТ проблемы
@@ -206,12 +224,12 @@ def login(user) :
     login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
     pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
     
-    login_form.send_keys(user.bookmaker_login)
-    pass_form.send_keys(user.bookmaker_password)
+    login_form.send_keys(bkm_login)
+    pass_form.send_keys(bkm_password)
 
     browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
 
-    time.sleep(100)
+    time.sleep(5)
     
     browser.close()
     browser.quit()

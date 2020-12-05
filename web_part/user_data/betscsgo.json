@@ -1,1 +1,110 @@
-{}
+{
+    "events": [
+        {
+            "link": "https://betscsgo.in/match/261214/",
+            "team1": "777",
+            "team2": "BIFROST"
+        },
+        {
+            "link": "https://betscsgo.in/match/261351/",
+            "team1": "MOVISTARRIDERS",
+            "team2": "QUESO"
+        },
+        {
+            "link": "https://betscsgo.in/match/261318/",
+            "team1": "IG",
+            "team2": "BEZZP"
+        },
+        {
+            "link": "https://betscsgo.in/match/261188/",
+            "team1": "MOUSESPORTS",
+            "team2": "GODSENT"
+        },
+        {
+            "link": "https://betscsgo.in/match/261290/",
+            "team1": "LDLC",
+            "team2": "LYNGBYVIKINGS"
+        },
+        {
+            "link": "https://betscsgo.in/match/261248/",
+            "team1": "FURIA",
+            "team2": "ASTRALIS"
+        },
+        {
+            "link": "https://betscsgo.in/match/261084/",
+            "team1": "VP",
+            "team2": "FNATIC"
+        },
+        {
+            "link": "https://betscsgo.in/match/261362/",
+            "team1": "FLOWSKOLA",
+            "team2": "AURA"
+        },
+        {
+            "link": "https://betscsgo.in/match/261386/",
+            "team1": "ILLUMINAR",
+            "team2": "IZAKOBOARS"
+        },
+        {
+            "link": "https://betscsgo.in/match/260925/",
+            "team1": "CHAOS(NA)",
+            "team2": "YEAH"
+        },
+        {
+            "link": "https://betscsgo.in/match/261238/",
+            "team1": "MIBR",
+            "team2": "OG"
+        },
+        {
+            "link": "https://betscsgo.in/match/261364/",
+            "team1": "LILMIX",
+            "team2": "FIGHTCLUB"
+        },
+        {
+            "link": "https://betscsgo.in/match/261388/",
+            "team1": "PACT",
+            "team2": "HONORIS"
+        },
+        {
+            "link": "https://betscsgo.in/match/260959/",
+            "team1": "TEAMONE",
+            "team2": "REBIRTH"
+        },
+        {
+            "link": "https://betscsgo.in/match/261116/",
+            "team1": "ORDER",
+            "team2": "TBD"
+        },
+        {
+            "link": "https://betscsgo.in/match/261127/",
+            "team1": "VICI",
+            "team2": "TBD"
+        },
+        {
+            "link": "https://betscsgo.in/match/261408/",
+            "team1": "FLOWSKOLA",
+            "team2": "SJGAMING"
+        },
+        {
+            "link": "https://betscsgo.in/match/261420/",
+            "team1": "FORZE",
+            "team2": "ILLUMINAR"
+        },
+        {
+            "link": "https://betscsgo.in/match/261424/",
+            "team1": "ENDPOINT",
+            "team2": "BUDAPESTFIVE"
+        },
+        {
+            "link": "https://betscsgo.in/match/261138/",
+            "team1": "VITALITY",
+            "team2": "MOUSESPORTS"
+        },
+        {
+            "link": "https://betscsgo.in/match/261155/",
+            "team1": "NA'VI",
+            "team2": "ASTRALIS"
+        }
+    ],
+    "last_update": 1607180729.3034558
+}

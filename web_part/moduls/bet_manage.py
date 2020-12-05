@@ -1,21 +1,11 @@
 # общие модули
-from bs4 import BeautifulSoup
-import sys, time
-from datetime import datetime
-import sqlite3, os
+import sqlite3, time
 from sqlite3 import Error
-import requests, urllib, base64
-import re
+import requests, urllib, base64, re
 from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 
 # light selenium
 from selenium import webdriver
-from selenium import common
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 # dark selenium
 import undetected_chromedriver as uc
@@ -24,24 +14,25 @@ import undetected_chromedriver as uc
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 # groups
-from moduls.group_moduls import ExpertMnenie_group
-from moduls.group_moduls import CSgoVictory_group
+from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group, BETSPEDIA_group
 
 GROUP_OFFSET = {
     ExpertMnenie_group.NAME : ExpertMnenie_group,
     CSgoVictory_group.NAME : CSgoVictory_group,
+    BETSPEDIA_group.NAME : BETSPEDIA_group,
 }
 
 BOOKMAKER_OFFSET = {
     BETSCSGO_betting.NAME : BETSCSGO_betting,
 }
 
-LOAD_TIMEOUT = 10 # sec
+LOAD_TIMEOUT = 10  # sec
 
 class Stavka :
     def __init__(self, bets=None, summ=0) :
         self.summ = summ
         self.dogon = False
+
         if bets is None :
             self.match_title = ''
             self.winner = ''
@@ -50,8 +41,6 @@ class Stavka :
             self.match_title = bets['match_title']
             self.winner = bets['winner']
             self.outcome_index = bets['outcome_index']
-        
-
 
     def change_summ(self, s : int) :
         self.summ = str(s)
@@ -71,13 +60,18 @@ class Coupon() :
                 self.bets.append(Stavka(bet))
 
     def __json_repr__(self) :
-        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets])])
+        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets]), ('dogon' , self.dogon)])
         
     def add_bet(self, bet) :
         self.bets.append(bet)
 
     def change_type(self, new_type) :
         self.type = new_type
+
+    def set_dogon(self) :
+        for b in self.bets :
+            if 'outcome_index' in b.keys() and b['outcome_index'].find('map') > 0 :
+                b['outcome_index'].dogon = True
 
 
 class LastGroupPost() :
@@ -289,15 +283,16 @@ def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
     if undetected_mode :
         opts = uc.ChromeOptions()
         if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + '/ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')
         opts.set_headless(headless=hdless)
         obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
     else :
         opts = webdriver.ChromeOptions()
         opts.set_headless(headless=hdless)
+        opts.add_argument("--remote-debugging-port=9222")
         if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + r'\ID_' + user_id)
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + '/ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')         
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
     obj.implicitly_wait(LOAD_TIMEOUT)
