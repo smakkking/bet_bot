@@ -3,7 +3,7 @@ NAME = 'CSgoVictory'
 
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
-from moduls import bet_manage
+import bet_manage
 import nltk
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates

@@ -1,7 +1,9 @@
 from django.forms import ModelForm
 from .models import StandartUser
 from django import forms
-from moduls.bet_manage import GROUP_OFFSET
+
+from global_constants import GROUP_OFFSET
+
 
 class SettingsForm(ModelForm) :
     class Meta :

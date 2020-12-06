@@ -1,12 +1,9 @@
 # здесь тестируем все модули по группам и букмекеркам
 
-import manage
-from moduls.bet_manage import Stavka, LastGroupPost, YandexAPI_detection
+from bet_manage import LastGroupPost, YandexAPI_detection
 
-from moduls.group_moduls import BETSPEDIA_group, ExpertMnenie_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
-from manage import ALL_POSTS_JSON_PATH
 import nltk, json
 
 

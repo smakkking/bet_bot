@@ -1,5 +1,5 @@
 import time
-from moduls import bet_manage
+import bet_manage
 import selenium
 
 BET_URL = 'https://new.parimatch.ru'

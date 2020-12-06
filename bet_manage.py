@@ -2,7 +2,6 @@
 import sqlite3, time
 from sqlite3 import Error
 import requests, urllib, base64, re
-from manage import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 
 # light selenium
 from selenium import webdriver
@@ -10,23 +9,11 @@ from selenium import webdriver
 # dark selenium
 import undetected_chromedriver as uc
 
-# bookmakers
-from moduls.bookmaker_moduls import BETSCSGO_betting
-
-# groups
-from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group, BETSPEDIA_group
-
-GROUP_OFFSET = {
-    ExpertMnenie_group.NAME : ExpertMnenie_group,
-    CSgoVictory_group.NAME : CSgoVictory_group,
-    BETSPEDIA_group.NAME : BETSPEDIA_group,
-}
-
-BOOKMAKER_OFFSET = {
-    BETSCSGO_betting.NAME : BETSCSGO_betting,
-}
+from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
+#from global_constants import GROUP_OFFSET
 
 LOAD_TIMEOUT = 10  # sec
+
 
 class Stavka :
     def __init__(self, bets=None, summ=0) :
@@ -49,7 +36,7 @@ class Stavka :
         return self.__dict__
 
 
-class Coupon() :
+class Coupon :
     def __init__(self, type_x='ordn', coup_data = None) :
         self.bets = []
         if (coup_data == None) :
@@ -60,7 +47,7 @@ class Coupon() :
                 self.bets.append(Stavka(bet))
 
     def __json_repr__(self) :
-        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets]), ('dogon' , self.dogon)])
+        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets])])
         
     def add_bet(self, bet) :
         self.bets.append(bet)
@@ -70,8 +57,8 @@ class Coupon() :
 
     def set_dogon(self) :
         for b in self.bets :
-            if 'outcome_index' in b.keys() and b['outcome_index'].find('map') > 0 :
-                b['outcome_index'].dogon = True
+            if b.outcome_index.find('map') > 0 :
+                b.dogon = True
 
 
 class LastGroupPost() :
@@ -154,6 +141,7 @@ class SQL_DB():
         return result
     
     def SQL_SELECT(self, select_cond : list, where_cond : str=None, groups_query=False) :
+        from global_constants import GROUP_OFFSET
         select_users = "SELECT"
         for arg in select_cond :
             select_users += ', ' + arg
@@ -266,24 +254,24 @@ class YandexAPI_detection() :
         return ' '.join(get_text_from_response(response.text))
 
 
-def get_html_with_browser(BROWSER, url, sec=0, cookies=None) :
+def get_html_with_browser(browser, url, sec=0, cookies=None) :
     if url != 'none' :
-        BROWSER.get(url)
+        browser.get(url)
     if cookies :
         for cok in cookies :
-            BROWSER.add_cookie({
+            browser.add_cookie({
                 'name' : cok[0],
                 'value' : cok[1],
             })
     time.sleep(sec)
 
-    return BROWSER.page_source
+    return browser.page_source
 
 def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
     if undetected_mode :
         opts = uc.ChromeOptions()
         if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + '/ID_' + user_id)
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')
         opts.set_headless(headless=hdless)
         obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
@@ -292,7 +280,7 @@ def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
         opts.set_headless(headless=hdless)
         opts.add_argument("--remote-debugging-port=9222")
         if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + '/ID_' + user_id)
+            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
         opts.add_argument('--profile-directory=Profile_1')         
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
     obj.implicitly_wait(LOAD_TIMEOUT)

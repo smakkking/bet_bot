@@ -1,29 +1,6 @@
 import os
 import sys
 
-# путь к папке bet_bot
-BET_PROJECT_ROOT    = '/home/andreysm/bet_bot'
-
-# путь к папке, где хранятся chrome данные(директории + профили)
-CHROME_DIR_PACKAGES = '/home/andreysm/chrome_dir'
-
-# путь к файлу с инфой о всех последних постах
-ALL_POSTS_JSON_PATH = BET_PROJECT_ROOT + '/web_part/user_data/group_post_data.json'
-
-# путь до chrome_driver
-CHROME_DRIVER_PATH  = BET_PROJECT_ROOT + '/chromedriver'
-
-#путь до базы данных
-DATABASE_PATH = BET_PROJECT_ROOT + '/web_part/db.sqlite3'
-
-# время ожидания по обновлению ссылок на матчи у бк с TAKES_THCES_LIVE=False
-MATCHES_UPDATE_TIMEh = 8
-
-# время ожидания по обновлению логинов
-LOGIN_UPDATE_TIMEh = 8
-
-sys.path.append(BET_PROJECT_ROOT)
-
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_part.settings')

@@ -1,10 +1,10 @@
-WALL_URL = 'https://vk.com/betspedia_csgo'
-NAME = 'BetsPedia'
-
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
-from moduls import bet_manage
+import bet_manage
 import nltk
+
+WALL_URL = 'https://vk.com/betspedia_csgo'
+NAME = 'BetsPedia'
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

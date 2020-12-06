@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from moduls.bet_manage import BOOKMAKER_OFFSET, GROUP_OFFSET
+from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET
 
 class StandartUser(AbstractUser):
     # поля по букмекерам

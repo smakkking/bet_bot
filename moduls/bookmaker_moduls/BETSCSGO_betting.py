@@ -1,8 +1,9 @@
-import re, time, json
-from moduls import bet_manage
-from manage import BET_PROJECT_ROOT, MATCHES_UPDATE_TIMEh
+import re
+import time
+import json
 
-from datetime import datetime, timedelta
+import bet_manage
+from global_constants import BET_PROJECT_ROOT, MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
 
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
@@ -12,7 +13,6 @@ TAKES_MATHES_LIVE = False
 
 # менять, когда меняешь сеть, см в куках
 CURRENT_CF_CLEARANCE = '1df0a716c47ea4a275b394288de60fa6a34e6095-1607113067-0-150'
-
 
 OFFSET_TABLE = {
     'Карта Победа' : 'map_winner',
@@ -127,7 +127,7 @@ def find_bet() :
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
-    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'r') as f :
+    with open(SERVER_DATA_PATH + NAME + '.json', 'r') as f :
         x = json.load(f)
         if 'last_update' in x.keys() and time.time() - x['last_update'] < MATCHES_UPDATE_TIMEh * 3600 :
             return None
@@ -146,7 +146,7 @@ def find_bet() :
 
             left_team   = a.find_element_by_class_name('bet-team_left ').find_element_by_class_name('bet-team__name')
             right_team  = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
-            #print(left_team, right_team)
+
             bbb.append({
                 'link'  : a.find_element_by_class_name('sys-matchlink').get_attribute('href'),
                 'team1' : bet_manage.reform_team_name(left_team.text.replace(left_team.find_element_by_tag_name('div').text, '')),
@@ -160,12 +160,13 @@ def find_bet() :
         'last_update' : time.time()
     }
 
-    with open(BET_PROJECT_ROOT + '/web_part/user_data/' + NAME + '.json', 'w') as f :
+    with open(SERVER_DATA_PATH + NAME + '.json', 'w') as f :
         json.dump(final, f, indent=4)
 
 
     browser.close()
     browser.quit()
+
 
 def make_bet(browser, stavka, match_url) :
     # делает ставку 
@@ -199,13 +200,15 @@ def make_bet(browser, stavka, match_url) :
     browser.find_element_by_xpath(xPath_bet).click()
     time.sleep(1)
 
+
 def init_config(chrome_dir_path=None) :
     # о структуре словаря см scan_database.py
-    if chrome_dir_path == None :
+    if chrome_dir_path is None :
         driver = bet_manage.create_webdriver()
     else :
         driver = bet_manage.create_webdriver(user_id=chrome_dir_path)
     return driver
+
 
 def login(chdp=None, bkm_login=None, bkm_password=None) :
     # аккаунт должен быть без steam_guard
@@ -215,7 +218,7 @@ def login(chdp=None, bkm_login=None, bkm_password=None) :
     # TODO exceptions and logging
 
     browser = init_config(chdp)
-    bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE),])
+    bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
     # по-другому на вход не пускает - с этим БУДУТ проблемы
     btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')

@@ -1,11 +1,11 @@
+from moduls.bookmaker_moduls import BETSCSGO_betting
+
+import bet_manage
+import nltk
+
 WALL_URL = 'https://vk.com/csgo_expert_dota'
 NAME = 'ExpertMnenie'
 
-from moduls.bookmaker_moduls import BETSCSGO_betting
-
-from moduls import bet_manage
-import nltk
-  
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 
 # here may be other specific templates, so add them to BET_TEMPLATES

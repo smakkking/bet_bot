@@ -1,16 +1,12 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
 from django import views, forms
-from django.middleware.csrf import get_token
-from django.contrib.auth import authenticate
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import SettingsForm, MenuForm, RegistrationForm, SubscribeForm
-from .models import StandartUser
-from moduls.bet_manage import BOOKMAKER_OFFSET
+from global_constants import BOOKMAKER_OFFSET
 
-import json, sys, time
+import time
 from datetime import datetime, timedelta
 
 
@@ -76,6 +72,7 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
                     bkm_login=request.user.bookmaker_login,
                     bkm_password=request.user.bookmaker_password
                 )
+                request.user.bookmaker_last_login = now
         else :
             return self.get(request)
         return redirect('menu')
