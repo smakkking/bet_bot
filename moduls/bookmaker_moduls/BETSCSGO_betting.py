@@ -3,13 +3,13 @@ import time
 import json
 
 import bet_manage
-from global_constants import BET_PROJECT_ROOT, MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
+from global_constants import MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
 
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
-TAKES_MATHES_LIVE = False
+TAKES_MATCHES_LIVE = False
 
 # менять, когда меняешь сеть, см в куках
 CURRENT_CF_CLEARANCE = '1df0a716c47ea4a275b394288de60fa6a34e6095-1607113067-0-150'
@@ -110,7 +110,7 @@ def parse2(photo_url : str, words : list) :
     if (side == 'left') :
         res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
-        res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
+        res.winner = res.match_title[res.match_title.find('vs') + 3 :]
     res.outcome_index = OFFSET_TABLE['Победа в матче']
 
     return res
@@ -127,7 +127,7 @@ def find_bet() :
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
-    with open(SERVER_DATA_PATH + NAME + '.json', 'r') as f :
+    with open(SERVER_DATA_PATH + NAME + '.json', 'r', encoding="utf-8") as f :
         x = json.load(f)
         if 'last_update' in x.keys() and time.time() - x['last_update'] < MATCHES_UPDATE_TIMEh * 3600 :
             return None
@@ -160,7 +160,7 @@ def find_bet() :
         'last_update' : time.time()
     }
 
-    with open(SERVER_DATA_PATH + NAME + '.json', 'w') as f :
+    with open(SERVER_DATA_PATH + NAME + '.json', 'w', encoding="utf-8") as f :
         json.dump(final, f, indent=4)
 
 
@@ -176,27 +176,34 @@ def make_bet(browser, stavka, match_url) :
 
     bet_manage.get_html_with_browser(browser, match_url, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    xPath_summinput = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/div/div/div[2]/div/input'
-    xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
-
     # подумать над более эффективной обработке
-    if stavka.outcome_index == OFFSET_TABLE['Победа в матче'] :
-        win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
-        if bet_manage.reform_team_name(win_btns[0].text).find(stavka.winner) >= 0 :
-            win_btns[0].click()
-        elif bet_manage.reform_team_name(win_btns[1].text).find(stavka.winner) >= 0 :
-            win_btns[0].click()
-    elif stavka.outcome_index is tuple and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
+    if stavka.outcome_index is tuple and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = int(stavka.outcome_index[1])
         if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
             win_btns[2 * (map_number - 1)].click()
         elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka.winner) >= 0:
             win_btns[1 + 2 * (map_number - 1)].click()
+    elif stavka.outcome_index == OFFSET_TABLE['Победа в матче'] :
+        win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
+        if bet_manage.reform_team_name(win_btns[0].text).find(stavka.winner) >= 0 :
+            win_btns[0].click()
+        elif bet_manage.reform_team_name(win_btns[1].text).find(stavka.winner) >= 0 :
+            win_btns[0].click()
     time.sleep(1) # подумать над временем ожидания
-    
-    browser.find_element_by_xpath(xPath_summinput).send_keys(stavka.summ)
+
+    xPath_summinput = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/div/div/div[2]/div/input'
+    xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
+
+    # не протестировано
+    curr_summ = browser.find_element_by_xpath(xPath_summinput).text
+    if curr_summ == '' :
+        browser.find_element_by_xpath(xPath_summinput).send_keys(stavka.summ)
+    else :
+        new_summ = int(curr_summ) + int(stavka.summ)
+        browser.find_element_by_xpath(xPath_summinput).send_keys(str(new_summ))
     time.sleep(1) # подумать над временем ожидания
+
     browser.find_element_by_xpath(xPath_bet).click()
     time.sleep(1)
 
