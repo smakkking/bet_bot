@@ -54,7 +54,7 @@ if __name__ == "__main__" :
     relogin_live.main(logging.getLogger("relogin_live"))
 
     # выполняются постоянно
-    load_last_data.main(logging.getLogger("load_last_data"))
+    #load_last_data.main(logging.getLogger("load_last_data"))
     client_data = scan_database.main()
     all_bet.main(client_data, logging.getLogger("all_bet"))
 

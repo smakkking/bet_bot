@@ -1,9 +1,7 @@
 import re
 import time
-import json
 
 import bet_manage
-from global_constants import MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
 
 import selenium.common.exceptions as selen_exc
 
@@ -127,11 +125,6 @@ def find_bet() :
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
 
-    with open(SERVER_DATA_PATH + NAME + '.json', 'r', encoding="utf-8") as f :
-        x = json.load(f)
-        if 'last_update' in x.keys() and time.time() - x['last_update'] < MATCHES_UPDATE_TIMEh * 3600 :
-            return None
-
     browser = init_config()
     # тест
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
@@ -155,17 +148,10 @@ def find_bet() :
     except Exception as e:
         print(f'unpredictable error {e}... STOP!')
 
-    final = {
-        'events' : bbb,
-        'last_update' : time.time()
-    }
-
-    with open(SERVER_DATA_PATH + NAME + '.json', 'w', encoding="utf-8") as f :
-        json.dump(final, f, indent=4)
-
-
     browser.close()
     browser.quit()
+
+    return bbb
 
 # betting process
 

@@ -24,6 +24,7 @@ def find_all_links(DATA, key_g) :
                     else :
                         with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '.json', 'r', encoding="utf-8") as f :
                             dat = json.load(f)
+                            dat = dat['events']
                         for x in dat :
                             # совпадает ли название матча
                             if stavka['match_title'].find(x['team1']) >= 0 and stavka['match_title'].find(x['team2']) >= 0 :
