@@ -155,12 +155,12 @@ def find_bet() :
 
 # betting process
 
-def make_bet(browser, stavka, match_url) :
+def make_bet(browser, stavka, summ) :
     # TODO exceptions and logging
 
-    bet_manage.get_html_with_browser(browser, match_url, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
+    bet_manage.get_html_with_browser(browser, stavka.get_bk_link(NAME), sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    if stavka.outcome_index is tuple and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
+    if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = int(stavka.outcome_index[1])
         if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
@@ -180,11 +180,14 @@ def make_bet(browser, stavka, match_url) :
     xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
 
     # не протестировано
-    curr_summ = browser.find_element_by_xpath(xPath_summinput).text
-    if curr_summ == '' :
-        browser.find_element_by_xpath(xPath_summinput).send_keys(stavka.summ)
+    summinput_Webelement = browser.find_element_by_xpath(xPath_summinput)
+
+    curr_summ = summinput_Webelement.get_attribute('value')
+    if type(curr_summ) is str and curr_summ == '' :
+        summinput_Webelement.send_keys(summ)
     else :
-        new_summ = int(curr_summ) + int(stavka.summ)
+        new_summ = int(curr_summ) + int(summ)
+        summinput_Webelement.clear()
         browser.find_element_by_xpath(xPath_summinput).send_keys(str(new_summ))
     time.sleep(1) # подумать над временем ожидания
 

@@ -12,13 +12,13 @@ import undetected_chromedriver as uc
 from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 #from global_constants import GROUP_OFFSET
 
-LOAD_TIMEOUT = 10  # sec
+LOAD_TIMEOUT = 15  # sec
 
 
 class Stavka :
-    def __init__(self, bets=None, summ=0) :
-        self.summ = summ
+    def __init__(self, bets=None) :
         self.dogon = False
+        self.bk_links = {}
 
         if bets is None :
             self.match_title = ''
@@ -28,12 +28,22 @@ class Stavka :
             self.match_title = bets['match_title']
             self.winner = bets['winner']
             self.outcome_index = bets['outcome_index']
+            if 'bk_links' in bets.keys() :
+                self.bk_links = bets['bk_links']
+
 
     def change_summ(self, s : int) :
         self.summ = str(s)
 
     def __json_repr__(self) :
         return self.__dict__
+
+    def get_bk_link(self, bk_name):
+        return self.bk_links[bk_name]
+
+    def set_bk_link(self, bk_name, url):
+        self.bk_links[bk_name] = url
+
 
 
 class Coupon :

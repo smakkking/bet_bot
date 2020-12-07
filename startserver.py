@@ -50,8 +50,8 @@ if __name__ == "__main__" :
     config.dictConfig(dictLogConfig)
 
     # выполнятются редко
-    find_matches_live.main(logging.getLogger("find_matches_live"))
-    relogin_live.main(logging.getLogger("relogin_live"))
+    #find_matches_live.main(logging.getLogger("find_matches_live"))
+    #relogin_live.main(logging.getLogger("relogin_live"))
 
     # выполняются постоянно
     #load_last_data.main(logging.getLogger("load_last_data"))

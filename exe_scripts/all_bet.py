@@ -9,26 +9,32 @@ from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET
 
 
 def find_all_links(DATA, key_g) :
+    # TODO превращает все словари в объекты ставок
     group = DATA[key_g]
     if group['parse_bet'] :
         if group['coupon']['type'] == 'ordn' :
+            new_list = []
             for stavka in group['coupon']['bets'] :
                 for key in BOOKMAKER_OFFSET.keys() :
+                    new_bet = Stavka(bets=stavka)
                     if BOOKMAKER_OFFSET[key].HAS_API :
                         pass
                     elif BOOKMAKER_OFFSET[key].TAKES_MATCHES_LIVE :
-                        browser = BOOKMAKER_OFFSET[key].init_config()
-                        stavka[key] = BOOKMAKER_OFFSET[key].find_bet(browser, Stavka(bets=stavka))
-                        browser.close()
-                        browser.quit()
+                        # из словаря получается объект ставки
+                        # должна вызываться функция find_bet
+                        # подразумеваем, что в этой функции в экземпляр класса Stakva() устанавливается ссылка на матч
+                        # очень возможно, что лучше перенести создание браузера в find_bet
+                        pass
                     else :
                         with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '.json', 'r', encoding="utf-8") as f :
                             dat = json.load(f)
                             dat = dat['events']
                         for x in dat :
                             # совпадает ли название матча
-                            if stavka['match_title'].find(x['team1']) >= 0 and stavka['match_title'].find(x['team2']) >= 0 :
-                                stavka[key] = x['link']
+                            if new_bet.match_title.find(x['team1']) >= 0 and new_bet.match_title.find(x['team2']) >= 0 :
+                                new_bet.set_bk_link(key, x['link'])
+                new_list.append(new_bet)
+            group['coupon']['bets'] = new_list
         else :
             # не умеет работать с системой ставок(когда одновременно)
             pass
@@ -36,6 +42,7 @@ def find_all_links(DATA, key_g) :
 
 
 def bbet_all(DATA, client) :
+    # уже подразумеваем, что в словарях лежат объекты ставок
     for group in client['groups'] :
         if DATA[group]['parse_bet'] :
             if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
@@ -43,9 +50,7 @@ def bbet_all(DATA, client) :
             else :
                 browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client['chrome_dir_path'])
                 for stavka in DATA[group]['coupon']['bets'] :
-                    # вопрос - нужно ли здесь инициализировать экземпляр класса Stavka?
-                    # и дальше работать с ним, а не со словарем
-                    BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, Stavka(bets=stavka, summ=client['bet_summ']), stavka[client['bookmaker']])
+                    BOOKMAKER_OFFSET[client['bookmaker']].make_bet(browser, stavka, summ=client['bet_summ'])
                 browser.close()
                 browser.quit()
 
