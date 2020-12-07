@@ -7,9 +7,9 @@ from global_constants import LOGIN_UPDATE_TIMEh, BOOKMAKER_OFFSET
 from bet_manage import SQL_DB
 
 
-def main(debug=False) :
+def main(main_logger=None) :
 
-    if debug :
+    if main_logger :
         now = time.time()
 
     q = SQL_DB()
@@ -25,11 +25,11 @@ def main(debug=False) :
     for x in t :
         if (x['bookmaker_last_login'] is None) or \
                 datetime.now() - dateutil.parser.parse(x['bookmaker_last_login']) > timedelta(hours=LOGIN_UPDATE_TIMEh) :
-            BOOKMAKER_OFFSET[x['bookmaker']].login(
-                chdp=x['chrome_dir_path'],
-                bkm_login=x['bookmaker_login'],
-                bkm_password=x['bookmaker_password']
-            )
+            #BOOKMAKER_OFFSET[x['bookmaker']].login(
+            #    chdp=x['chrome_dir_path'],
+            #    bkm_login=x['bookmaker_login'],
+            #    bkm_password=x['bookmaker_password']
+            #)
             update_db.append(str(x['id']))
 
     update_str = ''
@@ -37,7 +37,10 @@ def main(debug=False) :
         update_str += ' and id=' + x
     update_str = update_str.replace('and', '', 1)
 
-    q.SQL_UPDATE(set_cond="bookmaker_last_login=datetime(" + str(int(time.time())) + ", 'unixepoch')", where_cond=update_str)
+    q.SQL_UPDATE(set_cond="bookmaker_last_login=datetime('now')", where_cond=update_str)
 
-    if debug :
-        print('{0:.2f} spent on relogin users'.format(time.time() - now))
+    if main_logger :
+        main_logger.info('{0:.2f} spent on relogin users'.format(time.time() - now))
+
+if __name__ == "__main__" :
+    main()

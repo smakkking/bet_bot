@@ -49,9 +49,9 @@ def bbet_all(DATA, client) :
                 browser.quit()
 
 
-def main(clients_DATA : dict, debug=False) :
+def main(clients_DATA : dict, main_logger=None) :
 
-    if debug :
+    if main_logger :
         now = time.time()
 
     DATA = {}
@@ -65,11 +65,12 @@ def main(clients_DATA : dict, debug=False) :
 
     # здесь :
     # для каждого клиента происходит процесс ставки
-    with Pool(processes=len(clients_DATA)) as pool : 
-        pool.map(functools.partial(bbet_all, DATA), clients_DATA)   
+    if clients_DATA != [] :
+        with Pool(processes=len(clients_DATA)) as pool :
+            pool.map(functools.partial(bbet_all, DATA), clients_DATA)
 
-    if debug :
-        print('{0:.2f} spent on bet process'.format(time.time() - now))
+    if main_logger :
+        main_logger.info('{0:.2f} spent on bet process'.format(time.time() - now))
 
     
     

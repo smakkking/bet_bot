@@ -94,25 +94,31 @@ class LastGroupPost() :
     def get(self, offset=0, count=2) :
         base_url = 'https://api.vk.com/method/wall.get'
 
-        resp = requests.get(base_url, params={
-            'access_token' : LastGroupPost.token,
-            'v' : LastGroupPost.ver,
-            'domain' : self.wall_domain,
-            'count' : count,
-            'offset' : offset,
-        })
+        try :
+            resp = requests.get(base_url, params={
+                'access_token' : LastGroupPost.token,
+                'v' : LastGroupPost.ver,
+                'domain' : self.wall_domain,
+                'count' : count,
+                'offset' : offset,
+            })
+            posts = resp.json()['response']['items']
+        except :
+            assert False, "error in requesting group wall"
 
-        posts = resp.json()['response']['items']
         if count == 2 :
-            if 'is_pinned' in posts[0].keys() and posts[0]['is_pinned'] :
-                p = posts[1]
-            else :
-                p = posts[0]
-            self.text = p['text']
-            if 'attachments' in p.keys() :
-                for at in p['attachments'] :
-                    if at['type'] == 'photo' :
-                        self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
+            try :
+                if 'is_pinned' in posts[0].keys() and posts[0]['is_pinned'] :
+                    p = posts[1]
+                else :
+                    p = posts[0]
+                self.text = p['text']
+                if 'attachments' in p.keys() :
+                    for at in p['attachments'] :
+                        if at['type'] == 'photo' :
+                            self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
+            except :
+                assert False, "error in vk_api"
         else : 
             # для большого числа постов сохраяются только фото         
             for p in posts :
@@ -175,7 +181,7 @@ class SQL_DB():
 
         return result
 
-    def SQL_UPDATE(self, set_cond : str, where_cond : str) :
+    def SQL_UPDATE(self, set_cond: str, where_cond: str) :
 
         if where_cond == '' or set_cond == '' :
             return
@@ -183,7 +189,7 @@ class SQL_DB():
         query = "UPDATE " + SQL_DB.MODEL_NAME + '\n'
         query += "SET " + set_cond + '\n'
         query += "WHERE " + where_cond.replace('and', 'AND').replace('or', 'OR')
-        
+
         self.execute_query(query)
 
     def __del__(self) :
@@ -209,6 +215,7 @@ class YandexAPI_detection() :
 
         if debug :
             print(f'token collected in {time.time() - now : .2f} sec')       
+
         cls.iam_token = response.json()['iamToken']
     
     def __init__(self, photo_url, iam_token=None) :
@@ -251,6 +258,7 @@ class YandexAPI_detection() :
 
         if debug :
             print(f'text detected in {time.time() - now : .2f} sec')
+
         return ' '.join(get_text_from_response(response.text))
 
 

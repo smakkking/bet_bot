@@ -5,6 +5,8 @@ import json
 import bet_manage
 from global_constants import MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
 
+import selenium.common.exceptions as selen_exc
+
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
@@ -120,8 +122,6 @@ PHOTO_PARSING_TEMPLATES = [
     (template2, parse2),
 ]
 
-# betting process
-
 def find_bet() :
     # TODO exceptions and logging
 
@@ -167,16 +167,13 @@ def find_bet() :
     browser.close()
     browser.quit()
 
+# betting process
 
 def make_bet(browser, stavka, match_url) :
-    # делает ставку 
-    # stavka <--> экземпляр класса Stavka
-
     # TODO exceptions and logging
 
     bet_manage.get_html_with_browser(browser, match_url, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    # подумать над более эффективной обработке
     if stavka.outcome_index is tuple and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = int(stavka.outcome_index[1])
@@ -190,6 +187,7 @@ def make_bet(browser, stavka, match_url) :
             win_btns[0].click()
         elif bet_manage.reform_team_name(win_btns[1].text).find(stavka.winner) >= 0 :
             win_btns[0].click()
+
     time.sleep(1) # подумать над временем ожидания
 
     xPath_summinput = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/div/div/div[2]/div/input'
@@ -205,6 +203,7 @@ def make_bet(browser, stavka, match_url) :
     time.sleep(1) # подумать над временем ожидания
 
     browser.find_element_by_xpath(xPath_bet).click()
+
     time.sleep(1)
 
 
@@ -227,19 +226,21 @@ def login(chdp=None, bkm_login=None, bkm_password=None) :
     browser = init_config(chdp)
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    # по-другому на вход не пускает - с этим БУДУТ проблемы
-    btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
-    btn.click()
+    try :
+        btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
+        btn.click()
 
-    login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
-    pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
-    
-    login_form.send_keys(bkm_login)
-    pass_form.send_keys(bkm_password)
+        login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
+        pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
 
-    browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
+        login_form.send_keys(bkm_login)
+        pass_form.send_keys(bkm_password)
 
-    time.sleep(5)
-    
-    browser.close()
-    browser.quit()
+        browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
+
+        time.sleep(5)
+    except :
+        pass
+    finally :
+        browser.close()
+        browser.quit()

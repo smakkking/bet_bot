@@ -22,8 +22,10 @@
                 <input type="radio" name="week", value="12"> 3 месяца </div>
             </p>
             
-            <input type="submit" value="Оформить подписку">
+            <input type="submit" value="Оформить подписку" onclick="(document.getElementById('sub_load').style.display='block')">
         </form>
+
+        <div id="sub_load" hidden="true" style="display: none">Идет регистрация. Ждите.</div>
 
         <script>
             $(document).ready(function(){
@@ -35,7 +37,6 @@
                     // сюда добавлять дополнительное отображение при выборе из bookmaker
                     
                 });
-            
             });
         </script>
         

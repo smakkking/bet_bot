@@ -1,5 +1,5 @@
-# путь к папке bet_bot
-BET_PROJECT_ROOT = '/home/andreysm/bet_bot'
+# путь к каталогу bet_bot
+BET_PROJECT_ROOT = '/home/andreysm/bet_bot/'
 
 # путь к каталогу, где хранятся chrome данные
 CHROME_DIR_PACKAGES = BET_PROJECT_ROOT + '/chrome_dir/'
@@ -17,7 +17,7 @@ CHROME_DRIVER_PATH = BET_PROJECT_ROOT + '/chromedriver'
 DATABASE_PATH = BET_PROJECT_ROOT + '/web_part/db.sqlite3'
 
 # время ожидания по обновлению ссылок на матчи у бк с TAKES_MATCHES_LIVE=False
-MATCHES_UPDATE_TIMEh = 8
+MATCHES_UPDATE_TIMEh = 36
 
 # время ожидания по обновлению логинов
 LOGIN_UPDATE_TIMEh = 8

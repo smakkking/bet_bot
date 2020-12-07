@@ -2,10 +2,12 @@ import json
 import nltk
 import functools
 import time
+import logging
+from logging import config
 from multiprocessing import Pool
 
 import bet_manage
-from global_constants import ALL_POSTS_JSON_PATH, GROUP_OFFSET
+from global_constants import ALL_POSTS_JSON_PATH, GROUP_OFFSET, BET_PROJECT_ROOT
 from bet_manage import YandexAPI_detection
 
 
@@ -17,28 +19,42 @@ def load_last_data(OLD_DATA, token, group_off) :
             post.parse_bet = False
         else :
             GROUP_OFFSET[group_off].check_templates(post, token)
-    except:
+    except Exception as e:
         post.parse_bet = False
+        logger = logging.getLogger(GROUP_OFFSET[group_off].NAME)
+        logger.error(f'loading failed because of {e}')
     return (group_off, post.__json_repr__())
 
 
-def check_templates(group_module, post, token) :
-    for photo_url in post.photo_list :
-        obj = YandexAPI_detection(photo_url, token)
-        text = obj.text_detection()
-        for (tmp, parse) in group_module.BET_TEMPLATES :
-            if tmp(text.upper()) :
-                st = parse(photo_url, nltk.word_tokenize(text))
-                post.coupon.add_bet(st)
-    if post.find_dogon():
-        post.dogon = True
-    if post.coupon.bets == [] :
-        post.parse_bet = False
+def main(main_logger=None) :
+    # create logger
 
+    dictLogConfig = {
+        "version":1,
+        "handlers":{
+            "fileHandler":{
+                "class":"logging.FileHandler",
+                "formatter":"myFormatter",
+                "filename": BET_PROJECT_ROOT + "moduls/group_moduls/groups.log",
+            }
+        },
+        "loggers":{},
+        "formatters":{
+            "myFormatter":{
+                "format":"%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            }
+        }
+    }
 
-def main(debug=False) :
-    # TODO проблемы с кодировкой
-    if debug :
+    for k in GROUP_OFFSET.keys() :
+        dictLogConfig['loggers'][k] = {
+            "handlers": ["fileHandler"],
+            "level": "INFO",
+        }
+
+    config.dictConfig(dictLogConfig)
+
+    if main_logger :
         now = time.time()
 
     YandexAPI_detection.create_new_token()
@@ -52,8 +68,9 @@ def main(debug=False) :
     with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
         json.dump(new_data, last_posts_json, indent=4)
 
-    if debug :
-        print('{0:.2f} spent on load data from group'.format(time.time() - now))
+    if main_logger :
+        main_logger.info('{0:.2f} spent on load data from group'.format(time.time() - now))
+
 
 if __name__ == "__main__":
     main()
