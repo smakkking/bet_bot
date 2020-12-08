@@ -163,10 +163,13 @@ def make_bet(browser, stavka, summ) :
     if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = stavka.outcome_index[1]
-        if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
-            win_btns[2 * (map_number - 1)].click()
-        elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka.winner) >= 0:
-            win_btns[1 + 2 * (map_number - 1)].click()
+        try :
+            if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
+                win_btns[2 * (map_number - 1)].click()
+            elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka.winner) >= 0:
+                win_btns[1 + 2 * (map_number - 1)].click()
+        except IndexError:
+            return False
     elif stavka.outcome_index == OFFSET_TABLE['Победа в матче'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="sys-container"]/div[2]/div/div/button')
         if bet_manage.reform_team_name(win_btns[0].text).find(stavka.winner) >= 0 :
@@ -194,6 +197,7 @@ def make_bet(browser, stavka, summ) :
     browser.find_element_by_xpath(xPath_bet).click()
 
     time.sleep(1)
+    return True
 
 
 def init_config(chrome_dir_path=None) :
