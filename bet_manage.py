@@ -45,7 +45,6 @@ class Stavka :
         self.bk_links[bk_name] = url
 
 
-
 class Coupon :
     def __init__(self, type_x='ordn', coup_data = None) :
         self.bets = []
@@ -71,7 +70,7 @@ class Coupon :
                 b.dogon = True
 
 
-class LastGroupPost() :
+class LastGroupPost:
 
     token = 'b43bde71b43bde71b43bde7135b44ed5a0bb43bb43bde71eb83d753b1a8f54e925ecaec'
     ver = 5.92

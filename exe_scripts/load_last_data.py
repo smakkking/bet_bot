@@ -52,7 +52,7 @@ def main(main_logger=None) :
             "level": "INFO",
         }
 
-    config.dictConfig(dictLogConfig)
+    #config.dictConfig(dictLogConfig)
 
     if main_logger :
         now = time.time()

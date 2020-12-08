@@ -19,9 +19,17 @@ def check_templates(post, token) :
             if tmp(text.upper()) :
                 st = parse(photo_url, nltk.word_tokenize(text))
                 post.coupon.add_bet(st)
-
-    # TODO переделать с такой же функцией только у модуля группы
-    if post.find_dogon():
-        post.dogon = True
+    dogon(post)
     if post.coupon.bets == [] :
         post.parse_bet = False
+
+
+def dogon(post) :
+    patterns = [
+        'ДОГОН',
+    ]
+    target = post.text.upper()
+    for x in patterns :
+        if target.find(x) >= 0 :
+            post.coupon.set_dogon()
+            break

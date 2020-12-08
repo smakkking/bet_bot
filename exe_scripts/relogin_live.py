@@ -34,8 +34,8 @@ def main(main_logger=None) :
 
     update_str = ''
     for x in update_db :
-        update_str += ' and id=' + x
-    update_str = update_str.replace('and', '', 1)
+        update_str += ' or id=' + x
+    update_str = update_str.replace('or', '', 1)
 
     q.SQL_UPDATE(set_cond="bookmaker_last_login=datetime('now')", where_cond=update_str)
 

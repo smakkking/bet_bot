@@ -80,7 +80,7 @@ def parse1(photo_url : str, words : list) :
         res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
         res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
-    res.outcome_index = (OFFSET_TABLE['Карта Победа'], words[words.index('#') + 1])
+    res.outcome_index = (OFFSET_TABLE['Карта Победа'], int(words[words.index('#') + 1]))
 
     return res
 
@@ -162,7 +162,7 @@ def make_bet(browser, stavka, summ) :
 
     if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
-        map_number = int(stavka.outcome_index[1])
+        map_number = stavka.outcome_index[1]
         if bet_manage.reform_team_name(win_btns[2 * (map_number - 1)].text).find(stavka.winner) >= 0 :
             win_btns[2 * (map_number - 1)].click()
         elif bet_manage.reform_team_name(win_btns[1 + 2 * (map_number - 1)].text).find(stavka.winner) >= 0:

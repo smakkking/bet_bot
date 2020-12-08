@@ -9,7 +9,7 @@ from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET
 
 
 def find_all_links(DATA, key_g) :
-    # TODO превращает все словари в объекты ставок
+
     group = DATA[key_g]
     if group['parse_bet'] :
         if group['coupon']['type'] == 'ordn' :
