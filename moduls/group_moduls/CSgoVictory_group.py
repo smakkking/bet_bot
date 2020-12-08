@@ -12,6 +12,7 @@ BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers te
 # like BET_TEMPLATES += [(template, parse)]
 
 def check_templates(post, token) :
+    # есть другие варианты шаблонов, которых у меня пока нет(две ставки на одной картинке)
     for photo_url in post.photo_list :
         obj = bet_manage.YandexAPI_detection(photo_url, token)
         text = obj.text_detection()

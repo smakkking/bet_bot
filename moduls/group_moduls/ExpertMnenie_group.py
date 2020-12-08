@@ -21,8 +21,6 @@ def check_templates(post, token) :
                 st = parse(photo_url, nltk.word_tokenize(text))
                 post.coupon.add_bet(st)
     dogon(post)
-    if post.coupon.bets == [] :
-        post.parse_bet = False
 
 
 def dogon(post) :
