@@ -1,10 +1,12 @@
-WALL_URL = 'https://vk.com/victorybets_stavki'
-NAME = 'CSgoVictory'
+import bet_manage
+import nltk
 
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
-import bet_manage
-import nltk
+WALL_URL = 'https://vk.com/victorybets_stavki'
+NAME = 'CSgoVictory'
+DOGON_AGGREGATOR = BETSCSGO_betting.NAME
+
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

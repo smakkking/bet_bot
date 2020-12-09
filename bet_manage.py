@@ -12,22 +12,24 @@ import undetected_chromedriver as uc
 from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 #from global_constants import GROUP_OFFSET
 
-LOAD_TIMEOUT = 15  # sec
+LOAD_TIMEOUT = 2  # sec
 
 
 class Stavka :
     def __init__(self, bets=None) :
-        self.dogon = False
+
         self.bk_links = {}
 
         if bets is None :
             self.match_title = ''
             self.winner = ''
             self.outcome_index = ''
+            self.dogon = False
         else :
             self.match_title = bets['match_title']
             self.winner = bets['winner']
             self.outcome_index = bets['outcome_index']
+            self.dogon = bets['dogon']
             if 'bk_links' in bets.keys() :
                 self.bk_links = bets['bk_links']
 
@@ -46,20 +48,29 @@ class Stavka :
 
 
 class Coupon :
-    def __init__(self, type_x='ordn', coup_data = None) :
+    def __init__(self, type_x='ordn', coup_data: dict=None) :
         self.bets = []
-        if (coup_data == None) :
-            self.type = type_x
-        else :
+        self.dogon = []
+        self.type = type_x
+        if coup_data :
             self.type = coup_data['type']
             for bet in coup_data['bets'] :
-                self.bets.append(Stavka(bet))
+                self.add_bet(Stavka(bet))
+            for bet in coup_data['dogon'] :
+                self.dogon.append(Stavka(bet))
 
     def __json_repr__(self) :
-        return dict([('type', self.type), ('bets', [b.__json_repr__() for b in self.bets])])
+        return dict([
+            ('type', self.type),
+            ('bets', [b.__json_repr__() for b in self.bets]),
+            ('dogon', [b.__json_repr__() for b in self.dogon])
+        ])
         
-    def add_bet(self, bet) :
-        self.bets.append(bet)
+    def add_bet(self, bet, to_dogon=False) :
+        if to_dogon :
+            self.dogon.append(bet)
+        else :
+            self.bets.append(bet)
 
     def change_type(self, new_type) :
         self.type = new_type
@@ -75,12 +86,13 @@ class LastGroupPost:
     token = 'b43bde71b43bde71b43bde7135b44ed5a0bb43bb43bde71eb83d753b1a8f54e925ecaec'
     ver = 5.92
 
-    def __init__(self, wall_url : str) :
+    def __init__(self, wall_url : str, old=None) :
         self.text = ''
         self.photo_list = []
         self.parse_bet = True
-        self.coupon = Coupon()
+        self.coupon = Coupon(coup_data=old)
         self.wall_domain = wall_url[wall_url.rfind('/') + 1 : ]
+
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
@@ -97,10 +109,19 @@ class LastGroupPost:
             ('coupon', self.coupon.__json_repr__()),
         ])
 
+    def __dict__(self):
+        return dict([
+            ('text', self.text),
+            ('photo_list', self.photo_list),
+            ('parse_bet', self.parse_bet),
+            ('coupon', self.coupon),
+        ])
+
     def __str__(self) :
         return str(self.__dict__)
         
     def get(self, offset=0, count=2) :
+        # заполняет поля photo_list и text
         base_url = 'https://api.vk.com/method/wall.get'
 
         try :

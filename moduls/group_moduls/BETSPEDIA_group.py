@@ -5,6 +5,7 @@ import nltk
 
 WALL_URL = 'https://vk.com/betspedia_csgo'
 NAME = 'BetsPedia'
+DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

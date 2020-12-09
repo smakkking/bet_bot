@@ -7,7 +7,7 @@ from dateutil import parser
 from global_constants import BOOKMAKER_OFFSET, MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
 
 def main(main_logger=None) :
-
+    # TODO переделать на параллельный поиск
     if main_logger :
         now = time.time()
 
@@ -21,7 +21,7 @@ def main(main_logger=None) :
             else :
                 final = {
                     'events' : v.find_bet(),
-                    'last_update' : datetime.now().isoformat("|", "hours"),
+                    'last_update' : datetime.now().isoformat("|"),
                 }
                 with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
                     json.dump(final, f, indent=4)

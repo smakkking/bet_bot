@@ -12,10 +12,10 @@ HAS_API = False
 TAKES_MATCHES_LIVE = False
 
 # менять, когда меняешь сеть, см в куках
-CURRENT_CF_CLEARANCE = '1df0a716c47ea4a275b394288de60fa6a34e6095-1607113067-0-150'
+CURRENT_CF_CLEARANCE = 'e62d65eba5dd4522ea4a6ff7b971407817192467-1607544735-0-150'
 
 OFFSET_TABLE = {
-    'Карта Победа' : 'map_winner',
+    'Победа на карте' : 'map_winner',
     'Победа в матче' : 'game_winner',
 }
 
@@ -80,7 +80,7 @@ def parse1(photo_url : str, words : list) :
         res.winner = res.match_title[: res.match_title.find('vs') - 1]
     elif (side == 'right') :
         res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
-    res.outcome_index = (OFFSET_TABLE['Карта Победа'], int(words[words.index('#') + 1]))
+    res.outcome_index = (OFFSET_TABLE['Победа на карте'], int(words[words.index('#') + 1]))
 
     return res
 
@@ -114,7 +114,8 @@ def parse2(photo_url : str, words : list) :
     res.outcome_index = OFFSET_TABLE['Победа в матче']
 
     return res
-    
+
+
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
     (template2, parse2),
@@ -155,12 +156,21 @@ def find_bet() :
 
 # betting process
 
-def make_bet(browser, stavka, summ) :
+def make_bet(browser, stavka, summ, first_time=False) :
     # TODO exceptions and logging
+    if first_time :
+        bet_manage.get_html_with_browser(
+            browser,
+            stavka.get_bk_link(NAME),
+            sec=5,
+            cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ]
+        )
+    else:
+        bet_manage.get_html_with_browser(browser, stavka.get_bk_link(NAME))
 
-    bet_manage.get_html_with_browser(browser, stavka.get_bk_link(NAME), sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Карта Победа'] :
+
+    if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Победа на карте'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = stavka.outcome_index[1]
         try :
@@ -183,7 +193,11 @@ def make_bet(browser, stavka, summ) :
     xPath_bet = '/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[3]/div[3]/div/button'
 
     # не протестировано
-    summinput_Webelement = browser.find_element_by_xpath(xPath_summinput)
+    # TODO обработать случай, когда ставка недоступна(не ищет summinput_Webelement)
+    try :
+        summinput_Webelement = browser.find_element_by_xpath(xPath_summinput)
+    except :
+        return False
 
     curr_summ = summinput_Webelement.get_attribute('value')
     if type(curr_summ) is str and curr_summ == '' :
@@ -237,3 +251,38 @@ def login(chdp=None, bkm_login=None, bkm_password=None) :
     finally :
         browser.close()
         browser.quit()
+
+
+def dogon_check(stavka) :
+    browser = init_config()
+
+    bet_manage.get_html_with_browser(browser, stavka.bk_links[NAME], sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE)])
+
+    alloutcomes_xPath = '//*[@id="bm-additionals"]/div[' + str(stavka.outcome_index[1] + 1) + ']/div[2]/div'
+    outcomes = browser.find_elements_by_xpath(alloutcomes_xPath)
+
+    for out in outcomes :
+        if out.get_attribute('class').find('has-score') >= 0:
+            event = OFFSET_TABLE['Победа на карте']
+        else :
+            event = OFFSET_TABLE[out.find_element_by_class_name('bma-title').text]
+        btns = out.find_elements_by_tag_name('button')
+
+        if event == stavka.outcome_index[0] :
+            winner = None
+            if btns[0].value_of_css_property('color') == 'rgba(86, 115, 10, 1)':
+                winner = bet_manage.reform_team_name(btns[0].text[btns[0].text.find('\n') + 1:])
+            elif btns[1].value_of_css_property('color') == 'rgba(86, 115, 10, 1)':
+                winner = bet_manage.reform_team_name(btns[1].text[btns[1].text.find('\n') + 1:])
+
+            browser.close()
+            browser.quit()
+
+            if winner :
+                if winner == stavka.winner :
+                    return True
+                else :
+                    return False
+            else :
+                return None
+

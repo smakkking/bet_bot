@@ -3,9 +3,21 @@ from datetime import datetime, timedelta
 import time
 import dateutil.parser
 
+from multiprocessing import Pool
+
 from global_constants import LOGIN_UPDATE_TIMEh, BOOKMAKER_OFFSET
 from bet_manage import SQL_DB
 
+
+def checking(x) :
+    if (x['bookmaker_last_login'] is None) or \
+            datetime.now() - dateutil.parser.parse(x['bookmaker_last_login']) > timedelta(hours=LOGIN_UPDATE_TIMEh):
+        BOOKMAKER_OFFSET[x['bookmaker']].login(
+            chdp=x['chrome_dir_path'],
+            bkm_login=x['bookmaker_login'],
+            bkm_password=x['bookmaker_password']
+        )
+        return str(x['id'])
 
 def main(main_logger=None) :
 
@@ -21,20 +33,14 @@ def main(main_logger=None) :
         ],
         where_cond='sub_status=1',
     )
-    update_db = []
-    for x in t :
-        if (x['bookmaker_last_login'] is None) or \
-                datetime.now() - dateutil.parser.parse(x['bookmaker_last_login']) > timedelta(hours=LOGIN_UPDATE_TIMEh) :
-            #BOOKMAKER_OFFSET[x['bookmaker']].login(
-            #    chdp=x['chrome_dir_path'],
-            #    bkm_login=x['bookmaker_login'],
-            #    bkm_password=x['bookmaker_password']
-            #)
-            update_db.append(str(x['id']))
+
+    with Pool(processes=len(t)) as pool:
+        update_db = list(pool.map(checking, t))
 
     update_str = ''
     for x in update_db :
-        update_str += ' or id=' + x
+        if x :
+            update_str += ' or id=' + x
     update_str = update_str.replace('or', '', 1)
 
     q.SQL_UPDATE(set_cond="bookmaker_last_login=datetime('now')", where_cond=update_str)
