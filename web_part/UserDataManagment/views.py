@@ -73,6 +73,7 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
                     bkm_password=request.user.bookmaker_password
                 )
                 request.user.bookmaker_last_login = now
+                request.user.save()
         else :
             return self.get(request)
         return redirect('menu')

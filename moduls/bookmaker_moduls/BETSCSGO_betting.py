@@ -168,8 +168,6 @@ def make_bet(browser, stavka, summ, first_time=False) :
     else:
         bet_manage.get_html_with_browser(browser, stavka.get_bk_link(NAME))
 
-
-
     if type(stavka.outcome_index) is list and stavka.outcome_index[0] == OFFSET_TABLE['Победа на карте'] :
         win_btns = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div/div/div/div/div/button')
         map_number = stavka.outcome_index[1]
@@ -233,24 +231,20 @@ def login(chdp=None, bkm_login=None, bkm_password=None) :
     browser = init_config(chdp)
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
 
-    try :
-        btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
-        btn.click()
+    btn = browser.find_element_by_xpath('/html/body/div/div[3]/header/div[1]/div/div[2]/div[2]/div/div[2]/a')
+    btn.click()
 
-        login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
-        pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
+    login_form = browser.find_element_by_xpath('//*[@id="steamAccountName"]')
+    pass_form =  browser.find_element_by_xpath('//*[@id="steamPassword"]')
 
-        login_form.send_keys(bkm_login)
-        pass_form.send_keys(bkm_password)
+    login_form.send_keys(bkm_login)
+    pass_form.send_keys(bkm_password)
 
-        browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
+    browser.find_element_by_xpath('//*[@id="imageLogin"]').click()
 
-        time.sleep(5)
-    except :
-        pass
-    finally :
-        browser.close()
-        browser.quit()
+    time.sleep(5)
+    browser.close()
+    browser.quit()
 
 
 def dogon_check(stavka) :

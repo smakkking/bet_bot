@@ -10,7 +10,7 @@ def find_all_links(DATA, key_g) :
     if group['parse_bet'] :
         if group['coupon'].type == 'ordn' :
             for stavka in group['coupon'].bets :
-                if stavka.bk_links != [] :
+                if stavka.bk_links != {} :
                     continue
                 for key in BOOKMAKER_OFFSET.keys() :
                     if BOOKMAKER_OFFSET[key].HAS_API :

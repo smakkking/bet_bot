@@ -11,7 +11,7 @@ SERVER_DATA_PATH = BET_PROJECT_ROOT + '/server_data/'
 ALL_POSTS_JSON_PATH = SERVER_DATA_PATH + '/group_posts_data.json'
 
 # путь до chrome_driver
-CHROME_DRIVER_PATH = BET_PROJECT_ROOT + '/chromedriver'
+CHROME_DRIVER_PATH = "/snap/bin/chromium.chromedriver" #BET_PROJECT_ROOT + '/chromedriver'
 
 # путь до базы данных
 DATABASE_PATH = BET_PROJECT_ROOT + '/web_part/db.sqlite3'

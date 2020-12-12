@@ -7,7 +7,7 @@ from global_constants import BOOKMAKER_OFFSET
 def bbet_all(DATA, client) :
     k = 0
     if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
-        browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(client['chrome_dir_path'])
+        browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(chrome_dir_path=client['chrome_dir_path'])
         for group in client['groups']:
             if DATA[group]['parse_bet']:
                 for stavka in DATA[group]['coupon'].bets:
@@ -18,7 +18,6 @@ def bbet_all(DATA, client) :
                         first_time=(k == 0)
                     )
                     k += 1
-
         browser.close()
         browser.quit()
     else :

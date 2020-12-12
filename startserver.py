@@ -69,7 +69,7 @@ if __name__ == "__main__" :
 
     # системные скрипты выполнятются редко
     find_matches_live.main(logging.getLogger("find_matches_live"))
-    relogin_live.main(logging.getLogger("relogin_live"))
+    #relogin_live.main(logging.getLogger("relogin_live"))
 
     # основные скрипты выполняются постоянно
     GROUP_DATA = load_last_data.main(GROUP_DATA, logging.getLogger("load_last_data"))

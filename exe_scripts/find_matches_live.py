@@ -21,7 +21,7 @@ def main(main_logger=None) :
             else :
                 final = {
                     'events' : v.find_bet(),
-                    'last_update' : datetime.now().isoformat("|"),
+                    'last_update' : datetime.now().isoformat(),
                 }
                 with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
                     json.dump(final, f, indent=4)

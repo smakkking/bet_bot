@@ -3,8 +3,9 @@ from multiprocessing import Pool
 import functools
 import json
 
+
 from global_constants import GROUP_OFFSET, BOOKMAKER_OFFSET, ALL_POSTS_JSON_PATH
-import load_last_data
+from . import load_last_data
 
 def check_and_delete(DATA, data_key) :
     # возможно здесь нужно создавать браузер

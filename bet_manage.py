@@ -305,7 +305,7 @@ def get_html_with_browser(browser, url, sec=0, cookies=None) :
 
     return browser.page_source
 
-def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
+def create_webdriver(user_id=None, undetected_mode=False, hdless=False) :
     if undetected_mode :
         opts = uc.ChromeOptions()
         if user_id :
@@ -315,11 +315,13 @@ def create_webdriver(user_id='', undetected_mode=False, hdless=False) :
         obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
     else :
         opts = webdriver.ChromeOptions()
-        opts.set_headless(headless=hdless)
-        opts.add_argument("--remote-debugging-port=9222")
+        opts.add_argument('--no-sandbox')
+        #opts.set_headless(headless=hdless)
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
-        opts.add_argument('--profile-directory=Profile_1')         
+        opts.add_argument("--disable-dev-shm-usage")
+
+        opts.add_argument('--profile-directory=Profile_1')
         obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
     obj.implicitly_wait(LOAD_TIMEOUT)
 

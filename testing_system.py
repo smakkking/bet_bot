@@ -82,12 +82,9 @@ def get_stavka(photo_url, group) :
 if __name__ == "__main__" :
     a = {
         "outcome_index": "game_winner",
-        "winner": "RISE",
-        "match_title": "RISE vs KINSHIP",
-        "dogon": false,
-        "bk_links": {
-            "betscsgo": "https://betscsgo.in/match/262540/"
-        }
+        "winner": "9INE",
+        "match_title": "9INE vs EX-ETHEREAL",
+        "dogon": false
     }
 
 
