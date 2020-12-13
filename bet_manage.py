@@ -77,8 +77,9 @@ class Coupon :
 
     def set_dogon(self) :
         for b in self.bets :
-            if b.outcome_index.find('map') > 0 :
+            if type(b.outcome_index) is tuple and b.outcome_index[0].find('map') >= 0 :
                 b.dogon = True
+        pass
 
 
 class LastGroupPost:

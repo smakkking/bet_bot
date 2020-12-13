@@ -1,2 +1,2 @@
-chrome_dir/ID_*
-server_data/*.json
+/chrome_dir/
+/server_data/

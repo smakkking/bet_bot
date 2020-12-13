@@ -28,6 +28,11 @@ if __name__ == "__main__" :
                 "class": "logging.FileHandler",
                 "formatter": "myFormatter",
                 "filename":BET_PROJECT_ROOT + 'moduls/group_moduls/groups.log'
+            },
+            "bets":{
+                "class": "logging.FileHandler",
+                "formatter": "myFormatter",
+                "filename": BET_PROJECT_ROOT + "exe_scripts/bet_info.log"
             }
         },
         "loggers":{
@@ -55,6 +60,10 @@ if __name__ == "__main__" :
                 "handlers": ["script"],
                 "level": "INFO",
             },
+            "bet_status": {
+                "handlers": ["bets"],
+                "level": "INFO",
+            }
         },
         "formatters":{
             "myFormatter":{
