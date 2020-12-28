@@ -40,6 +40,6 @@ def main(DATA: dict, main_logger=None) :
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(find_all_links, DATA), GROUP_OFFSET.keys()))
     if main_logger:
-        main_logger.info('{0:.2f} spent on finding links for all bets'.format(time.time() - now))
+        main_logger.info('{0:.2f} spent'.format(time.time() - now))
     return DATA
 

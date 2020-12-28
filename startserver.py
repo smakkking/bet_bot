@@ -81,7 +81,7 @@ if __name__ == "__main__" :
     #relogin_live.main(logging.getLogger("relogin_live"))
 
     # основные скрипты выполняются постоянно
-    GROUP_DATA = load_last_data.main(GROUP_DATA, logging.getLogger("load_last_data"))
+    GROUP_DATA = load_last_data.main(logging.getLogger("load_last_data"))
 
     GROUP_DATA = find_all_links.main(GROUP_DATA, logging.getLogger("find_all_links"))
 

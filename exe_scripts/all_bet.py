@@ -1,6 +1,7 @@
 import functools
 import time
 from multiprocessing import Pool
+import logging
 
 from global_constants import BOOKMAKER_OFFSET
 
@@ -11,12 +12,19 @@ def bbet_all(DATA, client) :
         for group in client['groups']:
             if DATA[group]['parse_bet']:
                 for stavka in DATA[group]['coupon'].bets:
+                    if not (client['bookmaker'] in stavka.bk_links.keys()) :
+                        continue
                     result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
                         browser,
                         stavka,
                         summ=client['bet_summ'],
                         first_time=(k == 0)
                     )
+                    lg = logging.getLogger("bet_status")
+                    if result :
+                        lg.info("clent #" + str(client['id']) +": The bet from " + group + " group was successful.")
+                    else :
+                        lg.info("clent #" + str(client['id']) +": The bet from " + group + " group failed.")
                     k += 1
         browser.close()
         browser.quit()
@@ -39,7 +47,7 @@ def main(DATA : dict, clients_DATA : dict, main_logger=None) :
             bet_data = list(pool.map(functools.partial(bbet_all, DATA), clients_DATA))
 
     if main_logger :
-        main_logger.info('{0:.2f} spent on bet process'.format(time.time() - now))
+        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
     for group in DATA.keys() :

@@ -46,7 +46,7 @@ def main(main_logger=None) :
     q.SQL_UPDATE(set_cond="bookmaker_last_login=datetime('now')", where_cond=update_str)
 
     if main_logger :
-        main_logger.info('{0:.2f} spent on relogin users'.format(time.time() - now))
+        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
 if __name__ == "__main__" :
     main()

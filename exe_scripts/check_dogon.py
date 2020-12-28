@@ -12,6 +12,8 @@ def check_and_delete(DATA, data_key) :
     new_dogon = []
     for x in DATA[data_key]['coupon'].dogon :
         # какая-то функция от ставки, возв True False или None
+        if not (GROUP_OFFSET[data_key].DOGON_AGGREGATOR in x.bk_links.keys()) :
+            continue
         result = BOOKMAKER_OFFSET[GROUP_OFFSET[data_key].DOGON_AGGREGATOR].dogon_check(x)
         if result is None :
             new_dogon.append(x)
@@ -35,7 +37,7 @@ def main(DATA, main_logger=None):
         DATA = dict(pool.map(functools.partial(check_and_delete, DATA), DATA.keys()))
 
     if main_logger :
-        main_logger.info('{0:.2f} spent on checking dogon examples'.format(time.time() - now))
+        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     return DATA
 

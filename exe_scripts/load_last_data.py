@@ -26,12 +26,18 @@ def load_last_data(OLD_DATA, token, group_off) :
     return (group_off, post.__dict__())
 
 
-def main(DATA, main_logger=None) :
+def main(main_logger=None) :
 
     if main_logger :
         now = time.time()
 
     YandexAPI_detection.create_new_token()
+
+    try :
+        with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
+            DATA = json.load(last_posts_json)
+    except FileNotFoundError:
+        DATA = {}
 
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(load_last_data, DATA, YandexAPI_detection.iam_token), GROUP_OFFSET.keys()))
@@ -39,15 +45,13 @@ def main(DATA, main_logger=None) :
     # DATA - словари, содержащие экземпляры coupon
 
     if main_logger :
-        main_logger.info('{0:.2f} spent on load data from group'.format(time.time() - now))
+        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     return DATA
 
 
 if __name__ == "__main__":
-    with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
-        OLD_DATA = json.load(last_posts_json)
-    t = main(OLD_DATA)
+    t = main()
     # записываем обратно для более удобного восприятия
     for x in t.keys() :
         t[x]['coupon'] = t[x]['coupon'].__json_repr__()

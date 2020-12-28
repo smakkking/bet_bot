@@ -317,7 +317,12 @@ def create_webdriver(user_id=None, undetected_mode=False, hdless=False) :
     else :
         opts = webdriver.ChromeOptions()
         opts.add_argument('--no-sandbox')
+        opts.add_argument('--disable-gpu')
+        if hdless :
+            opts.add_argument('--headless')
         #opts.set_headless(headless=hdless)
+        opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+        opts.add_experimental_option('useAutomationExtension', False)
         if user_id :
             opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
         opts.add_argument("--disable-dev-shm-usage")
