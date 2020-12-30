@@ -11,13 +11,15 @@ import selenium.common.exceptions as selen_exc
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
+WALL_URL_add = 'https://betsdota2.fun/'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
-MATCHES_UPDATE_TIMEh = 8
+MATCHES_UPDATE_TIMEh = 0
 LIVE_MATCHES_UPDATE_TIMEh = 1
 
 # менять, когда меняешь сеть, см в куках
 CURRENT_CF_CLEARANCE = '366d5424a19b0f1809696a3f73871cb8682e1de0-1609339139-0-150'
+CURRENT_CF_CLEARANCE_add = '733f8db49f6b6b018bf88adadb08b8fbf555e5ec-1609340700-0-150'
 
 OFFSET_TABLE = {
     'Победа на карте' : 'map_winner',
@@ -130,13 +132,13 @@ def find_bet(last_date, update_live=False, update_all=False) :
     # TODO exceptions and logging
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
+    bbb = {}
 
     browser = init_config()
-    # тест
+    # запустить эти два процесса параллельно
+    # find matches on betscsgo
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
-    bbb = {}
     matches = browser.find_elements_by_xpath(xPath_matches)
-
     for a in matches :
         if a == matches[len(matches) - 1] or a.text == 'Нет активных матчей':
             continue
@@ -158,12 +160,38 @@ def find_bet(last_date, update_live=False, update_all=False) :
 
         bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
 
+    # find matches on betsdota2
+    bet_manage.get_html_with_browser(browser, WALL_URL_add, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE_add), ])
+    matches = browser.find_elements_by_xpath(xPath_matches)
+    for a in matches:
+        if a == matches[len(matches) - 1] or a.text == 'Нет активных матчей':
+            continue
+        try:
+            begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%d.%m %H:%M')
+        except ValueError:
+            begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%H:%M')
+            begin = begin.replace(day=datetime.now().day, month=datetime.now().month)
+        begin = begin.replace(year=datetime.now().year)  # здесь приходится поправлять каждый год
+
+        event_info = {}
+
+        left_team = a.find_element_by_class_name('bet-team_left ').find_element_by_class_name('bet-team__name')
+        right_team = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
+
+        event_info['begin_date'] = begin.isoformat()
+        event_info['team1'] = bet_manage.reform_team_name(
+            left_team.text.replace(left_team.find_element_by_tag_name('div').text, ''))
+        event_info['team2'] = bet_manage.reform_team_name(
+            right_team.text.replace(right_team.find_element_by_tag_name('div').text, ''))
+
+        bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
 
     new_data = []
+    # update old matches
     for match in last_date :
         if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=3):
             continue
-        elif (update_live and parser.parse(match['begin_date']) < datetime.now()) or update_all :
+        elif (update_live and datetime.now() > parser.parse(match['begin_date'])) or update_all :
             match['outcomes'] = {}
             bet_manage.get_html_with_browser(browser, match['link'])
             # победа
@@ -208,6 +236,7 @@ def find_bet(last_date, update_live=False, update_all=False) :
             del bbb[match['link']]
         new_data.append(match)
 
+    # adding new matches
     for match_key in bbb.keys() :
         match = bbb[match_key]
         match['link'] = match_key

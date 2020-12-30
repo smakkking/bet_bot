@@ -8,7 +8,6 @@
             "outcomes": {
                 "game_winner": "265668",
                 "map1": {
-                    "map_winner": "265676",
                     "total_score": "265677"
                 },
                 "map2": {
@@ -25,7 +24,6 @@
             "outcomes": {
                 "game_winner": "265670",
                 "map1": {
-                    "map_winner": "265684",
                     "total_score": "265685"
                 },
                 "map2": {
@@ -42,7 +40,6 @@
             "outcomes": {
                 "game_winner": "265672",
                 "map1": {
-                    "map_winner": "265692",
                     "total_score": "265693"
                 },
                 "map2": {
@@ -59,7 +56,6 @@
             "outcomes": {
                 "game_winner": "265674",
                 "map1": {
-                    "map_winner": "265700",
                     "total_score": "265701"
                 },
                 "map2": {
@@ -135,8 +131,92 @@
                     "total_score": "265577"
                 }
             }
+        },
+        {
+            "begin_date": "2020-12-31T06:15:00",
+            "team1": "LBZS",
+            "team2": "FOREST",
+            "link": "https://betsdota2.fun/match/162586/",
+            "outcomes": {
+                "game_winner": "162586",
+                "map1": {
+                    "map_winner": "162590"
+                },
+                "map2": {
+                    "map_winner": "162592"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-12-31T09:15:00",
+            "team1": "ACCESS",
+            "team2": "TEAMSIRIUS",
+            "link": "https://betsdota2.fun/match/162588/",
+            "outcomes": {
+                "game_winner": "162588",
+                "map1": {
+                    "map_winner": "162594"
+                },
+                "map2": {
+                    "map_winner": "162596"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-01-06T01:00:00",
+            "team1": "SANDKINGGOMEZ",
+            "team2": "THEUNDERDOGS",
+            "link": "https://betsdota2.fun/match/162550/",
+            "outcomes": {
+                "game_winner": "162550"
+            }
+        },
+        {
+            "begin_date": "2020-01-06T02:00:00",
+            "team1": "THEUNDERDOGS",
+            "team2": "SANDKINGGOMEZ",
+            "link": "https://betsdota2.fun/match/162552/",
+            "outcomes": {
+                "game_winner": "162552"
+            }
+        },
+        {
+            "begin_date": "2020-01-08T01:00:00",
+            "team1": "BINGOHOTGAMING",
+            "team2": "DOZEREBORN",
+            "link": "https://betsdota2.fun/match/162554/",
+            "outcomes": {
+                "game_winner": "162554"
+            }
+        },
+        {
+            "begin_date": "2020-01-08T02:00:00",
+            "team1": "DOZEREBORN",
+            "team2": "BINGOHOTGAMING",
+            "link": "https://betsdota2.fun/match/162556/",
+            "outcomes": {
+                "game_winner": "162556"
+            }
+        },
+        {
+            "begin_date": "2020-01-08T04:00:00",
+            "team1": "BLACKICE",
+            "team2": "VALHALLAGAMING",
+            "link": "https://betsdota2.fun/match/162558/",
+            "outcomes": {
+                "game_winner": "162558"
+            }
+        },
+        {
+            "begin_date": "2020-01-08T05:00:00",
+            "team1": "VALHALLAGAMING",
+            "team2": "BLACKICE",
+            "link": "https://betsdota2.fun/match/162560/",
+            "outcomes": {
+                "game_winner": "162560"
+            }
         }
     ],
-    "last_update_all": "2020-12-30T17:56:56.500616",
-    "last_update_live": "2020-12-30T17:56:56.500669"
+    "last_update_all": "2020-12-30T18:14:18.939750",
+    "last_update_live": "2020-12-30T18:14:18.939772"
 }
