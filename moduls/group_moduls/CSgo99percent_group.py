@@ -1,5 +1,17 @@
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
+import bet_manage
+import nltk
+
+# поле для комментов
+# нужны еще шаблоны(так как по стандартным не выдает)
+# не добавлено в бд
+#
+#
+#
+#
+
+
 WALL_URL = 'https://vk.com/csgo_stavki99'
 NAME = 'CSGO99percent'
 
@@ -7,3 +19,33 @@ BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers te
 
 # here may be other speciefic templates, so add them to BET_TEMPLATES
 # like BET_TEMPLATES += [(template, parse)]
+
+def check_templates(post, token) :
+    for photo_url in post.photo_list :
+        obj = bet_manage.YandexAPI_detection(photo_url, token)
+        text = obj.text_detection()
+        for (tmp, parse) in BET_TEMPLATES :
+            if tmp(text.upper()) :
+                st = parse(photo_url, nltk.word_tokenize(text))
+                post.coupon.add_bet(st)
+    dogon(post)
+    if post.coupon.bets == [] :
+        post.parse_bet = False
+
+
+def dogon(post) :
+    patterns = [
+        'ДОГОН',
+    ]
+    target = post.text.upper()
+    for x in patterns :
+        if type(x) is tuple :
+            res = True
+            for cond in x :
+                res = res and target.find(cond) >= 0
+            if res :
+                post.coupon.set_dogon()
+                break
+        elif type(x) is str and target.find(x) >= 0 :
+            post.coupon.set_dogon()
+            break

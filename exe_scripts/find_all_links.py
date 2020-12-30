@@ -28,7 +28,17 @@ def find_all_links(DATA, key_g) :
                         for x in dat :
                             # совпадает ли название матча
                             if stavka.match_title.find(x['team1']) >= 0 and stavka.match_title.find(x['team2']) >= 0 :
-                                stavka.set_bk_link(key, x['link'])
+                                if type(stavka.outcome_index) is tuple :
+                                    bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
+                                else :
+                                    bet_id = x['outcomes'][stavka.outcome_index]
+                                stavka.set_bk_link(key, {
+                                    'team1' : x['team1'],
+                                    'team2' : x['team2'],
+                                    'bet_id' : bet_id,
+                                    'link' : x['link']
+                                })
+
         else :
             # не умеет работать с системой ставок(когда одновременно)
             pass

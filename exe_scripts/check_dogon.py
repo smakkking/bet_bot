@@ -5,7 +5,7 @@ import json
 
 
 from global_constants import GROUP_OFFSET, BOOKMAKER_OFFSET, ALL_POSTS_JSON_PATH
-from . import load_last_data
+from exe_scripts import load_last_data
 
 def check_and_delete(DATA, data_key) :
     # возможно здесь нужно создавать браузер
@@ -33,6 +33,7 @@ def main(DATA, main_logger=None):
     if main_logger :
         now = time.time()
 
+    # не будет работать на большом числе групп
     with Pool(processes=len(DATA.keys())) as pool:
         DATA = dict(pool.map(functools.partial(check_and_delete, DATA), DATA.keys()))
 
@@ -45,7 +46,7 @@ if __name__ == '__main__':
     with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
         GROUP_DATA = json.load(last_posts_json)
 
-    GROUP_DATA = load_last_data.main(GROUP_DATA)
+    GROUP_DATA = load_last_data.main()
 
     GROUP_DATA = main(GROUP_DATA)
 

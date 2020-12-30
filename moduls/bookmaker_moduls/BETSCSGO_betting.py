@@ -1,8 +1,10 @@
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from dateutil import parser
 import bet_manage
+from global_constants import SERVER_DATA_PATH
 
 import selenium.common.exceptions as selen_exc
 
@@ -11,9 +13,11 @@ NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
+MATCHES_UPDATE_TIMEh = 8
+LIVE_MATCHES_UPDATE_TIMEh = 1
 
 # менять, когда меняешь сеть, см в куках
-CURRENT_CF_CLEARANCE = 'f14c5a95a88cd68090e5f0d0d42d8571d6c5ee79-1609145767-0-150'
+CURRENT_CF_CLEARANCE = '4fd5c56bf782a42aed5a3ea5ac1adab2589f7607-1609250862-0-150'
 
 OFFSET_TABLE = {
     'Победа на карте' : 'map_winner',
@@ -117,13 +121,12 @@ def parse2(photo_url : str, words : list) :
 
     return res
 
-
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
     (template2, parse2),
 ]
 
-def find_bet(last_date) :
+def find_bet(last_date, update_live=False, update_all=False) :
     # TODO exceptions and logging
 
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
@@ -131,7 +134,7 @@ def find_bet(last_date) :
     browser = init_config()
     # тест
     bet_manage.get_html_with_browser(browser, WALL_URL, sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE), ])
-    bbb = []
+    bbb = {}
     matches = browser.find_elements_by_xpath(xPath_matches)
 
     for a in matches :
@@ -150,25 +153,76 @@ def find_bet(last_date) :
         right_team  = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
 
         event_info['begin_date'] = begin.isoformat()
-        event_info['link'] = a.find_element_by_class_name('sys-matchlink').get_attribute('href')
         event_info['team1'] = bet_manage.reform_team_name(left_team.text.replace(left_team.find_element_by_tag_name('div').text, ''))
         event_info['team2'] = bet_manage.reform_team_name(right_team.text.replace(right_team.find_element_by_tag_name('div').text, ''))
 
-        bbb.append(event_info)
+        bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
 
-    for match in bbb :
-        match['outcomes']= {}
-        bet_manage.get_html_with_browser(browser, match['link'])
+
+    new_data = []
+    for match in last_date :
+        if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=3):
+            pass
+        elif (update_live and parser.parse(match['begin_date']) < datetime.now()) or update_all :
+            match['outcomes'] = {}
+            bet_manage.get_html_with_browser(browser, match['link'])
+            # победа
+            try :
+                t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
+                match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
+            except :
+                pass
+
+            # доп события
+            t2 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[1]/div[2]/div')
+            if t2 != [] :
+                for x in t2:
+                    for title in OFFSET_TABLE.keys():
+                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
+                            match['outcomes'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+
+            # карта 1
+            t31 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[2]/div[2]/div')
+            if t31 != [] :
+                match['outcomes']['map1'] = {}
+                for x in t31 :
+                     for title in OFFSET_TABLE.keys() :
+                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+                            match['outcomes']['map1'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+            # карта 2
+            t32 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[3]/div[2]/div')
+            if t32 != []:
+                match['outcomes']['map2'] = {}
+                for x in t32 :
+                     for title in OFFSET_TABLE.keys() :
+                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+                            match['outcomes']['map2'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+            # карта 3
+            t33 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[4]/div[2]/div')
+            if t33 != []:
+                    match['outcomes']['map3'] = {}
+                    for x in t33 :
+                         for title in OFFSET_TABLE.keys() :
+                            if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+                                match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+            del bbb[match['link']]
+        new_data.append(match)
+
+    for match_key in bbb.keys() :
+        match = bbb[match_key]
+        match['link'] = match_key
+        match['outcomes'] = {}
+        bet_manage.get_html_with_browser(browser, match_key)
         # победа
-        try :
+        try:
             t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
             match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
-        except :
+        except:
             pass
 
         # доп события
         t2 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[1]/div[2]/div')
-        if t2 != [] :
+        if t2 != []:
             for x in t2:
                 for title in OFFSET_TABLE.keys():
                     if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
@@ -176,38 +230,53 @@ def find_bet(last_date) :
 
         # карта 1
         t31 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[2]/div[2]/div')
-        if t31 != [] :
-            match['events']['map1'] = {}
-            for x in t31 :
-                 for title in OFFSET_TABLE.keys() :
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+        if t31 != []:
+            match['outcomes']['map1'] = {}
+            for x in t31:
+                for title in OFFSET_TABLE.keys():
+                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
                         match['outcomes']['map1'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
         # карта 2
         t32 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[3]/div[2]/div')
         if t32 != []:
-            match['events']['map2'] = {}
-            for x in t32 :
-                 for title in OFFSET_TABLE.keys() :
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+            match['outcomes']['map2'] = {}
+            for x in t32:
+                for title in OFFSET_TABLE.keys():
+                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
                         match['outcomes']['map2'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
         # карта 3
         t33 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[4]/div[2]/div')
         if t33 != []:
-            match['events']['map3'] = {}
-            for x in t33 :
-                 for title in OFFSET_TABLE.keys() :
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0 :
+            match['outcomes']['map3'] = {}
+            for x in t33:
+                for title in OFFSET_TABLE.keys():
+                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
                         match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
 
     browser.close()
     browser.quit()
 
-    return bbb
+    new_data.extend(bbb.values())
+    return new_data
 
 # betting process
 
-def make_bet(browser, stavka, summ, first_time=False) :
-    pass
+def make_bet(stavka, summ, session_key='fghfh12wafsd') :
+    base_str = 'https://betscsgo.in/index/placebet'
+
+    # здесь авторизуемся
+
+    # здесь формируем запрос
+    base_str += stavka.bk_links[NAME]['bet_id'] + '/'
+
+    # не раб с больше\меньше
+    if stavka.bk_links[NAME]['team1'] == stavka.winner :
+        base_str += '1/'
+    elif stavka.bk_links[NAME]['team2'] == stavka.winner :
+        base_str += '2/'
+
+    base_str += str(summ) + '/' + session_key
+    return base_str
 
 
 def init_config(chrome_dir_path=None) :
@@ -248,7 +317,7 @@ def login(chdp=None, bkm_login=None, bkm_password=None) :
 def dogon_check(stavka) :
     browser = init_config()
 
-    bet_manage.get_html_with_browser(browser, stavka.bk_links[NAME], sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE)])
+    bet_manage.get_html_with_browser(browser, stavka.bk_links[NAME]['link'], sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE)])
 
     alloutcomes_xPath = '//*[@id="bm-additionals"]/div[' + str(stavka.outcome_index[1] + 1) + ']/div[2]/div'
     outcomes = browser.find_elements_by_xpath(alloutcomes_xPath)

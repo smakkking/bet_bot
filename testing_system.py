@@ -5,6 +5,7 @@ from bet_manage import LastGroupPost, YandexAPI_detection, Stavka, get_html_with
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 import nltk, json, time
+from moduls.group_moduls import ExpertMnenie_group
 
 
 def testing_group(group, N) :
@@ -76,27 +77,33 @@ def get_stavka(photo_url, group) :
     else :
         return stavka.__json_repr__()
 
+def cf_scraper() :
+    import requests
 
+    s = requests.Session()
+    head = {
+        'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
+    }
+    s.headers.update(head)
+    s.cookies.set('cf_clearance', '5a89c14b8b4ee0f11c4e471a778912a5c8222ac5-1609228344-0-150')
+
+    r = s.get('https://betscsgo.in/match/265584/')
+    print(r.text)
 
 
 if __name__ == "__main__" :
-    import requests
-    import bet_manage
-    driver = bet_manage.create_webdriver()
-    bet_manage.get_html_with_browser(driver, 'https://betscsgo.in/match/265517/', sec=5, cookies=[('cf_clearance', 'f14c5a95a88cd68090e5f0d0d42d8571d6c5ee79-1609145767-0-150')])
-    headers = {
-        "User-Agent":
-            "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
+    pass
+{
+    "match_title": "FORZESCHOOL VS STATE21",
+    "winner": "FORZESCHOOL",
+    "outcome_index": [
+        "map_winner", 1
+    ],
+    "dogon": true,
+    "bk_links": {
+        "betscsgo": {
+            "link": "https://betscsgo.in/match/265584/"
+        }
     }
-    s = requests.session()
-    s.headers.update(headers)
-
-    for cookie in driver.get_cookies():
-        c = {cookie['name']: cookie['value']}
-        s.cookies.update(c)
-    r = s.get('https://betscsgo.in/match/265517/')
-
-    with open('file.html', 'w') as f :
-        f.write(r.text)
-
+}
 

@@ -1,45 +1,31 @@
 {
     "events": [
         {
-            "begin_date": "2020-12-28T14:50:00",
-            "link": "https://betscsgo.in/match/265455/",
-            "team1": "PROJECTX",
-            "team2": "LILMIX",
-            "events": {
-                "game_winner": "265455",
-                "map1": {
-                    "map_winner": "265457",
-                    "total_score": "265458"
-                },
-                "map2": {
-                    "map_winner": "265461",
-                    "total_score": "265462"
-                }
-            }
-        },
-        {
-            "begin_date": "2020-12-28T18:10:00",
-            "link": "https://betscsgo.in/match/265465/",
+            "begin_date": "2020-12-28T19:00:00",
             "team1": "MBAPPEEK",
             "team2": "WINSTRIKE",
-            "events": {
+            "link": "https://betscsgo.in/match/265465/",
+            "outcomes": {
                 "game_winner": "265465",
                 "map1": {
-                    "map_winner": "265467",
                     "total_score": "265468"
                 },
                 "map2": {
                     "map_winner": "265471",
                     "total_score": "265472"
+                },
+                "map3": {
+                    "map_winner": "265533",
+                    "total_score": "265534"
                 }
             }
         },
         {
             "begin_date": "2020-12-28T21:30:00",
-            "link": "https://betscsgo.in/match/265476/",
             "team1": "LYNGBYVIKINGS",
             "team2": "EX-ETHEREAL",
-            "events": {
+            "link": "https://betscsgo.in/match/265476/",
+            "outcomes": {
                 "game_winner": "265476",
                 "map1": {
                     "map_winner": "265478",
@@ -53,10 +39,10 @@
         },
         {
             "begin_date": "2020-12-29T09:00:00",
-            "link": "https://betscsgo.in/match/265272/",
             "team1": "D13",
             "team2": "WAY2CHAMPION",
-            "events": {
+            "link": "https://betscsgo.in/match/265272/",
+            "outcomes": {
                 "game_winner": "265272",
                 "map1": {
                     "map_winner": "265274",
@@ -70,10 +56,10 @@
         },
         {
             "begin_date": "2020-12-29T12:00:00",
-            "link": "https://betscsgo.in/match/265493/",
             "team1": "AFTER",
             "team2": "TSG",
-            "events": {
+            "link": "https://betscsgo.in/match/265493/",
+            "outcomes": {
                 "game_winner": "265493",
                 "map1": {
                     "map_winner": "265496",
@@ -86,5 +72,6 @@
             }
         }
     ],
-    "last_update_all": "2020-12-28T15:47:02.152805"
+    "last_update_all": "2020-12-28T20:57:22.183647",
+    "last_update_live": "2020-12-28T20:57:22.183667"
 }

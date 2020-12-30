@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, TextInput
 from .models import StandartUser
 from django import forms
 
@@ -10,6 +10,7 @@ class SettingsForm(ModelForm) :
         model = StandartUser
         fields = (
             'bet_summ',
+            'dogon_on'
         )
         fields += tuple(GROUP_OFFSET.keys())
         
@@ -29,7 +30,12 @@ class MenuForm(ModelForm) :
         model = StandartUser
         fields = (
             'sub_end_date',
+            'personal_count'
         )
+        widgets = {
+            'personal_count' : TextInput(attrs={'readonly':'readonly'}),
+            'sub_end_date' : TextInput(attrs={'readonly':'readonly'})
+        }
 
 
 class SubscribeForm(ModelForm) :

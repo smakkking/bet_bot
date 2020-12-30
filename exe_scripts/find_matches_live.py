@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 from dateutil import parser
 
-from global_constants import BOOKMAKER_OFFSET, MATCHES_UPDATE_TIMEh, SERVER_DATA_PATH
+from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
 
 def main(main_logger=None) :
     if main_logger :
@@ -14,16 +14,14 @@ def main(main_logger=None) :
         if not v.TAKES_MATCHES_LIVE :
             with open(SERVER_DATA_PATH + v.NAME + '.json', 'r', encoding="utf-8") as f:
                 x = json.load(f)
-            if 'last_update' in x.keys() and \
-                    datetime.now() - parser.parse(x['last_update_all']) < timedelta(hours=MATCHES_UPDATE_TIMEh) :
-                continue
-            else :
-                final = {
-                    'events' : v.find_bet(x['events']),
-                    'last_update_all' : datetime.now().isoformat(),
-                }
-                with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
-                    json.dump(final, f, indent=4)
+            if datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.MATCHES_UPDATE_TIMEh) :
+                x['events'] = v.find_bet(x['events'], update_all=True)
+                x['last_update_all'] = datetime.now().isoformat()
+            elif datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.LIVE_MATCHES_UPDATE_TIMEh) :
+                x['events'] = v.find_bet(x['events'], update_live=True)
+                x['last_update_live'] = datetime.now().isoformat()
+            with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
+                json.dump(x, f, indent=4)
 
     if main_logger :
         main_logger.info('{0:.2f} spent'.format(time.time() - now))

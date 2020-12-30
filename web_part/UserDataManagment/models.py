@@ -72,7 +72,7 @@ class StandartUser(AbstractUser):
         default=0,
         validators=[
             MaxValueValidator(len(GROUP_OFFSET.keys())),
-            MinValueValidator(0)
+            MinValueValidator(1, message="Количество групп не может быть отрицательным")
         ],
         verbose_name="Количество групп"
     )
@@ -80,6 +80,9 @@ class StandartUser(AbstractUser):
     personal_count = models.FloatField(
         default=0.0,
         verbose_name="Ваш баланс",
+        validators=[
+            MinValueValidator(0, message="Ошибка, недостаточно средств на счету")
+        ],
     )
 
     # поля для групп

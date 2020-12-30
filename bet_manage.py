@@ -43,8 +43,8 @@ class Stavka :
     def get_bk_link(self, bk_name):
         return self.bk_links[bk_name]
 
-    def set_bk_link(self, bk_name, url):
-        self.bk_links[bk_name] = url
+    def set_bk_link(self, bk_name, params={}):
+        self.bk_links[bk_name] = params
 
 
 class Coupon :

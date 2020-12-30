@@ -28,9 +28,17 @@ def dogon(post) :
     patterns = [
         'УВЕЛИЧУ',
         'ДОГОН',
+        ('ПРИ ПОБЕДЕ', 'В СЛУЧАЕ ПОРАЖЕНИЯ'),
     ]
     target = post.text.upper()
     for x in patterns :
-        if target.find(x) >= 0 :
+        if type(x) is tuple :
+            res = True
+            for cond in x :
+                res = res and target.find(cond) >= 0
+            if res :
+                post.coupon.set_dogon()
+                break
+        elif type(x) is str and target.find(x) >= 0 :
             post.coupon.set_dogon()
             break

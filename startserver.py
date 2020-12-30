@@ -2,8 +2,7 @@ from logging import config
 import logging
 import json
 
-from exe_scripts import relogin_live, \
-                        load_last_data, \
+from exe_scripts import load_last_data, \
                         scan_database, \
                         all_bet, \
                         find_matches_live, \
@@ -78,7 +77,6 @@ if __name__ == "__main__" :
 
     # системные скрипты выполнятются редко
     find_matches_live.main(logging.getLogger("find_matches_live"))
-    #relogin_live.main(logging.getLogger("relogin_live"))
 
     # основные скрипты выполняются постоянно
     GROUP_DATA = load_last_data.main(logging.getLogger("load_last_data"))

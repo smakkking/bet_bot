@@ -8,26 +8,21 @@ from global_constants import BOOKMAKER_OFFSET
 def bbet_all(DATA, client) :
     k = 0
     if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
-        browser = BOOKMAKER_OFFSET[client['bookmaker']].init_config(chrome_dir_path=client['chrome_dir_path'])
-        for group in client['groups']:
-            if DATA[group]['parse_bet']:
-                for stavka in DATA[group]['coupon'].bets:
+        # здесь происходит авторизация
+        for group in client['groups'] :
+            if DATA[group]['parse_bet'] :
+                for stavka in DATA[group]['coupon'].bets :
                     if not (client['bookmaker'] in stavka.bk_links.keys()) :
                         continue
                     result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
-                        browser,
                         stavka,
-                        summ=client['bet_summ'],
-                        first_time=(k == 0)
+                        summ=client['bet_summ']
                     )
-                    lg = logging.getLogger("bet_status")
-                    if result :
-                        lg.info("clent #" + str(client['id']) +": The bet from " + group + " group was successful.")
-                    else :
-                        lg.info("clent #" + str(client['id']) +": The bet from " + group + " group failed.")
-                    k += 1
-        browser.close()
-        browser.quit()
+        # TODO избавиться от дубликатов, всю сумму прибавить к одной, от конкурирующих ставок хз как избавиться
+        # а вот что делать, если эта ставка уже поставлена?? как поменять сумму
+        # в ответ на запрос приходит словарь с ключом success - успех ставки
+        # если написано сумма ставки не изменилась, то удвоить сумму
+
     else :
         # ставить по api возможности пока нет
         pass

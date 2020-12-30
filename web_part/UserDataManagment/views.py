@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django import views, forms
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 
 from .forms import SettingsForm, MenuForm, RegistrationForm, SubscribeForm
 from global_constants import BOOKMAKER_OFFSET
@@ -55,27 +56,23 @@ class BuySubscribe(LoginRequiredMixin, views.View) :
 
     def post(self, request) :
         basic_form = SubscribeForm(instance=request.user, data=request.POST)
+
         if basic_form.is_valid() :
+
+            request.user.personal_count -= calcuate_sub(float(request.POST['duration']), basic_form.cleaned_data['max_group_count'])
+            if request.user.personal_count < 0:
+                basic_form.add_error('max_group_count', "Ошибка, недостаточно средств на счету.")
+                return render(request, 'subscribe.html', {'form': basic_form})
+
             basic_form.save()
 
             now = datetime.today()
-            request.user.sub_end_date = now + timedelta(days=int(request.POST['week']) * 7 + 1)
+            request.user.sub_end_date = now + timedelta(days=float(request.POST['duration']) * 31)
             request.user.sub_status = True
 
-            if request.user.chrome_dir_path is None :
-                request.user.chrome_dir_path = str(time.time()).replace('.', '')
             request.user.save()
-
-            if not BOOKMAKER_OFFSET[request.user.bookmaker].HAS_API :                
-                BOOKMAKER_OFFSET[request.user.bookmaker].login(
-                    chdp=request.user.chrome_dir_path,
-                    bkm_login=request.user.bookmaker_login,
-                    bkm_password=request.user.bookmaker_password
-                )
-                request.user.bookmaker_last_login = now
-                request.user.save()
         else :
-            return self.get(request)
+            return render(request, 'subscribe.html', {'form' : basic_form})
         return redirect('menu')
 
 
@@ -97,4 +94,22 @@ class BotRegistration(views.View) :
         else :
             return self.get(request)
 
+def calcuate_sub(duration, max_group_count) :
+    base_day_payment = 30
+    a = 0.2
+    b = 0.14
+
+    sale_mn = 0
+    if duration == 1:
+        sale_mn = 1
+    elif duration == 3:
+        sale_mn = 2
+    elif duration == 6:
+        sale_mn = 3
+
+    count_sale = (1 - b) ** (max_group_count - 1)
+    duration_sale = (1 - a) ** sale_mn
+
+    S = base_day_payment * duration * 31 * duration_sale * count_sale
+    return S * max_group_count
     
