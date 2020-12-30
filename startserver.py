@@ -84,6 +84,7 @@ if __name__ == "__main__" :
 
     GROUP_DATA = check_dogon.main(GROUP_DATA, logging.getLogger("check_dogon"))
 
+    # formating
     for x in GROUP_DATA.keys() :
         GROUP_DATA[x]['coupon'] = GROUP_DATA[x]['coupon'].__json_repr__()
     with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
