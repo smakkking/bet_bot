@@ -13,7 +13,7 @@ NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
-MATCHES_UPDATE_TIMEh = 8
+MATCHES_UPDATE_TIMEh = 12
 LIVE_MATCHES_UPDATE_TIMEh = 1
 
 # менять, когда меняешь сеть, см в куках
@@ -162,7 +162,7 @@ def find_bet(last_date, update_live=False, update_all=False) :
     new_data = []
     for match in last_date :
         if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=3):
-            pass
+            continue
         elif (update_live and parser.parse(match['begin_date']) < datetime.now()) or update_all :
             match['outcomes'] = {}
             bet_manage.get_html_with_browser(browser, match['link'])

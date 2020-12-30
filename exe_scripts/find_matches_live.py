@@ -17,7 +17,8 @@ def main(main_logger=None) :
             if datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.MATCHES_UPDATE_TIMEh) :
                 x['events'] = v.find_bet(x['events'], update_all=True)
                 x['last_update_all'] = datetime.now().isoformat()
-            elif datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.LIVE_MATCHES_UPDATE_TIMEh) :
+                x['last_update_live'] = datetime.now().isoformat()
+            elif datetime.now() - parser.parse(x['last_update_live']) >= timedelta(hours=v.LIVE_MATCHES_UPDATE_TIMEh) :
                 x['events'] = v.find_bet(x['events'], update_live=True)
                 x['last_update_live'] = datetime.now().isoformat()
             with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:

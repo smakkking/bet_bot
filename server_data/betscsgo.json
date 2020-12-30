@@ -70,8 +70,144 @@
                     "total_score": "265501"
                 }
             }
+        },
+        {
+            "begin_date": "2020-12-30T17:00:00",
+            "team1": "VINKELPARTY",
+            "team2": "4BOYS1ALPHA",
+            "link": "https://betscsgo.in/match/265668/",
+            "outcomes": {
+                "game_winner": "265668",
+                "map1": {
+                    "map_winner": "265676",
+                    "total_score": "265677"
+                },
+                "map2": {
+                    "map_winner": "265680",
+                    "total_score": "265681"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-12-30T17:00:00",
+            "team1": "MYGAMEESPORTS",
+            "team2": "SOYBOYSXP",
+            "link": "https://betscsgo.in/match/265670/",
+            "outcomes": {
+                "game_winner": "265670",
+                "map1": {
+                    "map_winner": "265684",
+                    "total_score": "265685"
+                },
+                "map2": {
+                    "map_winner": "265688",
+                    "total_score": "265689"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-12-30T17:00:00",
+            "team1": "LYNGBYVIKINGS",
+            "team2": "TIKTOKSTRUCK",
+            "link": "https://betscsgo.in/match/265672/",
+            "outcomes": {
+                "game_winner": "265672",
+                "map1": {
+                    "map_winner": "265692",
+                    "total_score": "265693"
+                },
+                "map2": {
+                    "map_winner": "265696",
+                    "total_score": "265697"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-12-30T17:00:00",
+            "team1": "FLOWSKOLA",
+            "team2": "PROUDVIRGINS",
+            "link": "https://betscsgo.in/match/265674/",
+            "outcomes": {
+                "game_winner": "265674",
+                "map1": {
+                    "map_winner": "265700",
+                    "total_score": "265701"
+                },
+                "map2": {
+                    "map_winner": "265704",
+                    "total_score": "265705"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-01-05T09:00:00",
+            "team1": "CHECKMATE",
+            "team2": "WAY2CHAMPION",
+            "link": "https://betscsgo.in/match/265537/",
+            "outcomes": {
+                "game_winner": "265537",
+                "map1": {
+                    "map_winner": "265539",
+                    "total_score": "265540"
+                },
+                "map2": {
+                    "map_winner": "265543",
+                    "total_score": "265544"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-01-05T12:00:00",
+            "team1": "LYNNVISION",
+            "team2": "XI'ANTAICHANGGUI",
+            "link": "https://betscsgo.in/match/265547/",
+            "outcomes": {
+                "game_winner": "265547",
+                "map1": {
+                    "map_winner": "265550",
+                    "total_score": "265551"
+                },
+                "map2": {
+                    "map_winner": "265554",
+                    "total_score": "265555"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-01-08T19:00:00",
+            "team1": "RHEINNECKAR",
+            "team2": "NLG",
+            "link": "https://betscsgo.in/match/265558/",
+            "outcomes": {
+                "game_winner": "265558",
+                "map1": {
+                    "map_winner": "265562",
+                    "total_score": "265563"
+                },
+                "map2": {
+                    "map_winner": "265566",
+                    "total_score": "265567"
+                }
+            }
+        },
+        {
+            "begin_date": "2020-01-08T22:00:00",
+            "team1": "ENTROPYGAMING",
+            "team2": "PLAN-B",
+            "link": "https://betscsgo.in/match/265560/",
+            "outcomes": {
+                "game_winner": "265560",
+                "map1": {
+                    "map_winner": "265572",
+                    "total_score": "265573"
+                },
+                "map2": {
+                    "map_winner": "265576",
+                    "total_score": "265577"
+                }
+            }
         }
     ],
-    "last_update_all": "2020-12-28T20:57:22.183647",
-    "last_update_live": "2020-12-28T20:57:22.183667"
+    "last_update_all": "2020-12-30T13:08:29.326002",
+    "last_update_live": "2020-12-30T13:08:29.326002"
 }

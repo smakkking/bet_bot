@@ -72,9 +72,6 @@ if __name__ == "__main__" :
     }
     config.dictConfig(dictLogConfig)
 
-    with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
-        GROUP_DATA = json.load(last_posts_json)
-
     # системные скрипты выполнятются редко
     find_matches_live.main(logging.getLogger("find_matches_live"))
 
