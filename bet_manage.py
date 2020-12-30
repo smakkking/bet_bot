@@ -25,11 +25,13 @@ class Stavka :
             self.winner = ''
             self.outcome_index = ''
             self.dogon = False
+            self.sport = ''
         else :
             self.match_title = bets['match_title']
             self.winner = bets['winner']
             self.outcome_index = bets['outcome_index']
             self.dogon = bets['dogon']
+            self.sport = bets['sport']
             if 'bk_links' in bets.keys() :
                 self.bk_links = bets['bk_links']
 

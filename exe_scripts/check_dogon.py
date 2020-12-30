@@ -33,9 +33,7 @@ def main(DATA, main_logger=None):
     if main_logger :
         now = time.time()
 
-    # не будет работать на большом числе групп
-    with Pool(processes=len(DATA.keys())) as pool:
-        DATA = dict(pool.map(functools.partial(check_and_delete, DATA), DATA.keys()))
+    DATA = dict(map(functools.partial(check_and_delete, DATA), DATA.keys()))
 
     if main_logger :
         main_logger.info('{0:.2f} spent'.format(time.time() - now))

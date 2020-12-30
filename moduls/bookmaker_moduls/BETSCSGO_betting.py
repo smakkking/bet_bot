@@ -13,11 +13,11 @@ NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
-MATCHES_UPDATE_TIMEh = 12
+MATCHES_UPDATE_TIMEh = 8
 LIVE_MATCHES_UPDATE_TIMEh = 1
 
 # менять, когда меняешь сеть, см в куках
-CURRENT_CF_CLEARANCE = '4fd5c56bf782a42aed5a3ea5ac1adab2589f7607-1609250862-0-150'
+CURRENT_CF_CLEARANCE = '366d5424a19b0f1809696a3f73871cb8682e1de0-1609339139-0-150'
 
 OFFSET_TABLE = {
     'Победа на карте' : 'map_winner',
@@ -145,7 +145,7 @@ def find_bet(last_date, update_live=False, update_all=False) :
         except ValueError :
             begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%H:%M')
             begin = begin.replace(day=datetime.now().day, month=datetime.now().month)
-        begin =begin.replace(year=datetime.now().year)
+        begin =begin.replace(year=datetime.now().year) # здесь приходится поправлять каждый год
 
         event_info = {}
 
@@ -262,9 +262,10 @@ def find_bet(last_date, update_live=False, update_all=False) :
 # betting process
 
 def make_bet(stavka, summ, session_key='fghfh12wafsd') :
-    base_str = 'https://betscsgo.in/index/placebet'
+    # если ставка на доту - то betsdota2.fun
+    #base_str = 'https://betscsgo.in/index/placebet/'
 
-    # здесь авторизуемся
+    base_str = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match')] + 'index/placebet/'
 
     # здесь формируем запрос
     base_str += stavka.bk_links[NAME]['bet_id'] + '/'

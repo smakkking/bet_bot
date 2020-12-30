@@ -1,77 +1,6 @@
 {
     "events": [
         {
-            "begin_date": "2020-12-28T19:00:00",
-            "team1": "MBAPPEEK",
-            "team2": "WINSTRIKE",
-            "link": "https://betscsgo.in/match/265465/",
-            "outcomes": {
-                "game_winner": "265465",
-                "map1": {
-                    "total_score": "265468"
-                },
-                "map2": {
-                    "map_winner": "265471",
-                    "total_score": "265472"
-                },
-                "map3": {
-                    "map_winner": "265533",
-                    "total_score": "265534"
-                }
-            }
-        },
-        {
-            "begin_date": "2020-12-28T21:30:00",
-            "team1": "LYNGBYVIKINGS",
-            "team2": "EX-ETHEREAL",
-            "link": "https://betscsgo.in/match/265476/",
-            "outcomes": {
-                "game_winner": "265476",
-                "map1": {
-                    "map_winner": "265478",
-                    "total_score": "265479"
-                },
-                "map2": {
-                    "map_winner": "265482",
-                    "total_score": "265483"
-                }
-            }
-        },
-        {
-            "begin_date": "2020-12-29T09:00:00",
-            "team1": "D13",
-            "team2": "WAY2CHAMPION",
-            "link": "https://betscsgo.in/match/265272/",
-            "outcomes": {
-                "game_winner": "265272",
-                "map1": {
-                    "map_winner": "265274",
-                    "total_score": "265275"
-                },
-                "map2": {
-                    "map_winner": "265278",
-                    "total_score": "265279"
-                }
-            }
-        },
-        {
-            "begin_date": "2020-12-29T12:00:00",
-            "team1": "AFTER",
-            "team2": "TSG",
-            "link": "https://betscsgo.in/match/265493/",
-            "outcomes": {
-                "game_winner": "265493",
-                "map1": {
-                    "map_winner": "265496",
-                    "total_score": "265497"
-                },
-                "map2": {
-                    "map_winner": "265500",
-                    "total_score": "265501"
-                }
-            }
-        },
-        {
             "begin_date": "2020-12-30T17:00:00",
             "team1": "VINKELPARTY",
             "team2": "4BOYS1ALPHA",
@@ -208,6 +137,6 @@
             }
         }
     ],
-    "last_update_all": "2020-12-30T13:08:29.326002",
-    "last_update_live": "2020-12-30T13:08:29.326002"
+    "last_update_all": "2020-12-30T17:56:56.500616",
+    "last_update_live": "2020-12-30T17:56:56.500669"
 }
