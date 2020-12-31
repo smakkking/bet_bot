@@ -14,4 +14,7 @@ urlpatterns = [
     path('account/', include('django.contrib.auth.urls')),
     path('account/menu/', views.BotMenu.as_view(), name='menu'),
     path('account/subscribe/', views.BuySubscribe.as_view(), name='subscribe'),
+    path('account/change_status', views.ChangeBotStatus.as_view(), name='change_status'),
+    path('account/add_to_account', views.CreateBill.as_view(), name='add')
+
 ]

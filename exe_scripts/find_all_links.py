@@ -23,30 +23,9 @@ def find_all_links(DATA, key_g) :
                         # очень возможно, что лучше перенести создание браузера в find_bet
                         pass
                     else :
-                        with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '.json', 'r', encoding="utf-8") as f :
-                            dat = json.load(f)
-                            dat = dat['events']
-                        for x in dat :
-                            # совпадает ли название матча
-                            if stavka.match_title.find(x['team1']) >= 0 and stavka.match_title.find(x['team2']) >= 0 :
-                                if type(stavka.outcome_index) is tuple :
-                                    bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
-                                else :
-                                    # исхода может не быть, вылезет KeyError, что делать?????
-                                    # причины, по кот это может произойти
-                                    # 1) после обновления в файле betscsgo.json. Это значит, что такая ставка уже недоступна(закончилась)
-                                    #
-                                    #
-                                    bet_id = x['outcomes'][stavka.outcome_index]
-                                stavka.set_bk_link(key, {
-                                    'team1' : x['team1'],
-                                    'team2' : x['team2'],
-                                    'bet_id' : bet_id,
-                                    'link' : x['link']
-                                })
-
+                        stavka.set_bk_link(key, BOOKMAKER_OFFSET[key].get_info(stavka))
         else :
-            # не умеет работать с системой ставок(когда одновременно)
+            # не умеет работать с системой ставок(когда одновременно), а может это и не нужно???
             pass
     return (key_g, DATA[key_g])
 

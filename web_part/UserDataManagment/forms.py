@@ -71,4 +71,3 @@ class RegistrationForm(ModelForm) :
         return cd['password2']
 
 
-    

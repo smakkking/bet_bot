@@ -10,19 +10,74 @@
         <p> 
             <a href="{% url 'settings' %}"> НАСТРОЙКИ </a>
         </p>
+
         {% if not sub_status %}
         <p><a href="{% url 'subscribe' %}"> КУПИТЬ ПОДПИСКУ </a></p>
         {% endif %}
-            
-        <form method="POST">
-            {% csrf_token %}
-            {% if bot_status %}
-                <input type="submit" value="ОСТАНОВИТЬ БОТА"/>
-            {% else %}
-                <input type="submit" value="АКТИВИРОВАТЬ БОТА"/>
-            {% endif %}
-            
-        </form>
+        <button id="bot_status" onclick="
+                $.getJSON('{% url 'change_status' %}', function (data) {
+                    if (data['status']) {
+                    $('#bot_status').text('ОСТАНОВИТЬ БОТА')
+                } else {
+                    $('#bot_status').text('АКТИВИРОВАТЬ БОТА')
+                }
+                })
+                ">
+             {% if bot_status %}
+                 ОСТАНОВИТЬ БОТА
+             {% else %}
+                 АКТИВИРОВАТЬ БОТА
+             {% endif %}
+        </button>
+
+
+        <p>
+    <div> Оплата производится с помощью онлайн-кошелька QIWI</div>
+</p>
+<p>
+    <div id="add_error"></div>
+        <div id="info"> </div>
+</p>
+
+        <script>
+            var summ;
+            var comment;
+        </script>
+
+<div id="summ_div"> Введите сумму для пополнения</div>
+<input type="number" id="summ">
+<button id="pay" onclick="
+    $.getJSON('{% url 'add' %}', {'summ' : $('#summ').val(), 'check_status' : false}, function (data) {
+            if (!data['success']) {
+                $('#add_error').html(data['error']);
+            } else {
+                $('#info').html(
+                    'Переведите ' + data['summ'] +
+                    ' рублей на кошелек с номером ' + data['phone'] +
+                    ' с комментарием <b>' + data['code'] + '</b>'
+                );
+                $('#add_error').text('');
+                comment = data['code'];
+                summ = data['summ'];
+                $('#check').show();
+                $('#pay').hide();
+                $('#summ').hide();
+                $('#summ_div').hide();
+            }
+        });
+"> Оплатить</button>
+ <button hidden id="check" onclick="
+    $.getJSON('{% url 'add' %}', {'price' : summ, 'check_status' : true, 'comment' : comment}, function (data) {
+        if (!data['success']) {
+            $('#add_error').html(data['error']);
+        } else {
+            $('#info').html(
+             '<b>Сумма зачислена на Ваш счет. Для синхронизации перезагрузите страницу</b>'
+            );
+            $('#add_error').text('');
+         }
+    });
+"> Проверить статус платежа</button>
             {{form.as_p}}
 
         <a href="{% url 'logout' %}"> ВЫХОД </a>
