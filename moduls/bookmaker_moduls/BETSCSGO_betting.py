@@ -16,7 +16,7 @@ WALL_URL_add = 'https://betsdota2.fun/'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
 # corrected params
-MATCHES_UPDATE_TIMEh = 8
+MATCHES_UPDATE_TIMEh = 0
 LIVE_MATCHES_UPDATE_TIMEh = 0.5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
@@ -236,6 +236,7 @@ def get_info(stavka) :
 
 def find_matches(update_live, update_all, web_dict: tuple):
     def get_match(match) :
+        # победа
         try:
             t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
             match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
@@ -247,12 +248,15 @@ def find_matches(update_live, update_all, web_dict: tuple):
         if t2 != []:
             match['outcomes']['one_map_win'] = {}
             for x in t2:
+
+                formed_text = bet_manage.reform_team_name(x.find_element_by_class_name('bma-title').text)
+
                 for title in OFFSET_TABLE.keys():
                     if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
                         if OFFSET_TABLE[title] == 'one_map_win':
-                            if x.find_element_by_class_name('bma-title').text.find(match['team1']) >= 0:
+                            if formed_text.find(match['team1']) >= 0:
                                 match['outcomes'][OFFSET_TABLE[title]]['team1'] = x.get_attribute('data-id')
-                            elif x.find_element_by_class_name('bma-title').text.find(match['team2']) >= 0:
+                            elif formed_text.find(match['team2']) >= 0:
                                 match['outcomes'][OFFSET_TABLE[title]]['team2'] = x.get_attribute('data-id')
                         else:
                             match['outcomes'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
@@ -330,52 +334,9 @@ def find_matches(update_live, update_all, web_dict: tuple):
         elif (update_live and datetime.now() > parser.parse(match['begin_date'])) or update_all:
             match['outcomes'] = {}
             bet_manage.get_html_with_browser(browser, match['link'])
-            # победа
-            try:
-                t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
-                match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
-            except:
-                pass
 
-            # доп события
-            t2 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[1]/div[2]/div')
-            if t2 != []:
-                match['outcomes']['one_map_win'] = {}
-                for x in t2:
-                    for title in OFFSET_TABLE.keys():
-                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                            if OFFSET_TABLE[title] == 'one_map_win' :
-                                if x.find_element_by_class_name('bma-title').text.find(match['team1']) >= 0 :
-                                    match['outcomes'][OFFSET_TABLE[title]]['team1'] = x.get_attribute('data-id')
-                                elif x.find_element_by_class_name('bma-title').text.find(match['team2']) >= 0 :
-                                    match['outcomes'][OFFSET_TABLE[title]]['team2'] = x.get_attribute('data-id')
-                            else :
-                                match['outcomes'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+            get_match(match)
 
-            # карта 1
-            t31 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[2]/div[2]/div')
-            if t31 != []:
-                match['outcomes']['map1'] = {}
-                for x in t31:
-                    for title in OFFSET_TABLE.keys():
-                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                            match['outcomes']['map1'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-            # карта 2
-            t32 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[3]/div[2]/div')
-            if t32 != []:
-                match['outcomes']['map2'] = {}
-                for x in t32:
-                    for title in OFFSET_TABLE.keys():
-                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                            match['outcomes']['map2'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-            # карта 3
-            t33 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[4]/div[2]/div')
-            if t33 != []:
-                match['outcomes']['map3'] = {}
-                for x in t33:
-                    for title in OFFSET_TABLE.keys():
-                        if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                            match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
             if match['link'] in bbb :
                 del bbb[match['link']]
         new_data.append(match)
@@ -384,53 +345,11 @@ def find_matches(update_live, update_all, web_dict: tuple):
         match = bbb[match_key]
         match['link'] = match_key
         match['outcomes'] = {}
+
         bet_manage.get_html_with_browser(browser, match_key)
-        # победа
-        try:
-            t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
-            match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
-        except:
-            pass
 
-        # доп события
-        t2 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[1]/div[2]/div')
-        if t2 != []:
-            match['outcomes']['one_map_win'] = {}
-            for x in t2:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        if OFFSET_TABLE[title] == 'one_map_win':
-                            if x.find_element_by_class_name('bma-title').text.find(match['team1']) >= 0:
-                                match['outcomes'][OFFSET_TABLE[title]]['team1'] = x.get_attribute('data-id')
-                            elif x.find_element_by_class_name('bma-title').text.find(match['team2']) >= 0:
-                                match['outcomes'][OFFSET_TABLE[title]]['team2'] = x.get_attribute('data-id')
-                        else:
-                            match['outcomes'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+        get_match(match)
 
-        # карта 1
-        t31 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[2]/div[2]/div')
-        if t31 != []:
-            match['outcomes']['map1'] = {}
-            for x in t31:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map1'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-        # карта 2
-        t32 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[3]/div[2]/div')
-        if t32 != []:
-            match['outcomes']['map2'] = {}
-            for x in t32:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map2'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-        # карта 3
-        t33 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[4]/div[2]/div')
-        if t33 != []:
-            match['outcomes']['map3'] = {}
-            for x in t33:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
     new_data.extend(bbb.values())
 
     browser.close()

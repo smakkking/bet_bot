@@ -16,7 +16,7 @@ import undetected_chromedriver as uc
 from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, GROUP_OFFSET
 
 
-LOAD_TIMEOUT = 2  # sec
+LOAD_TIMEOUT = 0.5  # sec
 
 
 class Stavka :

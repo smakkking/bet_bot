@@ -6,7 +6,8 @@
             "team2": "TYLOO",
             "link": "https://betscsgo.in/match/265784/",
             "outcomes": {
-                "game_winner": "265784"
+                "game_winner": "265784",
+                "one_map_win": {}
             }
         },
         {
@@ -15,7 +16,8 @@
             "team2": "XI'ANTAICHANGGUI",
             "link": "https://betscsgo.in/match/265788/",
             "outcomes": {
-                "game_winner": "265788"
+                "game_winner": "265788",
+                "one_map_win": {}
             }
         },
         {
@@ -24,7 +26,8 @@
             "team2": "LYNNVISION",
             "link": "https://betscsgo.in/match/265796/",
             "outcomes": {
-                "game_winner": "265796"
+                "game_winner": "265796",
+                "one_map_win": {}
             }
         },
         {
@@ -33,7 +36,8 @@
             "team2": "AFTER",
             "link": "https://betscsgo.in/match/265800/",
             "outcomes": {
-                "game_winner": "265800"
+                "game_winner": "265800",
+                "one_map_win": {}
             }
         },
         {
@@ -42,7 +46,8 @@
             "team2": "IG",
             "link": "https://betscsgo.in/match/265804/",
             "outcomes": {
-                "game_winner": "265804"
+                "game_winner": "265804",
+                "one_map_win": {}
             }
         },
         {
@@ -51,7 +56,8 @@
             "team2": "WINGSUP",
             "link": "https://betscsgo.in/match/265792/",
             "outcomes": {
-                "game_winner": "265792"
+                "game_winner": "265792",
+                "one_map_win": {}
             }
         },
         {
@@ -61,6 +67,11 @@
             "link": "https://betsdota2.fun/match/162610/",
             "outcomes": {
                 "game_winner": "162610",
+                "one_map_win": {
+                    "team1": "162616",
+                    "team2": "162617"
+                },
+                "games_count_2.5": "162611",
                 "map1": {
                     "map_winner": "162612"
                 },
@@ -76,6 +87,10 @@
             "link": "https://betsdota2.fun/match/162636/",
             "outcomes": {
                 "game_winner": "162636",
+                "one_map_win": {
+                    "team2": "162674"
+                },
+                "games_count_2.5": "162637",
                 "map1": {
                     "map_winner": "162638"
                 },
@@ -85,6 +100,6 @@
             }
         }
     ],
-    "last_update_all": "2021-01-01T22:28:09.961284",
-    "last_update_live": "2021-01-01T22:28:09.961308"
+    "last_update_all": "2021-01-01T23:13:29.503940",
+    "last_update_live": "2021-01-01T23:13:29.503962"
 }
