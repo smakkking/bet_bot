@@ -1,22 +1,12 @@
 {
     "events": [
         {
-            "begin_date": "2021-01-01T16:30:00",
-            "team1": "LYNNVISION",
-            "team2": "AFTER",
-            "link": "https://betscsgo.in/match/265764/",
-            "outcomes": {
-                "game_winner": "265764"
-            }
-        },
-        {
             "begin_date": "2021-01-02T09:00:00",
             "team1": "TSG",
             "team2": "TYLOO",
             "link": "https://betscsgo.in/match/265784/",
             "outcomes": {
-                "game_winner": "265784",
-                "total_score": "265785"
+                "game_winner": "265784"
             }
         },
         {
@@ -25,8 +15,7 @@
             "team2": "XI'ANTAICHANGGUI",
             "link": "https://betscsgo.in/match/265788/",
             "outcomes": {
-                "game_winner": "265788",
-                "total_score": "265789"
+                "game_winner": "265788"
             }
         },
         {
@@ -35,8 +24,7 @@
             "team2": "LYNNVISION",
             "link": "https://betscsgo.in/match/265796/",
             "outcomes": {
-                "game_winner": "265796",
-                "total_score": "265797"
+                "game_winner": "265796"
             }
         },
         {
@@ -45,8 +33,7 @@
             "team2": "AFTER",
             "link": "https://betscsgo.in/match/265800/",
             "outcomes": {
-                "game_winner": "265800",
-                "total_score": "265801"
+                "game_winner": "265800"
             }
         },
         {
@@ -55,8 +42,16 @@
             "team2": "IG",
             "link": "https://betscsgo.in/match/265804/",
             "outcomes": {
-                "game_winner": "265804",
-                "total_score": "265805"
+                "game_winner": "265804"
+            }
+        },
+        {
+            "begin_date": "2021-01-02T16:00:00",
+            "team1": "TYLOO",
+            "team2": "WINGSUP",
+            "link": "https://betscsgo.in/match/265792/",
+            "outcomes": {
+                "game_winner": "265792"
             }
         },
         {
@@ -73,8 +68,23 @@
                     "map_winner": "162614"
                 }
             }
+        },
+        {
+            "begin_date": "2021-01-02T10:00:00",
+            "team1": "IG.V",
+            "team2": "VOID",
+            "link": "https://betsdota2.fun/match/162636/",
+            "outcomes": {
+                "game_winner": "162636",
+                "map1": {
+                    "map_winner": "162638"
+                },
+                "map2": {
+                    "map_winner": "162640"
+                }
+            }
         }
     ],
-    "last_update_all": "2021-01-01T13:25:34.834113",
-    "last_update_live": "2021-01-01T18:48:32.297603"
+    "last_update_all": "2021-01-01T22:28:09.961284",
+    "last_update_live": "2021-01-01T22:28:09.961308"
 }

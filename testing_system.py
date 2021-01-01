@@ -91,7 +91,7 @@ def cf_scraper() :
 
 
 if __name__ == "__main__" :
-    print(get_stavka('https://sun9-24.userapi.com/impg/pbcAOCrgcQuzbZrbF0JMDv2dnruy0a2oB4JQFA/gBUq0GjmqsU.jpg?size=497x433&quality=96&proxy=1&sign=a337356f9c2c0e69065ed8f8c1a2bc22&c_uniq_tag=eyRhAY1GJO30quk4uqU4h74AfRI8B--EzTfOoyjoDFY&type=album', ExpertMnenie_group))
+    print(get_stavka('https://sun9-3.userapi.com/impg/cyKHESr-WViWzAwLR9H_f-ZdGCAuWC_XjI0gxw/J-VpeiCnX_Q.jpg?size=640x549&quality=96&proxy=1&sign=ba1efca46db799cce27d4fa2b78bd48b&c_uniq_tag=acWqGDd2McmOtUx_o7jDjEd6Dj0B2vmyrUMfMB6RPtA&type=album', ExpertMnenie_group))
 """
 {
     "match_title": "FORZESCHOOL VS STATE21",
