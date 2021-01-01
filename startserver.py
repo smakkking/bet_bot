@@ -35,10 +35,6 @@ if __name__ == "__main__" :
             }
         },
         "loggers":{
-            "relogin_live":{
-                "handlers":["script"],
-                "level":"INFO",
-            },
             "load_last_data": {
                 "handlers": ["script"],
                 "level": "INFO",
@@ -59,10 +55,6 @@ if __name__ == "__main__" :
                 "handlers": ["script"],
                 "level": "INFO",
             },
-            "bet_status": {
-                "handlers": ["bets"],
-                "level": "INFO",
-            }
         },
         "formatters":{
             "myFormatter":{
@@ -70,19 +62,27 @@ if __name__ == "__main__" :
             }
         }
     }
+
+    for key in GROUP_OFFSET.keys() :
+        dictLogConfig['loggers'][key] = {
+            "handlers": ["groups"],
+            "level": "INFO",
+        }
+
     config.dictConfig(dictLogConfig)
 
+
     # системные скрипты выполнятются редко
-    find_matches_live.main(logging.getLogger("find_matches_live"))
+    find_matches_live.main()
 
     # основные скрипты выполняются постоянно
-    GROUP_DATA = load_last_data.main(logging.getLogger("load_last_data"))
+    GROUP_DATA = load_last_data.main()
 
-    GROUP_DATA = find_all_links.main(GROUP_DATA, logging.getLogger("find_all_links"))
+    GROUP_DATA = find_all_links.main(GROUP_DATA)
 
-    GROUP_DATA = all_bet.main(GROUP_DATA, scan_database.main(), logging.getLogger("all_bet"))
+    GROUP_DATA = all_bet.main(GROUP_DATA, scan_database.main())
 
-    GROUP_DATA = check_dogon.main(GROUP_DATA, logging.getLogger("check_dogon"))
+    GROUP_DATA = check_dogon.main(GROUP_DATA)
 
     # formating
     for x in GROUP_DATA.keys() :

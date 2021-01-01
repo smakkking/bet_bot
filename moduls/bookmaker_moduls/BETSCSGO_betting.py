@@ -26,7 +26,6 @@ CURRENT_CF_CLEARANCE_add = '733f8db49f6b6b018bf88adadb08b8fbf555e5ec-1609340700-
 OFFSET_TABLE = {
     'Победа на карте' : 'map_winner',
     'Победа в матче' : 'game_winner',
-    'Количество раундов' : 'total_score',
     'выиграет одну карту' : 'one_map_win' # нет правильной обработки
 }
 
@@ -94,6 +93,8 @@ def parse1(photo_url : str, words : list) :
         res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
     res.outcome_index = (OFFSET_TABLE['Победа на карте'], int(words[words.index('#') + 1]))
 
+    res.sum = float(words[words.index('Сумма') + 3])
+
     return res
 
 
@@ -126,7 +127,10 @@ def parse2(photo_url : str, words : list) :
         res.winner = res.match_title[res.match_title.find('vs') + 3 :]
     res.outcome_index = OFFSET_TABLE['Победа в матче']
 
+    res.sum = float(words[words.index('Сумма') + 3])
+
     return res
+
 
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
@@ -156,7 +160,7 @@ def find_bet(last_date, update_live=False, update_all=False) :
     return new_d
 
 
-def make_bet(stavka, summ, session_key='fghfh12wafsd') :
+def make_bet(stavka, summ, session_key='session_key') :
     # вопросы по поводу ставок:
     # 1) ставка открылась, но ее нет в файле .json, load_last_data она уже собрана(решается увеличением частоты обновления live)
     # однако все равно можно попасть в такой временной участок(если только не проверять live каждый раз перед load_last_data)
@@ -171,7 +175,7 @@ def make_bet(stavka, summ, session_key='fghfh12wafsd') :
     elif stavka.bk_links[NAME]['team2'] == stavka.winner :
         base_str += '2/'
 
-    base_str += str(summ) + '/' + session_key
+    base_str += str(summ * stavka.summ_multiplier) + '/' + session_key
     return base_str
 
 
@@ -247,7 +251,10 @@ def find_matches(update_live, update_all, web_dict: tuple):
     browser = init_config()
 
     bet_manage.get_html_with_browser(browser, web_dict[0], sec=5, cookies=[('cf_clearance', web_dict[1]), ])
-    matches = browser.find_elements_by_xpath(xPath_matches)
+    try :
+        matches = browser.find_elements_by_xpath(xPath_matches)
+    except :
+        assert False, "can't find matches on web_page"
     for a in matches:
         if a == matches[len(matches) - 1] or a.text == 'Нет активных матчей':
             continue
@@ -258,7 +265,8 @@ def find_matches(update_live, update_all, web_dict: tuple):
             begin = begin.replace(day=datetime.now().day, month=datetime.now().month)
         begin = begin.replace(year=datetime.now().year)
 
-        if begin - datetime.now() > timedelta(hours=24):
+        # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
+        if begin - datetime.now() > timedelta(hours=18):
             continue
         if begin > datetime.now() and update_live:
             continue
@@ -322,7 +330,8 @@ def find_matches(update_live, update_all, web_dict: tuple):
                     for title in OFFSET_TABLE.keys():
                         if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
                             match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-            del bbb[match['link']]
+            if match['link'] in bbb :
+                del bbb[match['link']]
         new_data.append(match)
 
     for match_key in bbb.keys():

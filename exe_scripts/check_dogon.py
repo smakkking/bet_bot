@@ -20,12 +20,13 @@ def check_and_delete(DATA, data_key) :
             continue
         if not result :
             x.outcome_index[1] += 1
+            # при догоне сумма увел в 2 раза
+            x.summ_multiplier *= 2
             DATA[data_key]['coupon'].add_bet(x)
         pass
     DATA[data_key]['coupon'].dogon = new_dogon
 
     return (data_key, DATA[data_key])
-    # возвращать ли кортеж ключ-значение? изменится ли DATA в main?
 
 
 def main(DATA, main_logger=None):

@@ -1,5 +1,6 @@
 import bet_manage
 import nltk
+import logging
 
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
@@ -18,10 +19,14 @@ def check_templates(post, token) :
     for photo_url in post.photo_list :
         obj = bet_manage.YandexAPI_detection(photo_url, token)
         text = obj.text_detection()
+        has_template = False
         for (tmp, parse) in BET_TEMPLATES :
             if tmp(text.upper()) :
                 st = parse(photo_url, nltk.word_tokenize(text))
                 post.coupon.add_bet(st)
+                has_template = True
+        if not has_template :
+            logging.getLogger(NAME).info("no templates for: " + photo_url)
     dogon(post)
 
 

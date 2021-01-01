@@ -122,6 +122,7 @@ class CreateBill(LoginRequiredMixin, views.View) :
             phone = "+79162158810"
 
             return QApi(token=token, phone=phone)
+
         if 'summ' in request.GET.dict() :
             api = auth()
 
@@ -156,10 +157,10 @@ class CreateBill(LoginRequiredMixin, views.View) :
             # изучить инфу про функции api, может есть слежка за всеми последними платежами, а не за теми, кот поступили сейчас
 
 
-            for i in range(5) :
+            for i in range(6) :
                 # здесь могут возникнуть дополнительные условия совпадения( подробнее нужно смотреть устройство файла file.json)
                 if api.payments['data'][i]['comment'] == request.GET.get('comment') and \
-                        float(api.payments['data'][i]['sum']['amount']) == float(request.GET.get('price')) and \
+                        float(api.payments['data'][i]['sum']['amount']) >= float(request.GET.get('price')) and \
                         api.payments['data'][i]['status'] == 'SUCCESS':
                     request.user.personal_count += api.payments['data'][i]['sum']['amount']
                     request.user.save()

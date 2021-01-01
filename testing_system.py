@@ -2,7 +2,7 @@
 
 from bet_manage import LastGroupPost, YandexAPI_detection, Stavka, get_html_with_browser, reform_team_name
 
-from moduls.bookmaker_moduls import BETSCSGO_betting
+from global_constants import BET_PROJECT_ROOT
 
 import nltk, json, time
 from moduls.group_moduls import ExpertMnenie_group
@@ -56,7 +56,7 @@ def testing_group(group, N) :
                     'stavka' : stavka.__json_repr__(),
                 })
 
-    with open(r'C:\GitRep\bet_bot\web_part\user_data\test.json', 'w') as f :
+    with open(BET_PROJECT_ROOT + 'server_data/test.json', 'w') as f :
         json.dump(bbb, f, indent=4)
 
 def get_stavka(photo_url, group) :
@@ -65,7 +65,6 @@ def get_stavka(photo_url, group) :
     text = a.text_detection()
     text_nltk = nltk.word_tokenize(text)
     text = text.upper()
-    
 
     stavka = None
 
@@ -92,7 +91,8 @@ def cf_scraper() :
 
 
 if __name__ == "__main__" :
-    pass
+    print(get_stavka('https://sun9-24.userapi.com/impg/pbcAOCrgcQuzbZrbF0JMDv2dnruy0a2oB4JQFA/gBUq0GjmqsU.jpg?size=497x433&quality=96&proxy=1&sign=a337356f9c2c0e69065ed8f8c1a2bc22&c_uniq_tag=eyRhAY1GJO30quk4uqU4h74AfRI8B--EzTfOoyjoDFY&type=album', ExpertMnenie_group))
+"""
 {
     "match_title": "FORZESCHOOL VS STATE21",
     "winner": "FORZESCHOOL",
@@ -106,4 +106,4 @@ if __name__ == "__main__" :
         }
     }
 }
-
+"""

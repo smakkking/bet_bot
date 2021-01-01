@@ -1,6 +1,6 @@
 import json
 import functools
-import time
+import logging
 from multiprocessing import Pool
 
 import bet_manage
@@ -11,26 +11,22 @@ from bet_manage import YandexAPI_detection
 # TODO need test
 def load_last_data(OLD_DATA, token, group_off) :
     # OLD_DATA - словари, содержащие экземпляры coupon
-    if group_off in OLD_DATA.keys() :
+    if group_off in OLD_DATA.keys():
         post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL, old=OLD_DATA[group_off]['coupon'])
-    else :
+    else:
         post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL)
-    try :
+    try:
         post.get()
         if not (group_off in OLD_DATA.keys() and OLD_DATA[group_off]['text'] == post.text):
             GROUP_OFFSET[group_off].check_templates(post, token)
     except Exception as e:
-        pass
+        logging.getLogger("load_last_data").error(group_off + " was failed because of " + e)
     if post.coupon.bets == []:
         post.parse_bet = False
     return (group_off, post.__dict__())
 
 
-def main(main_logger=None) :
-
-    if main_logger :
-        now = time.time()
-
+def main() :
     YandexAPI_detection.create_new_token()
 
     try :
@@ -43,9 +39,6 @@ def main(main_logger=None) :
         DATA = dict(pool.map(functools.partial(load_last_data, DATA, YandexAPI_detection.iam_token), GROUP_OFFSET.keys()))
 
     # DATA - словари, содержащие экземпляры coupon
-
-    if main_logger :
-        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     return DATA
 

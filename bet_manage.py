@@ -1,7 +1,11 @@
 # общие модули
-import sqlite3, time
+import sqlite3
+import time
 from sqlite3 import Error
-import requests, urllib, base64, re
+import requests
+import urllib
+import base64
+import re
 
 # light selenium
 from selenium import webdriver
@@ -9,8 +13,8 @@ from selenium import webdriver
 # dark selenium
 import undetected_chromedriver as uc
 
-from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
-#from global_constants import GROUP_OFFSET
+from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, GROUP_OFFSET
+
 
 LOAD_TIMEOUT = 2  # sec
 
@@ -19,25 +23,30 @@ class Stavka :
     def __init__(self, bets=None) :
 
         self.bk_links = {}
+        self.summ_multiplier = 1
+        self.sum = 0
 
         if bets is None :
             self.match_title = ''
             self.winner = ''
             self.outcome_index = ''
             self.dogon = False
-            self.sport = ''
         else :
             self.match_title = bets['match_title']
             self.winner = bets['winner']
             self.outcome_index = bets['outcome_index']
             self.dogon = bets['dogon']
-            self.sport = bets['sport']
+            self.summ_multiplier = bets['summ_multiplier']
+            self.sum = bets['sum']
             if 'bk_links' in bets.keys() :
                 self.bk_links = bets['bk_links']
 
-
-    def change_summ(self, s : int) :
-        self.summ = str(s)
+    def __eq__(self, other):
+        flag = True
+        flag &= self.match_title == other.match_title
+        flag &= self.outcome_index == other.outcome_index
+        flag &= self.winner == other.winner
+        return flag
 
     def __json_repr__(self) :
         return self.__dict__
@@ -96,13 +105,8 @@ class LastGroupPost:
         self.coupon = Coupon(coup_data=old)
         self.wall_domain = wall_url[wall_url.rfind('/') + 1 : ]
 
-
     def add_photo(self, photo) :
         self.photo_list.append(photo)
-
-    def find_dogon(self) :
-        s = self.text.lower()
-        return s.find('догон') >= 0 or s.find('увеличу') >= 0 # дополняется
 
     def __json_repr__(self) :
         return dict([
@@ -342,10 +346,14 @@ def define_side_winner(url) :
     import requests
 
     def otkl(color) :
+        # если честно сомнительное сравнение
+        # возможно нужно сузить диапазон цветов
+
         flag = True
-        green = (182, 235, 52)
+        green_upper = (255, 255, 91)
+        green_lower = (110, 85, 40)
         for i in range(len(color)) :
-            flag = flag and abs(color[i] - green[i]) < 2
+            flag &= green_lower[i] <= color[i] <= green_upper[i]
         return flag
 
     resp = requests.get(url, stream=True).raw
@@ -367,9 +375,9 @@ def define_side_winner(url) :
         else :
             count_right += 1
 
-    if count_right == len(green_array) :
+    if count_right > count_left:
         return 'right'
-    elif  count_left == len(green_array) :
+    else:
         return 'left'
 
 def reform_team_name(s : str) :

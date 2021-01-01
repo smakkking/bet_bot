@@ -89,19 +89,19 @@ class StandartUser(AbstractUser):
     CSgoVictory = models.BooleanField(
         default=False,
         verbose_name="CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2",
-        help_text='<a href="https://vk.com/victorybets_stavki"> подробнее </a>',
+        help_text='<a href="' + GROUP_OFFSET['CSgoVictory'].WALL_URL + '"> подробнее </a>',
     )
 
     ExpertMnenie = models.BooleanField(
         default=False,
         verbose_name="Экспертное мнение CSGO | Прогнозы CS:GO & DOTA 2", 
-        help_text='<a href="https://vk.com/csgo_expert_dota"> подробнее </a>',
+        help_text='<a href="' + GROUP_OFFSET['ExpertMnenie'].WALL_URL + '"> подробнее </a>',
     )
 
     BetsPedia = models.BooleanField(
         default=False,
         verbose_name="BETSPEDIA CS:GO | ПРОГНОЗЫ CSGO & DOTA 2",
-        help_text='<a href="https://vk.com/betspedia_csgo"> подробнее </a>',
+        help_text='<a href="' + GROUP_OFFSET['BetsPedia'].WALL_URL + '"> подробнее </a>',
     )
 
     def __str__(self):
