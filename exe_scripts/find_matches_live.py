@@ -33,6 +33,5 @@ def main(main_logger=None) :
         main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
 if __name__ == '__main__':
-    # нужно протестировать 2021/01/01
-    # почему-то не удаляет старые матчи
-    main()
+    while True:
+        main()

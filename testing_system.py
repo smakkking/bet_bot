@@ -1,11 +1,12 @@
 # здесь тестируем все модули по группам и букмекеркам
 
-from bet_manage import LastGroupPost, YandexAPI_detection, Stavka, get_html_with_browser, reform_team_name
+from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver
 
 from global_constants import BET_PROJECT_ROOT
 
 import nltk, json, time
 from moduls.group_moduls import ExpertMnenie_group
+from moduls.bookmaker_moduls import BETSCSGO_betting
 
 
 def testing_group(group, N) :
@@ -89,11 +90,25 @@ def cf_scraper() :
     r = s.get('https://betscsgo.in/match/265584/')
     print(r.text)
 
+def hdless_betscsgo() :
+    driver = create_webdriver()
+    get_html_with_browser(driver, BETSCSGO_betting.WALL_URL, sec=5, cookies=[('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)])
 
+    cook = driver.get_cookies()
 
+    driver = create_webdriver(hdless=True)
+    get_html_with_browser(driver, BETSCSGO_betting.WALL_URL, sec=5)
+
+    for c in cook :
+        driver.add_cookie(c)
+
+    time.sleep(10)
+
+    with open('file.html', 'w') as f :
+        f.write(driver.page_source)
 
 if __name__ == "__main__" :
-
+    hdless_betscsgo()
     """
     {
         "match_title": "FORZESCHOOL VS STATE21",
@@ -109,4 +124,5 @@ if __name__ == "__main__" :
         }
     }
     """
+    '(python3 load_last_data.py) | (python3 all_bet.py) | (python3 check_dogon.py) | (python3 find_matches_live.py)'
     pass

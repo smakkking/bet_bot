@@ -16,12 +16,12 @@ WALL_URL_add = 'https://betsdota2.fun/'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
 # corrected params
-MATCHES_UPDATE_TIMEh = 8
-LIVE_MATCHES_UPDATE_TIMEh = 0.5
+MATCHES_UPDATE_TIMEh = 12
+LIVE_MATCHES_UPDATE_TIMEh = 0.25
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
 CURRENT_CF_CLEARANCE = '366d5424a19b0f1809696a3f73871cb8682e1de0-1609339139-0-150'
-CURRENT_CF_CLEARANCE_add = '84f001b4c29c2554441eb17afeb4a45cecb9eaef-1609587672-0-150'
+CURRENT_CF_CLEARANCE_add = '733f8db49f6b6b018bf88adadb08b8fbf555e5ec-1609340700-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
@@ -309,7 +309,7 @@ def find_matches(update_live, update_all, web_dict: tuple):
 
         # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
 
-        if begin - datetime.now() > timedelta(hours=12):
+        if begin - datetime.now() > timedelta(hours=16):
             continue
         if begin > datetime.now() and update_live:
             continue

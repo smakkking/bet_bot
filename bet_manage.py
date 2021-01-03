@@ -6,6 +6,7 @@ import requests
 import urllib
 import base64
 import re
+import json
 
 # light selenium
 from selenium import webdriver
@@ -13,7 +14,7 @@ from selenium import webdriver
 # dark selenium
 import undetected_chromedriver as uc
 
-from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
+from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, ALL_POSTS_JSON_PATH
 
 
 LOAD_TIMEOUT = 0.5  # sec
@@ -69,7 +70,7 @@ class Coupon :
             for bet in coup_data['bets'] :
                 self.add_bet(Stavka(bet))
             for bet in coup_data['dogon'] :
-                self.dogon.append(Stavka(bet))
+                self.add_bet(Stavka(bet), to_dogon=True)
 
     def __json_repr__(self) :
         return dict([
@@ -385,3 +386,25 @@ def reform_team_name(s : str) :
     s = s.replace(' ', '')
     s = s.upper()
     return s
+
+def read_groups() :
+    while True :
+        try :
+            with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
+                DATA = json.load(last_posts_json)
+            #print("read successful")
+        except :
+            time.sleep(1)
+            print("cant read")
+            continue
+    for key in DATA.keys() :
+        DATA[key]['coupon'] = Coupon(coup_data=DATA[key]['coupon'])
+
+    return DATA
+
+def write_groups(t) :
+    for x in t.keys() :
+        t[x]['coupon'] = t[x]['coupon'].__json_repr__()
+
+    with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
+        json.dump(t, last_posts_json, indent=4)

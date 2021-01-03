@@ -4,7 +4,8 @@ from multiprocessing import Pool
 import logging
 
 from global_constants import BOOKMAKER_OFFSET
-
+import bet_manage
+from exe_scripts import scan_database
 def bbet_all(DATA, client) :
     k = 0
     if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
@@ -31,11 +32,8 @@ def bbet_all(DATA, client) :
         pass
 
 
-def main(DATA : dict, clients_DATA : dict, main_logger=None) :
-
-    if main_logger :
-        now = time.time()
-
+def main(DATA : dict, clients_DATA : dict=None, main_logger=None) :
+    clients_DATA = scan_database.main()
     # здесь :
     # для каждого клиента происходит процесс ставки
     # ставки из dogon в bets переносятся в другом скрипте
@@ -43,9 +41,6 @@ def main(DATA : dict, clients_DATA : dict, main_logger=None) :
     if clients_DATA != [] :
         with Pool(processes=len(clients_DATA)) as pool :
             bet_data = list(pool.map(functools.partial(bbet_all, DATA), clients_DATA))
-
-    if main_logger :
-        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
     for group in DATA.keys() :
@@ -59,5 +54,10 @@ def main(DATA : dict, clients_DATA : dict, main_logger=None) :
         DATA[x]['coupon'].bets = []
     return DATA
 
-    
+
+if __name__ == '__main__' :
+    while True :
+        DATA = bet_manage.read_groups()
+        bet_manage.write_groups(main(DATA))
+
     

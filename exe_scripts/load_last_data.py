@@ -1,11 +1,14 @@
 import json
 import functools
 import logging
+import time
 from multiprocessing import Pool
+import json
 
 import bet_manage
 from global_constants import ALL_POSTS_JSON_PATH, GROUP_OFFSET
 from bet_manage import YandexAPI_detection
+from exe_scripts import find_all_links
 
 
 # TODO need test
@@ -32,7 +35,7 @@ def main() :
     try :
         with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
             DATA = json.load(last_posts_json)
-    except FileNotFoundError:
+    except Exception:
         DATA = {}
 
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
@@ -44,10 +47,11 @@ def main() :
 
 
 if __name__ == "__main__":
-    t = main()
-    # записываем обратно для более удобного восприятия
-    for x in t.keys() :
-        t[x]['coupon'] = t[x]['coupon'].__json_repr__()
-    with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
-        json.dump(t, last_posts_json, indent=4)
+    while True :
+        t = main()
+        # записываем обратно для более удобного восприятия
+        DATA = find_all_links.main(t)
+
+        bet_manage.write_groups(DATA)
+        time.sleep(15)
     
