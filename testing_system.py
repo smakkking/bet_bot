@@ -90,20 +90,23 @@ def cf_scraper() :
     print(r.text)
 
 
+
+
 if __name__ == "__main__" :
-    print(get_stavka('https://sun9-3.userapi.com/impg/cyKHESr-WViWzAwLR9H_f-ZdGCAuWC_XjI0gxw/J-VpeiCnX_Q.jpg?size=640x549&quality=96&proxy=1&sign=ba1efca46db799cce27d4fa2b78bd48b&c_uniq_tag=acWqGDd2McmOtUx_o7jDjEd6Dj0B2vmyrUMfMB6RPtA&type=album', ExpertMnenie_group))
-"""
-{
-    "match_title": "FORZESCHOOL VS STATE21",
-    "winner": "FORZESCHOOL",
-    "outcome_index": [
-        "map_winner", 1
-    ],
-    "dogon": true,
-    "bk_links": {
-        "betscsgo": {
-            "link": "https://betscsgo.in/match/265584/"
+
+    """
+    {
+        "match_title": "FORZESCHOOL VS STATE21",
+        "winner": "FORZESCHOOL",
+        "outcome_index": [
+            "map_winner", 1
+        ],
+        "dogon": true,
+        "bk_links": {
+            "betscsgo": {
+                "link": "https://betscsgo.in/match/265584/"
+            }
         }
     }
-}
-"""
+    """
+    pass

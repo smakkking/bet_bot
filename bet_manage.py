@@ -13,7 +13,7 @@ from selenium import webdriver
 # dark selenium
 import undetected_chromedriver as uc
 
-from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, GROUP_OFFSET
+from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH
 
 
 LOAD_TIMEOUT = 0.5  # sec

@@ -4,7 +4,7 @@ import logging
 from multiprocessing import Pool
 
 import bet_manage
-from global_constants import ALL_POSTS_JSON_PATH, GROUP_OFFSET, BET_PROJECT_ROOT
+from global_constants import ALL_POSTS_JSON_PATH, GROUP_OFFSET
 from bet_manage import YandexAPI_detection
 
 

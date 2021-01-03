@@ -3,7 +3,7 @@ from multiprocessing import Pool
 import functools
 import time
 
-from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET, SERVER_DATA_PATH
+from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET, ALL_POSTS_JSON_PATH
 
 def find_all_links(DATA, key_g) :
     group = DATA[key_g]
@@ -30,11 +30,13 @@ def find_all_links(DATA, key_g) :
     return (key_g, DATA[key_g])
 
 def main(DATA: dict, main_logger=None) :
-    if main_logger :
-        now = time.time()
+    with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
+        DATA = json.load(last_posts_json)
+
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(find_all_links, DATA), GROUP_OFFSET.keys()))
-    if main_logger:
-        main_logger.info('{0:.2f} spent'.format(time.time() - now))
+
+    with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
+        json.dump(DATA, last_posts_json, indent=4)
     return DATA
 
