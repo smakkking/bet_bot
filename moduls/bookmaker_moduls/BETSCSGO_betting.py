@@ -20,7 +20,7 @@ MATCHES_UPDATE_TIMEh = 12
 LIVE_MATCHES_UPDATE_TIMEh = 0.25
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE = '366d5424a19b0f1809696a3f73871cb8682e1de0-1609339139-0-150'
+CURRENT_CF_CLEARANCE = '1d53718a4415e4cce26e76ce14d281b17cfd592f-1609968097-0-150'
 CURRENT_CF_CLEARANCE_add = '733f8db49f6b6b018bf88adadb08b8fbf555e5ec-1609340700-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять

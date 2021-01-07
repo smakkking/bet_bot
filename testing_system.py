@@ -1,5 +1,5 @@
 # здесь тестируем все модули по группам и букмекеркам
-
+import steampy
 from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver
 
 from global_constants import BET_PROJECT_ROOT
@@ -7,7 +7,6 @@ from global_constants import BET_PROJECT_ROOT
 import nltk, json, time
 from moduls.group_moduls import ExpertMnenie_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
-
 
 def testing_group(group, N) :
     p = LastGroupPost(group.WALL_URL)
@@ -78,17 +77,39 @@ def get_stavka(photo_url, group) :
         return stavka.__json_repr__()
 
 def cf_scraper() :
-    import requests
+    import steam.webauth as wa
+    user = wa.WebAuth('Karkadav')
+    s = user.cli_login(';:9N8;,Emg@LkQ[')
 
-    s = requests.Session()
     head = {
         'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
     }
     s.headers.update(head)
-    s.cookies.set('cf_clearance', '5a89c14b8b4ee0f11c4e471a778912a5c8222ac5-1609228344-0-150')
+    s.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
 
-    r = s.get('https://betscsgo.in/match/265584/')
-    print(r.text)
+    r = s.get('https://betscsgo.in/login/')
+
+    with open('file1.html', 'w') as f :
+        f.write(r.text)
+
+    from bs4 import BeautifulSoup as bs
+
+    soup = bs(r.text, 'html.parser')
+    form_obj = soup.find(id='openidForm')
+
+
+    r = s.post('https://steamcommunity.com/openid/login', files={
+        'actionInput': form_obj.find('input', {'id': 'actionInput'})['value'],
+        'openid.mode': form_obj.find('input', {'name': 'openid.mode'})['value'],
+        'openidparams': form_obj.find('input', {'name': 'openidparams'})['value'],
+        'nonce': form_obj.find('input', {'name': 'nonce'})['value']
+    })
+
+
+    with open('file2.html', 'w') as f :
+        f.write(r.text)
+
+
 
 def hdless_betscsgo() :
     driver = create_webdriver()
@@ -108,7 +129,7 @@ def hdless_betscsgo() :
         f.write(driver.page_source)
 
 if __name__ == "__main__" :
-    hdless_betscsgo()
+    cf_scraper()
     """
     {
         "match_title": "FORZESCHOOL VS STATE21",
