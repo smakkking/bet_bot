@@ -76,38 +76,48 @@ def get_stavka(photo_url, group) :
     else :
         return stavka.__json_repr__()
 
-def cf_scraper() :
+def placebet(login, passwd) :
+
+    # данная ф-ия осуществляет авторизацию на betscsgo
+
     import steam.webauth as wa
-    import requests
-    from pprint import pprint
-    user = wa.WebAuth('yphmbgmejdqsb')
-    s = user.cli_login('adbj2lpr1')
+    from bs4 import BeautifulSoup as bs
+
+    user = wa.WebAuth(login)
+    session = user.cli_login(passwd)
 
     head = {
         'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
     }
-    s.headers.update(head)
-    s.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
+    session.headers.update(head)
+    session.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
 
-    r = s.get('https://betscsgo.in/login/')
-
-    with open('file1.html', 'w') as f :
-        f.write(r.text)
-
-    from bs4 import BeautifulSoup as bs
+    r = session.get('https://betscsgo.in/login/')
 
     soup = bs(r.text, 'html.parser')
     form_obj = soup.find(id='openidForm')
 
-    r = s.post('https://steamcommunity.com/openid/login', files={
+    r = session.post('https://steamcommunity.com/openid/login', files={
         'action': (None, form_obj.find('input', {'id': 'actionInput'})['value']),
         'openid.mode': (None,form_obj.find('input', {'name': 'openid.mode'})['value']),
         'openidparams': (None,form_obj.find('input', {'name': 'openidparams'})['value']),
         'nonce': (None,form_obj.find('input', {'name': 'nonce'})['value'])
     })
 
-    with open('file2.html', 'w') as f :
-        f.write(r.text)
+    # поиск GetSessionToken
+    soup = bs(r.text, 'html.parser')
+    scr = soup.find_all('script')
+    for script in scr :
+        s = str(script)
+        pos = s.find('GetSessionToken')
+        if pos >= 0 :
+            new_s = s[pos : ]
+            GetSesToken = new_s[new_s.find('\"') +  1 : new_s.find(';') - 1]
+
+    # как пример ставки, не более
+    print(session.get('https://betscsgo.in/index/placebet/265922/2/1/' + GetSesToken).text)
+
+    session.close()
 
 def hdless_betscsgo() :
     driver = create_webdriver()
@@ -127,7 +137,7 @@ def hdless_betscsgo() :
         f.write(driver.page_source)
 
 if __name__ == "__main__" :
-    cf_scraper()
+    placebet('ft1w1mcx1', 'nyzpvnsd1')
     """
     {
         "match_title": "FORZESCHOOL VS STATE21",
