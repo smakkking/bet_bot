@@ -78,8 +78,10 @@ def get_stavka(photo_url, group) :
 
 def cf_scraper() :
     import steam.webauth as wa
-    user = wa.WebAuth('Karkadav')
-    s = user.cli_login(';:9N8;,Emg@LkQ[')
+    import requests
+    from pprint import pprint
+    user = wa.WebAuth('yphmbgmejdqsb')
+    s = user.cli_login('adbj2lpr1')
 
     head = {
         'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
@@ -97,19 +99,15 @@ def cf_scraper() :
     soup = bs(r.text, 'html.parser')
     form_obj = soup.find(id='openidForm')
 
-
     r = s.post('https://steamcommunity.com/openid/login', files={
-        'actionInput': form_obj.find('input', {'id': 'actionInput'})['value'],
-        'openid.mode': form_obj.find('input', {'name': 'openid.mode'})['value'],
-        'openidparams': form_obj.find('input', {'name': 'openidparams'})['value'],
-        'nonce': form_obj.find('input', {'name': 'nonce'})['value']
+        'action': (None, form_obj.find('input', {'id': 'actionInput'})['value']),
+        'openid.mode': (None,form_obj.find('input', {'name': 'openid.mode'})['value']),
+        'openidparams': (None,form_obj.find('input', {'name': 'openidparams'})['value']),
+        'nonce': (None,form_obj.find('input', {'name': 'nonce'})['value'])
     })
-
 
     with open('file2.html', 'w') as f :
         f.write(r.text)
-
-
 
 def hdless_betscsgo() :
     driver = create_webdriver()
