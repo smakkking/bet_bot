@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 import functools
 from multiprocessing import Pool
 from dateutil import parser
+import steam.webauth as wa
+from bs4 import BeautifulSoup as bs
+
 
 import bet_manage
 from global_constants import SERVER_DATA_PATH
@@ -12,7 +15,7 @@ from global_constants import SERVER_DATA_PATH
 # управляющие константы, для других модулей
 NAME = 'betscsgo'
 WALL_URL = 'https://betscsgo.in'
-WALL_URL_add = 'https://betsdota2.fun/'
+WALL_URL_add = 'https://betsdota2.fun'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
 # corrected params
@@ -56,10 +59,10 @@ def find_vs(words : list, idx : int) :
     return bet_manage.reform_team_name(left_team) + ' vs ' + bet_manage.reform_team_name(right_team)
 
 
-def template1(text : str) :
+def template1(text: str) :
     temp = [
         r'ПОБЕДА\s*НА\s*КАРТЕ',
-        r'ОТМЕНИТЬ\s*СТАВКУ',
+        r'СУММА\s*СТАВКИ',
     ]
     not_temp = [
 
@@ -72,7 +75,7 @@ def template1(text : str) :
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
-def parse1(photo_url : str, words : list) :
+def parse1(photo_url: str, words: list) :
     res = bet_manage.Stavka()
     res.match_title = find_vs(words, words.index('vs'))
 
@@ -88,11 +91,11 @@ def parse1(photo_url : str, words : list) :
     return res
 
 
-def template2(text : str) :
+def template2(text: str) :
     temp = [
         # добавить \s*
         r'ПОБЕДА\s*В\s*МАТЧЕ',
-        r'ОТМЕНИТЬ\s*СТАВКУ',
+        r'СУММА\s*СТАВКИ',
     ]
     not_temp = [
 
@@ -105,7 +108,7 @@ def template2(text : str) :
     for x in not_temp :
         flag = flag and text.find(x) < 0
     return flag
-def parse2(photo_url : str, words : list) :
+def parse2(photo_url: str, words: list) :
 
     res = bet_manage.Stavka()
     res.match_title = find_vs(words, words.index('vs'))
@@ -122,9 +125,42 @@ def parse2(photo_url : str, words : list) :
     return res
 
 
+def template3(text: str) :
+    temp = [
+        r'РЕЗУЛЬТАТ\s*ОЖИДАЕТСЯ',
+        r'ПОБЕДА',
+    ]
+    not_temp = [
+        'КАРТЕ',
+    ]
+    flag = True
+    for x in temp :
+        flag = flag and re.search(x, text)
+
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse3(photo_url: str, words: list) :
+    res = bet_manage.Stavka()
+
+    res.match_title = find_vs(words, words.index('vs'))
+
+    i = 0
+    while words[words.index('Победа') + 2 + i][-1] != 'P' :
+        res.winner += words[words.index('Победа') + 2 + i]
+        i += 1
+    res.winner = bet_manage.reform_team_name(res.winner)
+
+    res.sum = float(words[words.index('Победа') + 2 + i][ : -1])
+
+    res.outcome_index = OFFSET_TABLE['Победа в матче']
+
+    return res
+
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
     (template2, parse2),
+    (template3, parse3),
 ]
 
 
@@ -150,11 +186,53 @@ def find_bet(last_date, update_live=False, update_all=False) :
     return new_d
 
 
-def make_bet(stavka, summ, session_key='session_key') :
-    # вопросы по поводу ставок:
-    # 1) ставка открылась, но ее нет в файле .json, load_last_data она уже собрана(решается увеличением частоты обновления live)
-    # однако все равно можно попасть в такой временной участок(если только не проверять live каждый раз перед load_last_data)
-    base_str = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match')] + 'index/placebet/'
+def make_bet(stavka, summ, client_login=None, client_passwd=None) :
+    # TODO избавиться от дубликатов, всю сумму прибавить к одной, от конкурирующих ставок хз как избавиться
+    # а вот что делать, если эта ставка уже поставлена?? как поменять сумму
+    # в ответ на запрос приходит словарь с ключом success - успех ставки
+    # если написано сумма ставки не изменилась, то удвоить сумму
+    # может это решать локально????
+
+    domen = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match') - 1]
+
+    user = wa.WebAuth(client_login)
+    session = user.cli_login(client_passwd)
+
+    head = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
+    }
+    session.headers.update(head)
+
+    # TODO тут должны быть другие cf_clearance от firefox'а
+
+    if domen == WALL_URL :
+        session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+    else :
+        session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
+
+    r = session.get(domen + '/login/')
+
+    soup = bs(r.text, 'html.parser')
+    form_obj = soup.find(id='openidForm')
+
+    r = session.post('https://steamcommunity.com/openid/login', files={
+        'action': (None, form_obj.find('input', {'id': 'actionInput'})['value']),
+        'openid.mode': (None, form_obj.find('input', {'name': 'openid.mode'})['value']),
+        'openidparams': (None, form_obj.find('input', {'name': 'openidparams'})['value']),
+        'nonce': (None, form_obj.find('input', {'name': 'nonce'})['value'])
+    })
+
+    # поиск GetSessionToken
+    soup = bs(r.text, 'html.parser')
+    scr = soup.find_all('script')
+    for script in scr:
+        s = str(script)
+        pos = s.find('GetSessionToken')
+        if pos >= 0:
+            new_s = s[pos:]
+            GetSesToken = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
+
+    base_str = domen + '/index/placebet/'
 
     # здесь формируем запрос
     base_str += stavka.bk_links[NAME]['bet_id'] + '/'
@@ -165,8 +243,8 @@ def make_bet(stavka, summ, session_key='session_key') :
     elif stavka.bk_links[NAME]['team2'] == stavka.winner :
         base_str += '2/'
 
-    base_str += str(summ * stavka.summ_multiplier) + '/' + session_key
-    return base_str
+    base_str += str(summ * stavka.summ_multiplier) + '/' + GetSesToken
+    return session.get(base_str)
 
 
 def dogon_check(stavka) :

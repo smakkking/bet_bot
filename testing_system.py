@@ -1,11 +1,12 @@
 # здесь тестируем все модули по группам и букмекеркам
 import steampy
+from pprint import pprint
 from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver
 
-from global_constants import BET_PROJECT_ROOT
+from global_constants import SERVER_DATA_PATH
 
 import nltk, json, time
-from moduls.group_moduls import ExpertMnenie_group
+from moduls.group_moduls import CSgo99percent_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 def testing_group(group, N) :
@@ -56,25 +57,48 @@ def testing_group(group, N) :
                     'stavka' : stavka.__json_repr__(),
                 })
 
-    with open(BET_PROJECT_ROOT + 'server_data/test.json', 'w') as f :
-        json.dump(bbb, f, indent=4)
+    driver = create_webdriver()
+    undetected_bets = []
 
-def get_stavka(photo_url, group) :
-    YandexAPI_detection.create_new_token(debug=True)
+    for tape in bbb :
+        get_html_with_browser(driver, tape['link'])
+        pprint(tape['stavka'])
+        symb = input()
+        if symb == 'w' :
+            undetected_bets.append(tape['link'])
+
+    with open(SERVER_DATA_PATH + 'undetected_bets.json', 'r') as f :
+        data = json.load(f)
+
+    if group.NAME in data :
+        data[group.NAME].extend(undetected_bets)
+    else :
+        data[group.NAME] = undetected_bets
+
+    with open(SERVER_DATA_PATH + 'undetected_bets.json', 'w') as f :
+        json.dump(data, f, indent=4)
+
+    driver.close()
+
+def get_stavka(photo_url, group, debug=False) :
+    YandexAPI_detection.create_new_token()
     a = YandexAPI_detection(photo_url)
     text = a.text_detection()
-    text_nltk = nltk.word_tokenize(text)
-    text = text.upper()
 
+    text_nltk = nltk.word_tokenize(text)
+
+    if debug :
+        print(text)
+        print(text_nltk)
+
+    text = text.upper()
     stavka = None
 
     for (tmp, parse) in group.BET_TEMPLATES :
         if tmp(text) :
             stavka = parse(photo_url, text_nltk)
-    if stavka is None :
-        return None
-    else :
-        return stavka.__json_repr__()
+
+    return None if (stavka is None) else stavka.__json_repr__()
 
 def placebet(login, passwd) :
 
@@ -115,9 +139,30 @@ def placebet(login, passwd) :
             GetSesToken = new_s[new_s.find('\"') +  1 : new_s.find(';') - 1]
 
     # как пример ставки, не более
-    print(session.get('https://betscsgo.in/index/placebet/265922/2/1/' + GetSesToken).text)
-
     session.close()
+
+    return GetSesToken
+
+def undetected_bets_test(group) :
+    with open(SERVER_DATA_PATH + 'undetected_bets.json', 'r') as f:
+        data = json.load(f)
+    reupload = []
+
+    driver = create_webdriver()
+
+    for link in data[group.NAME] :
+        bet = get_stavka(link, group)
+        get_html_with_browser(driver, link)
+        if bet :
+            pprint(bet)
+        else :
+            reupload.append(link)
+        input()
+    driver.close()
+    data[group.NAME] = reupload
+
+    with open(SERVER_DATA_PATH + 'undetected_bets.json', 'w') as f :
+        json.dump(data, f, indent=4)
 
 def hdless_betscsgo() :
     driver = create_webdriver()
@@ -137,21 +182,4 @@ def hdless_betscsgo() :
         f.write(driver.page_source)
 
 if __name__ == "__main__" :
-    placebet('ft1w1mcx1', 'nyzpvnsd1')
-    """
-    {
-        "match_title": "FORZESCHOOL VS STATE21",
-        "winner": "FORZESCHOOL",
-        "outcome_index": [
-            "map_winner", 1
-        ],
-        "dogon": true,
-        "bk_links": {
-            "betscsgo": {
-                "link": "https://betscsgo.in/match/265584/"
-            }
-        }
-    }
-    """
-    '(python3 load_last_data.py) | (python3 all_bet.py) | (python3 check_dogon.py) | (python3 find_matches_live.py)'
-    pass
+    testing_group(CSgo99percent_group, 100)
