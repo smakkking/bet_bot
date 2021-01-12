@@ -392,6 +392,7 @@ def read_groups() :
         try :
             with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
                 DATA = json.load(last_posts_json)
+            break
             #print("read successful")
         except :
             time.sleep(1)

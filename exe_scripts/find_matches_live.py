@@ -13,18 +13,25 @@ def main(main_logger=None) :
 
     for v in BOOKMAKER_OFFSET.values() :
         if not v.TAKES_MATCHES_LIVE :
-            with open(SERVER_DATA_PATH + v.NAME + '.json', 'r', encoding="utf-8") as f:
-                x = json.load(f)
             try :
-                if datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.MATCHES_UPDATE_TIMEh) :
+                with open(SERVER_DATA_PATH + v.NAME + '.json', 'r', encoding="utf-8") as f:
+                    x = json.load(f)
+            except :
+                x = {}
+            try :
+                if x == {} :
+                    x['events'] = v.find_bet([], update_all=True)
+                    x['last_update_all'] = datetime.now().isoformat()
+                    x['last_update_live'] = datetime.now().isoformat()
+                elif datetime.now() - parser.parse(x['last_update_all']) >= timedelta(hours=v.MATCHES_UPDATE_TIMEh) :
                     x['events'] = v.find_bet(x['events'], update_all=True)
                     x['last_update_all'] = datetime.now().isoformat()
                     x['last_update_live'] = datetime.now().isoformat()
-                elif datetime.now() - parser.parse(x['last_update_live']) >= timedelta(hours=v.LIVE_MATCHES_UPDATE_TIMEh) :
+                elif datetime.now() - parser.parse(x['last_update_live']) >= timedelta(minutes=v.LIVE_MATCHES_UPDATE_TIMEm) :
                     x['events'] = v.find_bet(x['events'], update_live=True)
                     x['last_update_live'] = datetime.now().isoformat()
             except Exception as e :
-                logging.getLogger("find_matches_live").error(v.NAME + " failed because of " + e)
+                logging.getLogger("find_matches_live").error(v.NAME + " failed because of " + str(e))
 
             with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
                 json.dump(x, f, indent=4)

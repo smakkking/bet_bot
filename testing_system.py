@@ -1,12 +1,14 @@
 # здесь тестируем все модули по группам и букмекеркам
-import steampy
+
+import steam.webauth as wa
+from bs4 import BeautifulSoup as bs
 from pprint import pprint
 from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver
 
 from global_constants import SERVER_DATA_PATH
 
 import nltk, json, time
-from moduls.group_moduls import CSgo99percent_group
+from moduls.group_moduls import SaveMoney_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 def testing_group(group, N) :
@@ -100,12 +102,7 @@ def get_stavka(photo_url, group, debug=False) :
 
     return None if (stavka is None) else stavka.__json_repr__()
 
-def placebet(login, passwd) :
-
-    # данная ф-ия осуществляет авторизацию на betscsgo
-
-    import steam.webauth as wa
-    from bs4 import BeautifulSoup as bs
+def placebet(login, passwd, i) :
 
     user = wa.WebAuth(login)
     session = user.cli_login(passwd)
@@ -113,12 +110,12 @@ def placebet(login, passwd) :
     head = {
         'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
     }
-    session.headers.update(head)
-    session.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
+    #session.headers.update(head)
+    session.cookies.set('cf_clearance', '869adfab27a1a8e792dfedd9959f36cd45e122c1-1610387075-0-150')
 
     r = session.get('https://betscsgo.in/login/')
 
-    soup = bs(r.text, 'html.parser')
+    soup = bs(r.text, 'lxml')
     form_obj = soup.find(id='openidForm')
 
     r = session.post('https://steamcommunity.com/openid/login', files={
@@ -129,7 +126,9 @@ def placebet(login, passwd) :
     })
 
     # поиск GetSessionToken
-    soup = bs(r.text, 'html.parser')
+    GetSesToken = None
+
+    soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
     for script in scr :
         s = str(script)
@@ -164,22 +163,84 @@ def undetected_bets_test(group) :
     with open(SERVER_DATA_PATH + 'undetected_bets.json', 'w') as f :
         json.dump(data, f, indent=4)
 
-def hdless_betscsgo() :
-    driver = create_webdriver()
-    get_html_with_browser(driver, BETSCSGO_betting.WALL_URL, sec=5, cookies=[('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)])
 
-    cook = driver.get_cookies()
+def cf_scrapper() :
+    from requests_html import HTMLSession
 
-    driver = create_webdriver(hdless=True)
-    get_html_with_browser(driver, BETSCSGO_betting.WALL_URL, sec=5)
+    session = HTMLSession()
+    #session.proxies = {'http':  'socks5://ps3540:A_u0GQ1ODBTwRAKFRfSv@138.124.180.99:8000', 'https': f'socks5://ps3540:A_u0GQ1ODBTwRAKFRfSv@138.124.180.99:8000'}
+    session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
 
-    for c in cook :
-        driver.add_cookie(c)
+    hosts = [
+        '172.67.22.114',
+        '104.22.29.216',
+        '104.22.28.216',
+        '172.67.167.202',
+        '104.24.117.219',
+        '104.24.116.219',
+        '172.67.27.87',
+        '104.22.79.103',
+        '104.22.78.103'
+    ]
+    for ip in hosts :
+        try :
+            request = session.get('https://' + ip + '/', headers={'host' : 'betscsgo.in'})
+            print('connected successfully')
+        except :
+            continue
 
-    time.sleep(10)
+    session.close()
 
-    with open('file.html', 'w') as f :
-        f.write(driver.page_source)
+    request.html.render()  # драйвер для JS
+
+    print(request.html.html)  # Получаем контент)
+
+def cf_scrapper2() :
+    import cloudscraper
+
+    scraper = cloudscraper.create_scraper()
+    print(scraper.get("https://betscsgo.in").text)
 
 if __name__ == "__main__" :
-    testing_group(CSgo99percent_group, 100)
+
+    log = 'yphmbgmejdqsb'
+    pwd = 'adbj2lpr1'
+
+    from multiprocessing import Pool
+    from functools import partial
+
+    now = time.time()
+
+    N = 5
+    with Pool(processes=N) as p :
+        x = p.map(partial(placebet, log, pwd), list(range(N)))
+
+    pprint(x)
+
+
+    #print(placebet(log, pwd, 0))
+
+    print(f'executed by {time.time() - now} sec')
+
+
+    """
+    {
+        "bk_links": {
+            "betscsgo": {
+                "team1": "SISSISTATEPUNKS",
+                "team2": "NLG",
+                "bet_id": "266511",
+                "link": "https://betscsgo.in/match/266511/"
+            }
+        },
+        "summ_multiplier": 1,
+        "sum": 7500.0,
+        "match_title": "SISSISTATEPUNKS vs NLG",
+        "winner": "SISSISTATEPUNKS",
+        "outcome_index": "game_winner",
+        "dogon": false
+    }
+    """
+
+    '(python3 find_matches_live.py) | (python3 load_last_data.py) | (python3 all_bet.py) | (python3 check_dogon.py) '
+    'https://sun9-20.userapi.com/impf/O_fBuxflvvuDAQ4hWiKkClU5kevKL2TUgChlwg/7Xg3HApXyTQ.jpg?size=557x480&quality=96&proxy=1&sign=1e2691b1dc2b48878c7a4daf9d7c8289&c_uniq_tag=DhzWafUB25cMqfx5L4Dy0p8CqPoppvFNGF7jBg8-S_M&type=album'

@@ -47,11 +47,11 @@ def main() :
 
 
 if __name__ == "__main__":
-    while True :
-        t = main()
-        # записываем обратно для более удобного восприятия
-        DATA = find_all_links.main(t)
+    #while True :
+    t = main()
+    # записываем обратно для более удобного восприятия
+    DATA = find_all_links.main(t)
 
-        bet_manage.write_groups(DATA)
-        time.sleep(15)
+    bet_manage.write_groups(DATA)
+    #time.sleep(15)
     

@@ -6,6 +6,7 @@ from multiprocessing import Pool
 from dateutil import parser
 import steam.webauth as wa
 from bs4 import BeautifulSoup as bs
+import time
 
 
 import bet_manage
@@ -20,18 +21,21 @@ HAS_API = False
 TAKES_MATCHES_LIVE = False
 # corrected params
 MATCHES_UPDATE_TIMEh = 12
-LIVE_MATCHES_UPDATE_TIMEh = 0.25
+LIVE_MATCHES_UPDATE_TIMEm = 5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE = 'c5242ad56fca524fbfff66e132333e1bdeb55c65-1610047105-0-150'
-CURRENT_CF_CLEARANCE_add = '733f8db49f6b6b018bf88adadb08b8fbf555e5ec-1609340700-0-150'
+CURRENT_CF_CLEARANCE = '645a1c268540284c004438b4c4d953c7a12d62a2-1610387087-0-150'
+CURRENT_CF_CLEARANCE_add = 'b29218432d9db12d28873d17bc228f6a48b82bce-1610440332-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
     'Победа на карте' : 'map_winner',
+
     'Победа в матче' : 'game_winner',
+
     'выиграет одну карту' : 'one_map_win', # нет правильной обработки
     'выиграют одну карту' : 'one_map_win',
+
     'Количество карт 2.5' : 'games_count_2.5'
 }
 
@@ -186,31 +190,18 @@ def find_bet(last_date, update_live=False, update_all=False) :
     return new_d
 
 
-def make_bet(stavka, summ, client_login=None, client_passwd=None) :
-    # TODO избавиться от дубликатов, всю сумму прибавить к одной, от конкурирующих ставок хз как избавиться
-    # а вот что делать, если эта ставка уже поставлена?? как поменять сумму
-    # в ответ на запрос приходит словарь с ключом success - успех ставки
-    # если написано сумма ставки не изменилась, то удвоить сумму
-    # может это решать локально????
-
-    domen = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match') - 1]
-
+def create_session(client_login=None, client_passwd=None) :
     user = wa.WebAuth(client_login)
     session = user.cli_login(client_passwd)
 
     head = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
     }
     session.headers.update(head)
 
-    # TODO тут должны быть другие cf_clearance от firefox'а
+    session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
 
-    if domen == WALL_URL :
-        session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
-    else :
-        session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
-
-    r = session.get(domen + '/login/')
+    r = session.get(WALL_URL + '/login/')
 
     soup = bs(r.text, 'html.parser')
     form_obj = soup.find(id='openidForm')
@@ -230,7 +221,28 @@ def make_bet(stavka, summ, client_login=None, client_passwd=None) :
         pos = s.find('GetSessionToken')
         if pos >= 0:
             new_s = s[pos:]
-            GetSesToken = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
+            GetSesToken_betscsgo = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
+
+    session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
+    r = session.get(WALL_URL_add)
+
+    soup = bs(r.text, 'html.parser')
+    scr = soup.find_all('script')
+    for script in scr:
+        s = str(script)
+        pos = s.find('GetSessionToken')
+        if pos >= 0:
+            new_s = s[pos:]
+            GetSesToken_betsdota2 = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
+
+    return {
+        'session' : session,
+        'betscsgo_token' : GetSesToken_betscsgo,
+        'betsdota2_token' : GetSesToken_betsdota2
+    }
+
+def make_bet(stavka, summ, session) :
+    domen = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match') - 1]
 
     base_str = domen + '/index/placebet/'
 
@@ -242,9 +254,14 @@ def make_bet(stavka, summ, client_login=None, client_passwd=None) :
         base_str += '1/'
     elif stavka.bk_links[NAME]['team2'] == stavka.winner :
         base_str += '2/'
+    if domen == WALL_URL :
+        base_str += str(summ * stavka.summ_multiplier) + '/' + session['betscsgo_token']
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+    else :
+        base_str += str(summ * stavka.summ_multiplier) + '/' + session['betsdota2_token']
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
 
-    base_str += str(summ * stavka.summ_multiplier) + '/' + GetSesToken
-    return session.get(base_str)
+    return session['session'].get(base_str).text
 
 
 def dogon_check(stavka) :
