@@ -1,5 +1,4 @@
 import functools
-import time
 from multiprocessing import Pool
 import logging
 

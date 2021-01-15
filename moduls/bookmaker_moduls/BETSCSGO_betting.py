@@ -19,13 +19,15 @@ WALL_URL = 'https://betscsgo.in'
 WALL_URL_add = 'https://betsdota2.fun'
 HAS_API = False
 TAKES_MATCHES_LIVE = False
+
+
 # corrected params
 MATCHES_UPDATE_TIMEh = 12
 LIVE_MATCHES_UPDATE_TIMEm = 5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE = '645a1c268540284c004438b4c4d953c7a12d62a2-1610387087-0-150'
-CURRENT_CF_CLEARANCE_add = 'b29218432d9db12d28873d17bc228f6a48b82bce-1610440332-0-150'
+CURRENT_CF_CLEARANCE        = '444b49b85fcd8e9921cb8fcac9d9850b9bf48e58-1610723723-0-150'
+CURRENT_CF_CLEARANCE_add    = '12bdcb1a22fd4dc055b68063e17726cdf8cd010b-1610723745-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
@@ -235,11 +237,15 @@ def create_session(client_login=None, client_passwd=None) :
             new_s = s[pos:]
             GetSesToken_betsdota2 = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
 
+    # Todo delete
+    session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+
     return {
         'session' : session,
         'betscsgo_token' : GetSesToken_betscsgo,
         'betsdota2_token' : GetSesToken_betsdota2
     }
+
 
 def make_bet(stavka, summ, session) :
     domen = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match') - 1]
