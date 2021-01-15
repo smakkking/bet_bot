@@ -23,7 +23,7 @@ TAKES_MATCHES_LIVE = False
 
 # corrected params
 MATCHES_UPDATE_TIMEh = 8
-LIVE_MATCHES_UPDATE_TIMEm = 5
+LIVE_MATCHES_UPDATE_TIMEm = 15
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
 CURRENT_CF_CLEARANCE        = '444b49b85fcd8e9921cb8fcac9d9850b9bf48e58-1610723723-0-150'
@@ -332,7 +332,7 @@ def dogon_check(stavka) :
 
 
 def get_info(stavka) :
-    with open(SERVER_DATA_PATH + NAME + '.json', 'r', encoding="utf-8") as f:
+    with open(SERVER_DATA_PATH + NAME + '/matches.json', 'r', encoding="utf-8") as f:
         dat = json.load(f)
         dat = dat['events']
     for x in dat:
@@ -342,10 +342,7 @@ def get_info(stavka) :
                 bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
             else:
                 # исхода может не быть, вылезет KeyError, что делать?????
-                # причины, по кот это может произойти
-                # 1) после обновления в файле betscsgo.json. Это значит, что такая ставка уже недоступна(закончилась)
-                #
-                #
+
                 bet_id = x['outcomes'][stavka.outcome_index]
             return {
                 'team1': x['team1'],

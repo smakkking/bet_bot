@@ -14,7 +14,7 @@ def main(main_logger=None) :
     for v in BOOKMAKER_OFFSET.values() :
         if not v.TAKES_MATCHES_LIVE :
             try :
-                with open(SERVER_DATA_PATH + v.NAME + '.json', 'r', encoding="utf-8") as f:
+                with open(SERVER_DATA_PATH + v.NAME + '/matches.json', 'r', encoding="utf-8") as f:
                     x = json.load(f)
             except :
                 x = {}
@@ -33,7 +33,7 @@ def main(main_logger=None) :
             except Exception as e :
                 logging.getLogger("find_matches_live").error(v.NAME + " failed because of " + str(e))
 
-            with open(SERVER_DATA_PATH + v.NAME + '.json', 'w', encoding="utf-8") as f:
+            with open(SERVER_DATA_PATH + v.NAME + '/matches.json', 'w', encoding="utf-8") as f:
                 json.dump(x, f, indent=4)
 
     if main_logger :

@@ -30,8 +30,12 @@ def bbet_all(DATA, bkm) :
         else :
             # ставить по api возможности пока нет
             pass
+    with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
+        last_ = json.load(f)
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
-        json.dump(bkm['sessions'], f)
+        for key in last_.keys() :
+            bkm['sessions'][key]['session'] = last_[key]['session']
+        json.dump(bkm['sessions'], f, indent=4)
 
 def main(DATA : dict, clients_DATA : dict=None, main_logger=None) :
 
