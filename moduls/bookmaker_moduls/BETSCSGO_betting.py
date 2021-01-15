@@ -22,7 +22,7 @@ TAKES_MATCHES_LIVE = False
 
 
 # corrected params
-MATCHES_UPDATE_TIMEh = 12
+MATCHES_UPDATE_TIMEh = 8
 LIVE_MATCHES_UPDATE_TIMEm = 5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
@@ -216,7 +216,7 @@ def create_session(client_login=None, client_passwd=None) :
     })
 
     # поиск GetSessionToken
-    soup = bs(r.text, 'html.parser')
+    soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
     for script in scr:
         s = str(script)
@@ -228,7 +228,7 @@ def create_session(client_login=None, client_passwd=None) :
     session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
     r = session.get(WALL_URL_add)
 
-    soup = bs(r.text, 'html.parser')
+    soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
     for script in scr:
         s = str(script)
@@ -237,14 +237,13 @@ def create_session(client_login=None, client_passwd=None) :
             new_s = s[pos:]
             GetSesToken_betsdota2 = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
 
-    # Todo delete
-    session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
-
     return {
         'session' : session,
         'betscsgo_token' : GetSesToken_betscsgo,
         'betsdota2_token' : GetSesToken_betsdota2
     }
+
+
 
 
 def make_bet(stavka, summ, session) :
@@ -260,14 +259,37 @@ def make_bet(stavka, summ, session) :
         base_str += '1/'
     elif stavka.bk_links[NAME]['team2'] == stavka.winner :
         base_str += '2/'
-    if domen == WALL_URL :
-        base_str += str(summ * stavka.summ_multiplier) + '/' + session['betscsgo_token']
-        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
-    else :
-        base_str += str(summ * stavka.summ_multiplier) + '/' + session['betsdota2_token']
-        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
 
-    return session['session'].get(base_str).text
+    base_str += str(summ * stavka.summ_multiplier) + '/'
+
+    if domen == WALL_URL :
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+        r = session['session'].get(base_str + session['betscsgo_token'])
+    else :
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
+        r = session['session'].get(base_str + session['betsdota2_token'])
+
+    # в данной ситуации если в результате была получена страница с НОВЫМ GetSessionToken
+    # (значит старый GetSessionToken больше не работает) значит ищем новый, перезаписываем
+    # по времени получается достаточно недолго
+
+    GetSesToken = None
+    soup = bs(r.text, 'lxml')
+    scr = soup.find_all('script')
+    for script in scr:
+        s = str(script)
+        pos = s.find('GetSessionToken')
+        if pos >= 0:
+            new_s = s[pos:]
+            GetSesToken = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
+
+    if GetSesToken:
+        r = session['session'].get(base_str + GetSesToken)
+        if domen == WALL_URL :
+            session['betscsgo_token'] = GetSesToken
+        else :
+            session['betsdota2_token'] = GetSesToken
+    return r.text
 
 
 def dogon_check(stavka) :

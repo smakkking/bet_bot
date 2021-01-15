@@ -9,7 +9,7 @@ from exe_scripts import load_last_data, \
                         find_all_links, \
                         check_dogon
 from global_constants import BET_PROJECT_ROOT, ALL_POSTS_JSON_PATH, GROUP_OFFSET
-
+import bet_manage
 # осуществляет непосредственно ставочный процесс для всех клиентов
 # работает круглосуточно
 
@@ -71,26 +71,19 @@ if __name__ == "__main__" :
 
     config.dictConfig(dictLogConfig)
 
-    # линейных подход
+    # системные скрипты выполнятются редко
+    find_matches_live.main()
 
-    while True :
-        # системные скрипты выполнятются редко
-        find_matches_live.main()
+    # основные скрипты выполняются постоянно
+    GROUP_DATA = load_last_data.main()
 
-        # основные скрипты выполняются постоянно
-        GROUP_DATA = load_last_data.main()
+    GROUP_DATA = find_all_links.main(GROUP_DATA)
 
-        GROUP_DATA = find_all_links.main(GROUP_DATA)
+    GROUP_DATA = all_bet.main(GROUP_DATA, scan_database.main())
 
-        GROUP_DATA = all_bet.main(GROUP_DATA, scan_database.main())
+    GROUP_DATA = check_dogon.main(GROUP_DATA)
 
-        GROUP_DATA = check_dogon.main(GROUP_DATA)
-
-        # formating
-        for x in GROUP_DATA.keys() :
-            GROUP_DATA[x]['coupon'] = GROUP_DATA[x]['coupon'].__json_repr__()
-        with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
-            json.dump(GROUP_DATA, last_posts_json, indent=4)
+    bet_manage.write_groups(GROUP_DATA)
 
 
 

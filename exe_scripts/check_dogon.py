@@ -30,14 +30,7 @@ def check_and_delete(DATA, data_key) :
 
 
 def main(DATA, main_logger=None):
-
-    if main_logger :
-        now = time.time()
-
     DATA = dict(map(functools.partial(check_and_delete, DATA), DATA.keys()))
-
-    if main_logger :
-        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
     return DATA
 

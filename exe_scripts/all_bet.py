@@ -1,20 +1,21 @@
 import functools
 from multiprocessing import Pool
 import logging
+import json
+import pickle
 
-from global_constants import BOOKMAKER_OFFSET
+from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
 import bet_manage
 from exe_scripts import scan_database
 
 
-def bbet_all(DATA, clients) :
-    for client in clients :
-        if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
-            session = BOOKMAKER_OFFSET[client['bookmaker']].create_session(
-                client_login=client['bookmaker_login'],
-                client_passwd=client['bookmaker_password']
-            )
+def bbet_all(DATA, bkm) :
+    for client in bkm['clients'] :
 
+        bookmaker = client['bookmaker']
+
+        if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
+            session = bkm['sessions'][str(client['id'])]
             for group in client['groups'] :
                 if DATA[group]['parse_bet'] :
                     for stavka in DATA[group]['coupon'].bets :
@@ -26,26 +27,37 @@ def bbet_all(DATA, clients) :
                             session
                         )
                         print(result, client['id'])
-                        logging.getLogger("all_bet").info("Client" + str(client['id']) + " gained bet:  " + result)
-            session['session'].close()
         else :
             # ставить по api возможности пока нет
             pass
-
+    with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
+        json.dump(bkm['sessions'], f)
 
 def main(DATA : dict, clients_DATA : dict=None, main_logger=None) :
+
+
+    bkm = {}
+    for key in BOOKMAKER_OFFSET.keys():
+        bkm[key] = {}
+        bkm[key]['clients'] = []
+        if BOOKMAKER_OFFSET[key].HAS_API :
+            continue
+        #  получаем список всех активных сессий
+        with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/sessions.json', 'r') as f :
+            sessions = json.load(f)
+
+        for sess in sessions.values() :
+            with open(sess['session'], 'rb') as f :
+                sess['session'] = pickle.load(f)
+        bkm[key]['sessions'] = sessions
+
     clients_DATA = scan_database.main()
-
-    clients_by_bkm = {}
-
-    for key in BOOKMAKER_OFFSET.keys() :
-        clients_by_bkm[key] = []
-
     for client in clients_DATA :
-        clients_by_bkm[client['bookmaker']].append(client)
+        bkm[client['bookmaker']]['clients'].append(client)
 
-    with Pool(processes=len(clients_by_bkm.keys())) as pool:
-        pool.map(functools.partial(bbet_all, DATA), clients_by_bkm.values())
+
+    with Pool(processes=len(bkm.values())) as pool:
+        pool.map(functools.partial(bbet_all, DATA), bkm.values())
 
 
     # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
