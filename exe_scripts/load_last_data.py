@@ -1,7 +1,5 @@
-import json
 import functools
 import logging
-import time
 from multiprocessing import Pool
 import json
 
@@ -11,7 +9,6 @@ from bet_manage import YandexAPI_detection
 from exe_scripts import find_all_links
 
 
-# TODO need test
 def load_last_data(OLD_DATA, token, group_off) :
     # OLD_DATA - словари, содержащие экземпляры coupon
     if group_off in OLD_DATA.keys():
@@ -47,10 +44,8 @@ def main() :
 
 
 if __name__ == "__main__":
-    #while True :
     t = main()
     DATA = find_all_links.main(t)
 
     bet_manage.write_groups(DATA)
-    #time.sleep(15)
     

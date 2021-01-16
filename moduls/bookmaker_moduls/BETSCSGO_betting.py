@@ -23,11 +23,11 @@ TAKES_MATCHES_LIVE = False
 
 # corrected params
 MATCHES_UPDATE_TIMEh = 8
-LIVE_MATCHES_UPDATE_TIMEm = 15
+LIVE_MATCHES_UPDATE_TIMEm = 10
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE        = '444b49b85fcd8e9921cb8fcac9d9850b9bf48e58-1610723723-0-150'
-CURRENT_CF_CLEARANCE_add    = '12bdcb1a22fd4dc055b68063e17726cdf8cd010b-1610723745-0-150'
+CURRENT_CF_CLEARANCE        = '3981292ca935c342e48aa5bf040a8abdf701cc0d-1610787582-0-150'
+CURRENT_CF_CLEARANCE_add    = '234d9db9ed29faa46cc7d316530c85d64e96da5d-1610787628-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
@@ -289,6 +289,7 @@ def make_bet(stavka, summ, session) :
             session['betscsgo_token'] = GetSesToken
         else :
             session['betsdota2_token'] = GetSesToken
+
     return r.text
 
 
@@ -429,7 +430,7 @@ def find_matches(update_live, update_all, web_dict: tuple):
 
         # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
 
-        if begin - datetime.now() > timedelta(hours=16):
+        if begin - datetime.now() > timedelta(hours=MATCHES_UPDATE_TIMEh + 4):
             continue
         if begin > datetime.now() and update_live:
             continue

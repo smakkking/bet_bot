@@ -388,16 +388,18 @@ def reform_team_name(s : str) :
     return s
 
 def read_groups() :
+    counter = 0
     while True :
         try :
             with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
                 DATA = json.load(last_posts_json)
             break
             #print("read successful")
-        except :
+        except Exception as e:
+            counter += 1
             time.sleep(1)
-            print("cant read")
-            continue
+            print(f"cant read {counter} times because of {e}")
+
     for key in DATA.keys() :
         DATA[key]['coupon'] = Coupon(coup_data=DATA[key]['coupon'])
 

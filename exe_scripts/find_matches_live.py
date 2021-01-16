@@ -7,9 +7,7 @@ from dateutil import parser
 
 from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
 
-def main(main_logger=None) :
-    if main_logger :
-        now = time.time()
+def main() :
 
     for v in BOOKMAKER_OFFSET.values() :
         if not v.TAKES_MATCHES_LIVE :
@@ -35,9 +33,6 @@ def main(main_logger=None) :
 
             with open(SERVER_DATA_PATH + v.NAME + '/matches.json', 'w', encoding="utf-8") as f:
                 json.dump(x, f, indent=4)
-
-    if main_logger :
-        main_logger.info('{0:.2f} spent'.format(time.time() - now))
 
 if __name__ == '__main__':
     while True:

@@ -36,8 +36,4 @@ def main(DATA: dict) :
 
     return DATA
 
-if __name__ == "__main__":
-    while True :
-        DATA = bet_manage.read_groups()
-        bet_manage.write_groups(main(DATA))
 

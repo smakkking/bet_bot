@@ -3,12 +3,12 @@
 import steam.webauth as wa
 from bs4 import BeautifulSoup as bs
 from pprint import pprint
-from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver
+from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver, read_groups
 
 from global_constants import SERVER_DATA_PATH
 
 import nltk, json, time
-from moduls.group_moduls import SaveMoney_group
+from moduls.group_moduls import Aristocrat_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 def testing_group(group, N) :
@@ -203,40 +203,20 @@ def cf_scrapper2() :
 
 if __name__ == "__main__" :
 
-    log = 'yphmbgmejdqsb'
-    pwd = 'adbj2lpr1'
-
-    from multiprocessing import Pool
-    from functools import partial
-
-    now = time.time()
-
-    N = 5
-    with Pool(processes=N) as p :
-        x = p.map(partial(placebet, log, pwd), list(range(N)))
-
-    pprint(x)
-
-
-    #print(placebet(log, pwd, 0))
-
-    print(f'executed by {time.time() - now} sec')
-
-
     """
-    {
+{
         "bk_links": {
             "betscsgo": {
-                "team1": "SISSISTATEPUNKS",
-                "team2": "NLG",
-                "bet_id": "266511",
-                "link": "https://betscsgo.in/match/266511/"
+                "team1": "SPROUT",
+                "team2": "TBD",
+                "bet_id": "267019",
+                "link": "https://betscsgo.in/match/267019/"
             }
         },
         "summ_multiplier": 1,
         "sum": 7500.0,
-        "match_title": "SISSISTATEPUNKS vs NLG",
-        "winner": "SISSISTATEPUNKS",
+        "match_title": "SPROUT vs TBD",
+        "winner": "SPROUT",
         "outcome_index": "game_winner",
         "dogon": false
     }

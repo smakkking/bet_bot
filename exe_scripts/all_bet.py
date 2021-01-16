@@ -14,7 +14,10 @@ def bbet_all(DATA, bkm) :
 
         bookmaker = client['bookmaker']
 
-        if not BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
+        if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
+            # ставить по api возможности пока нет
+            pass
+        else :
             session = bkm['sessions'][str(client['id'])]
             for group in client['groups'] :
                 if DATA[group]['parse_bet'] :
@@ -27,9 +30,7 @@ def bbet_all(DATA, bkm) :
                             session
                         )
                         print(result, client['id'])
-        else :
-            # ставить по api возможности пока нет
-            pass
+
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
         last_ = json.load(f)
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
@@ -37,8 +38,7 @@ def bbet_all(DATA, bkm) :
             bkm['sessions'][key]['session'] = last_[key]['session']
         json.dump(bkm['sessions'], f, indent=4)
 
-def main(DATA : dict, clients_DATA : dict=None, main_logger=None) :
-
+def main(DATA : dict) :
 
     bkm = {}
     for key in BOOKMAKER_OFFSET.keys():
@@ -67,7 +67,6 @@ def main(DATA : dict, clients_DATA : dict=None, main_logger=None) :
     # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
     for group in DATA.keys() :
         for x in DATA[group]['coupon'].bets :
-            # не совсем четсное решение(так как карта может быть и 4-ая)
             if x.dogon and x.outcome_index[1] <= 4 :
                 DATA[group]['coupon'].add_bet(x, to_dogon=True)
 
