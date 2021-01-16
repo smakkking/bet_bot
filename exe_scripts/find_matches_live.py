@@ -6,12 +6,14 @@ from datetime import datetime, timedelta
 from dateutil import parser
 
 from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
+import bet_manage
 
 def main() :
 
     for v in BOOKMAKER_OFFSET.values() :
         if not v.TAKES_MATCHES_LIVE :
             try :
+                bet_manage.file_is_available(SERVER_DATA_PATH + v.NAME + '/matches.json')
                 with open(SERVER_DATA_PATH + v.NAME + '/matches.json', 'r', encoding="utf-8") as f:
                     x = json.load(f)
             except :
@@ -31,6 +33,7 @@ def main() :
             except Exception as e :
                 logging.getLogger("find_matches_live").error(v.NAME + " failed because of " + str(e))
 
+            bet_manage.file_is_available(SERVER_DATA_PATH + v.NAME + '/matches.json')
             with open(SERVER_DATA_PATH + v.NAME + '/matches.json', 'w', encoding="utf-8") as f:
                 json.dump(x, f, indent=4)
 

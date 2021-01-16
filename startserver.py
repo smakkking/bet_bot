@@ -11,8 +11,6 @@ from db_manage import   relogin_clients, \
                         reupdate_subscribe
 from global_constants import BET_PROJECT_ROOT, GROUP_OFFSET
 import bet_manage
-# осуществляет непосредственно ставочный процесс для всех клиентов
-# работает круглосуточно
 
 def db_sycle() :
     # нужно, чтобы при срабатывании этих скриптов все остальные прекратили свою работу
@@ -32,7 +30,6 @@ def lld_sycle() :
         DATA = find_all_links.main(t)
 
         bet_manage.write_groups(DATA)
-        print("data_loaded. I'm waiting")
         time.sleep(TIME_WAITsec)
 
 def fml_sycle():
@@ -124,6 +121,23 @@ if __name__ == "__main__" :
         bet_manage.write_groups(GROUP_DATA)
     """
 
+    proc1 = Process(target=fml_sycle)
+    proc2 = Process(target=lld_sycle)
+    proc3 = Process(target=db_sycle)
+    proc4 = Process(target=allb_sycle)
+    proc5 = Process(target=checkd_sycle)
+
+    proc1.start()
+    proc2.start()
+    proc3.start()
+    proc4.start()
+    proc5.start()
+
+    proc1.join()
+    proc2.join()
+    proc3.join()
+    proc4.join()
+    proc5.join()
 
 
 

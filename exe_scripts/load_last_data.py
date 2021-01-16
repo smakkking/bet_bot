@@ -30,6 +30,7 @@ def main() :
     YandexAPI_detection.create_new_token()
 
     try :
+        bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
         with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
             DATA = json.load(last_posts_json)
     except Exception:

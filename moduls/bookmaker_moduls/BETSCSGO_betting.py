@@ -333,6 +333,7 @@ def dogon_check(stavka) :
 
 
 def get_info(stavka) :
+    bet_manage.file_is_available(SERVER_DATA_PATH + NAME + '/matches.json')
     with open(SERVER_DATA_PATH + NAME + '/matches.json', 'r', encoding="utf-8") as f:
         dat = json.load(f)
         dat = dat['events']

@@ -7,6 +7,7 @@ import urllib
 import base64
 import re
 import json
+import os
 
 # light selenium
 from selenium import webdriver
@@ -388,26 +389,34 @@ def reform_team_name(s : str) :
     return s
 
 def read_groups() :
-    counter = 0
-    while True :
-        try :
-            with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
-                DATA = json.load(last_posts_json)
-            break
-            #print("read successful")
-        except Exception as e:
-            counter += 1
-            time.sleep(1)
-            print(f"cant read {counter} times because of {e}")
+
+    file_is_available(ALL_POSTS_JSON_PATH)
+    with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
+        DATA = json.load(last_posts_json)
 
     for key in DATA.keys() :
         DATA[key]['coupon'] = Coupon(coup_data=DATA[key]['coupon'])
 
     return DATA
 
+
 def write_groups(t) :
     for x in t.keys() :
         t[x]['coupon'] = t[x]['coupon'].__json_repr__()
 
+    file_is_available(ALL_POSTS_JSON_PATH)
+
     with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
         json.dump(t, last_posts_json, indent=4)
+
+
+def file_is_available(file) :
+    counter = 0
+    while True:
+        if os.path.exists(file):
+            try:
+                os.rename(file, file)
+                break
+            except OSError:
+                print(f"{counter} tries to pass")
+                continue

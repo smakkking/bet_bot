@@ -1,11 +1,7 @@
-import time
-
 import functools
 
+from global_constants import GROUP_OFFSET, BOOKMAKER_OFFSET
 
-
-from global_constants import GROUP_OFFSET, BOOKMAKER_OFFSET, ALL_POSTS_JSON_PATH
-import bet_manage
 
 def check_and_delete(DATA, data_key) :
     # возможно здесь нужно создавать браузер
@@ -29,13 +25,9 @@ def check_and_delete(DATA, data_key) :
     return (data_key, DATA[data_key])
 
 
-def main(DATA, main_logger=None):
+def main(DATA):
     DATA = dict(map(functools.partial(check_and_delete, DATA), DATA.keys()))
 
     return DATA
 
-if __name__ == '__main__':
-    while True :
-        DATA = bet_manage.read_groups()
-        bet_manage.write_groups(main(DATA))
 

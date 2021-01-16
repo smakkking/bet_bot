@@ -30,9 +30,11 @@ def bbet_all(DATA, bkm) :
                             session
                         )
                         print(result, client['id'])
-
+    bet_manage.file_is_available(SERVER_DATA_PATH + bookmaker + '/sessions.json')
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
         last_ = json.load(f)
+
+    bet_manage.file_is_available(SERVER_DATA_PATH + bookmaker + '/sessions.json')
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
         for key in last_.keys() :
             bkm['sessions'][key]['session'] = last_[key]['session']
@@ -47,6 +49,8 @@ def main(DATA : dict) :
         if BOOKMAKER_OFFSET[key].HAS_API :
             continue
         #  получаем список всех активных сессий
+
+        bet_manage.file_is_available(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/sessions.json')
         with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/sessions.json', 'r') as f :
             sessions = json.load(f)
 
