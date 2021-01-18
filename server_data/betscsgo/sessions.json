@@ -1,0 +1,17 @@
+{
+    "17": {
+        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/17",
+        "betscsgo_token": "z1p3XifDC1Zxo6yY5WFH6Ap",
+        "betsdota2_token": "1zpq20W4S4xaz63lVlXK0IZ"
+    },
+    "18": {
+        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/18",
+        "betscsgo_token": "27F5bs9N0EWINGH78V63865",
+        "betsdota2_token": "jO78F5XNe5DKXQgE3TpEVef"
+    },
+    "20": {
+        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/20",
+        "betscsgo_token": "srGADCui52hO4zcSLp16KWF",
+        "betsdota2_token": "Ly1B6y9I2RBQX9wo8pg8x5m"
+    }
+}
