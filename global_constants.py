@@ -1,5 +1,5 @@
 # путь к каталогу bet_bot
-BET_PROJECT_ROOT = '/home/andreysm/bet_bot/'
+BET_PROJECT_ROOT = '/home/smaking/bet_bot/'
 
 # путь к каталогу, где хранятся chrome данные
 CHROME_DIR_PACKAGES = BET_PROJECT_ROOT + 'chrome_dir/'

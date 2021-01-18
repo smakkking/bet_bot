@@ -146,8 +146,9 @@ if __name__ == "__main__" :
         }
 
     config.dictConfig(dictLogConfig)
-    """
-    while True :
+
+    linear = '-linear' in sys.argv
+    if linear:
         # системные скрипты выполнятются редко
         find_matches_live.main()
 
@@ -161,24 +162,23 @@ if __name__ == "__main__" :
         GROUP_DATA = check_dogon.main(GROUP_DATA)
 
         bet_manage.write_groups(GROUP_DATA)
-    """
+    else :
+        debug = '-debug' in sys.argv
 
-    debug = '-debug' in sys.argv
+        proc1 = Process(target=fml_sycle, args=(debug, ))
+        proc2 = Process(target=lld_sycle, args=(debug, ))
+        proc3 = Process(target=db_sycle, args=(debug, ))
+        proc4 = Process(target=allb_sycle, args=(debug, ))
+        proc5 = Process(target=checkd_sycle, args=(debug, ))
 
-    proc1 = Process(target=fml_sycle, args=(debug, ))
-    proc2 = Process(target=lld_sycle, args=(debug, ))
-    proc3 = Process(target=db_sycle, args=(debug, ))
-    proc4 = Process(target=allb_sycle, args=(debug, ))
-    proc5 = Process(target=checkd_sycle, args=(debug, ))
+        proc4.start()
+        proc1.start()
+        proc2.start()
+        proc3.start()
+        proc5.start()
 
-    proc4.start()
-    proc1.start()
-    proc2.start()
-    proc3.start()
-    proc5.start()
-
-    proc4.join()
-    proc1.join()
-    proc2.join()
-    proc3.join()
-    proc5.join()
+        proc4.join()
+        proc1.join()
+        proc2.join()
+        proc3.join()
+        proc5.join()
