@@ -8,12 +8,10 @@ import base64
 import re
 import json
 import os
-
+from PIL import Image
 # light selenium
 from selenium import webdriver
 
-# dark selenium
-import undetected_chromedriver as uc
 
 from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, ALL_POSTS_JSON_PATH
 
@@ -241,7 +239,8 @@ class YandexAPI_detection() :
     # иногда случается, что запрос на токен длится более 20 сек, как отлавливать - хз
     iam_token = ''
     oAuth_token = 'AgAAAAApv9blAATuwWZGhGvmrkzMm3hoRBzKIuE'
-    folder_id = 'b1goeg4e1h56agdp1q9d'
+    folder_id = 'b1gouek3ip9f0s5lrbtb'
+    Auth_key = 'AQVN20k7onWnZ_V3TlZjBBOTeD-4dFrqoT4mYnvm'
     
     @classmethod
     def create_new_token(cls, debug=False) :
@@ -315,38 +314,16 @@ def get_html_with_browser(browser, url, sec=0, cookies=None) :
 
     return browser.page_source
 
-def create_webdriver(user_id=None, undetected_mode=False, hdless=False) :
-    if undetected_mode :
-        opts = uc.ChromeOptions()
-        if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
-        opts.add_argument('--profile-directory=Profile_1')
-        opts.set_headless(headless=hdless)
-        obj = uc.Chrome(options=opts, executable_path=CHROME_DRIVER_PATH)
-    else :
-        opts = webdriver.ChromeOptions()
-        opts.add_argument('--no-sandbox')
-        opts.add_argument('--disable-gpu')
-        if hdless :
-            opts.add_argument('--headless')
-        #opts.set_headless(headless=hdless)
-        opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-        opts.add_experimental_option('useAutomationExtension', False)
-        if user_id :
-            opts.add_argument('--user-data-dir=' + CHROME_DIR_PACKAGES + 'ID_' + user_id)
-        opts.add_argument("--disable-dev-shm-usage")
+def create_webdriver(user_id=None, hdless=False) :
+    opts = webdriver.FirefoxOptions()
+    opts.headless = True
 
-        opts.add_argument('--profile-directory=Profile_1')
-        obj = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=opts)
+    obj = webdriver.Firefox(options=opts)
     obj.implicitly_wait(LOAD_TIMEOUT)
-
     return obj
     
 # return 'left' or 'right'
 def define_side_winner(url) :
-
-    from PIL import Image
-    import requests
 
     def otkl(color) :
         # если честно сомнительное сравнение

@@ -1,7 +1,5 @@
-import json
 from multiprocessing import Pool
 import functools
-import bet_manage
 
 from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET, ALL_POSTS_JSON_PATH
 

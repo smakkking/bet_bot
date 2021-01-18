@@ -1,0 +1,22 @@
+# !/bin/bash
+pip3 install base64
+pip3 install json
+pip3 install sqlite3
+pip3 install selenium
+pip3 install functools
+pip3 install pickle
+pip3 install nltk
+pip3 install dateutil
+pip3 install bs4
+pip3 install steam
+pip3 install re
+pip3 install django
+pip3 install SimpleQIWI
+pip3 install pprint
+pip3 install PIL
+
+# !/usr/bin/env python
+import nltk
+nltk.download('punkt')
+
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${IAM_TOKEN}" -d '@body.json' https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze > output.json

@@ -7,8 +7,6 @@ from django.http import JsonResponse
 from datetime import datetime, timedelta
 
 from SimpleQIWI import *
-from time import sleep
-import json
 
 
 class BotSettings(LoginRequiredMixin, views.View) :

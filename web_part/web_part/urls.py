@@ -4,8 +4,6 @@ from UserDataManagment import views
 from django.conf.urls import include
 from django.views.generic import TemplateView
 
-from django.contrib.auth import views as v
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name="test.html")),
