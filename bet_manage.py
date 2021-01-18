@@ -413,10 +413,9 @@ def write_groups(t) :
 def file_is_available(file) :
     counter = 0
     while True:
-        if os.path.exists(file):
-            try:
-                os.rename(file, file)
-                break
-            except OSError:
-                print(f"{counter} tries to pass")
-                continue
+        try:
+            os.rename(file, file)
+            break
+        except OSError:
+            print(f"{counter} tries to pass")
+            continue

@@ -24,12 +24,20 @@ LOGIN_UPDATE_TIMEh = 24
 
 
 from moduls.bookmaker_moduls import BETSCSGO_betting
-from moduls.group_moduls import ExpertMnenie_group, CSgoVictory_group, BETSPEDIA_group
+from moduls.group_moduls import ExpertMnenie_group, \
+                                CSgoVictory_group, \
+                                BETSPEDIA_group, \
+                                SaveMoney_group, \
+                                Aristocrat_group, \
+                                CSgo99percent_group
 
 GROUP_OFFSET = {
     ExpertMnenie_group.NAME: ExpertMnenie_group,
     CSgoVictory_group.NAME: CSgoVictory_group,
     BETSPEDIA_group.NAME: BETSPEDIA_group,
+    SaveMoney_group.NAME: SaveMoney_group,
+    Aristocrat_group.NAME: Aristocrat_group,
+    CSgo99percent_group.NAME: CSgo99percent_group
 }
 
 BOOKMAKER_OFFSET = {

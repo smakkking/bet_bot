@@ -26,8 +26,8 @@ MATCHES_UPDATE_TIMEh = 8
 LIVE_MATCHES_UPDATE_TIMEm = 10
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE        = '3981292ca935c342e48aa5bf040a8abdf701cc0d-1610787582-0-150'
-CURRENT_CF_CLEARANCE_add    = '234d9db9ed29faa46cc7d316530c85d64e96da5d-1610787628-0-150'
+CURRENT_CF_CLEARANCE        = 'f098055dd6ce3d5b6b9d38927df11d679dc3b3f1-1610880986-0-150'
+CURRENT_CF_CLEARANCE_add    = '556c840f9378cb59aa7fba501fafb5ee7d7e878f-1610881022-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
@@ -47,7 +47,7 @@ def find_vs(words : list, idx : int) :
     right_team = ''
     left_team = ''
     ndx = idx + 1
-    while (re.search('[A-Za-z0-9()\']+', words[ndx]) and words[ndx].find(':') < 0) :
+    while (re.search('[A-Za-z0-9().\']+', words[ndx]) and words[ndx].find(':') < 0) :
         if (right_team.upper().find(words[ndx].upper()) < 0) :
             right_team = right_team + ' ' + words[ndx]
             ndx += 1
@@ -55,7 +55,7 @@ def find_vs(words : list, idx : int) :
             break
 
     ndx = idx - 1
-    while (re.search('[A-Za-z0-9()\']+', words[ndx]) and ndx >= 0 and words[ndx].find(':') < 0) :
+    while (re.search('[A-Za-z0-9().\']+', words[ndx]) and ndx >= 0 and words[ndx].find(':') < 0) :
         if (left_team.upper().find(words[ndx].upper()) < 0) :
             left_team = words[ndx] + ' ' + left_team
             ndx -= 1
@@ -133,12 +133,14 @@ def parse2(photo_url: str, words: list) :
 
 def template3(text: str) :
     temp = [
-        r'РЕЗУЛЬТАТ\s*ОЖИДАЕТСЯ',
+        #r'РЕЗУЛЬТАТ\s*ОЖИДАЕТСЯ',
         r'ПОБЕДА',
     ]
     not_temp = [
-        'КАРТЕ',
+        'СУММА',
+        'НА'
     ]
+
     flag = True
     for x in temp :
         flag = flag and re.search(x, text)
@@ -156,17 +158,59 @@ def parse3(photo_url: str, words: list) :
         res.winner += words[words.index('Победа') + 2 + i]
         i += 1
     res.winner = bet_manage.reform_team_name(res.winner)
-
-    res.sum = float(words[words.index('Победа') + 2 + i][ : -1])
+    try :
+        res.sum = float(words[words.index('Победа') + 2 + i][ : -1])
+    except ValueError:
+        res.sum = float(words[words.index('Победа') + 1 + i])
 
     res.outcome_index = OFFSET_TABLE['Победа в матче']
 
     return res
 
+
+def template4(text : str) :
+    temp = [
+        #r'РЕЗУЛЬТАТ\s*ОЖИДАЕТСЯ',
+        r'ПОБЕДА\s*НА\s*КАРТЕ',
+    ]
+    not_temp = [
+        'СУММА'
+    ]
+
+    flag = True
+    for x in temp :
+        flag = flag and re.search(x, text)
+
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse4(photo_url: str, words: list) :
+    res = bet_manage.Stavka()
+
+    res.match_title = find_vs(words, words.index('vs'))
+
+    i = 0
+    while words[words.index('карте') + 4 + i][-1] != 'P' :
+        res.winner += words[words.index('карте') + 4 + i]
+        i += 1
+
+    res.winner = bet_manage.reform_team_name(res.winner)
+    try :
+        res.sum = float(words[words.index('карте') + 4 + i][ : -1])
+    except ValueError :
+        res.sum = float(words[words.index('карте') + 3 + i])
+
+    res.outcome_index = (OFFSET_TABLE['Победа на карте'], int(words[words.index('карте') + 2]))
+
+    return res
+
+
+
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
     (template2, parse2),
     (template3, parse3),
+    (template4, parse4),
 ]
 
 
@@ -255,9 +299,10 @@ def make_bet(stavka, summ, session) :
     base_str += stavka.bk_links[NAME]['bet_id'] + '/'
 
     # не раб с больше\меньше
-    if stavka.bk_links[NAME]['team1'] == stavka.winner :
+
+    if stavka.winner.find(stavka.bk_links[NAME]['team1']) >= 0 :
         base_str += '1/'
-    elif stavka.bk_links[NAME]['team2'] == stavka.winner :
+    elif stavka.winner.find(stavka.bk_links[NAME]['team2']) >= 0 :
         base_str += '2/'
 
     base_str += str(summ * stavka.summ_multiplier) + '/'

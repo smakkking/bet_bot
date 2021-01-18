@@ -104,5 +104,24 @@ class StandartUser(AbstractUser):
         help_text='<a href="' + GROUP_OFFSET['BetsPedia'].WALL_URL + '"> подробнее </a>',
     )
 
+    aristocratical = models.BooleanField(
+        default=False,
+        verbose_name="Аристократ CS:GO | Прогнозы и ставки CSGO & Dota",
+        help_text='<a href="' + GROUP_OFFSET['aristocratical'].WALL_URL + '"> подробнее </a>',
+    )
+
+    savemoney = models.BooleanField(
+        default=False,
+        verbose_name="SaveMoney CSGO | Прогнозы и ставки CS:GO & DOTA2",
+        help_text='<a href="' + GROUP_OFFSET['savemoney'].WALL_URL + '"> подробнее </a>',
+    )
+
+    CSGO99percent = models.BooleanField(
+        default=False,
+        verbose_name="99% CS:GO | ПРОГНОЗЫ CSGO & DOTA 2",
+        help_text='<a href="' + GROUP_OFFSET['CSGO99percent'].WALL_URL + '"> подробнее </a>',
+    )
+
+
     def __str__(self):
         return self.username

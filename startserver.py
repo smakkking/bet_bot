@@ -1,6 +1,7 @@
 from logging import config
 import time
 from multiprocessing import Process
+import sys
 
 from exe_scripts import load_last_data, \
                         all_bet, \
@@ -12,39 +13,80 @@ from db_manage import   relogin_clients, \
 from global_constants import BET_PROJECT_ROOT, GROUP_OFFSET
 import bet_manage
 
-def db_sycle() :
-    # нужно, чтобы при срабатывании этих скриптов все остальные прекратили свою работу
-    # как это сделать?
-    UPDATE_DBh = 4
+
+def update_db_time() :
+    UPDATE_DBh = 5
+    now = time.localtime(time.time())
+    return now.tm_hour == UPDATE_DBh and now.tm_min == 0 and now.tm_sec <= 30
+
+
+def db_sycle(debug=False) :
 
     while True :
-        now = time.gmtime(time.time())
-        if now.tm_hour == UPDATE_DBh and now.tm_min == 0 and now.tm_sec <= 20:
+        if update_db_time() :
             reupdate_subscribe.main()
             relogin_clients.main()
+        if debug:
+            print("db executed")
+            time.sleep(20)
 
-def lld_sycle() :
+
+def lld_sycle(debug=False) :
     TIME_WAITsec = 15
     while True :
+        if update_db_time():
+            print('i sleep')
+            time.sleep(60)
+
         t = load_last_data.main()
         DATA = find_all_links.main(t)
 
         bet_manage.write_groups(DATA)
         time.sleep(TIME_WAITsec)
 
-def fml_sycle():
+        if debug:
+            print("lld executed")
+
+
+def fml_sycle(debug=False):
     while True :
+        if update_db_time():
+            print('i sleep')
+            time.sleep(60)
+
         find_matches_live.main()
 
-def allb_sycle():
+        if debug:
+            print("fml executed")
+            time.sleep(20)
+
+
+def allb_sycle(debug=False):
     while True:
+        if update_db_time():
+            print('i sleep')
+            time.sleep(60)
+
         DATA = bet_manage.read_groups()
         bet_manage.write_groups(all_bet.main(DATA))
 
-def checkd_sycle():
+        if debug:
+            print("allb executed")
+            time.sleep(20)
+
+
+def checkd_sycle(debug=False):
     while True :
+        if update_db_time():
+            print('i sleep')
+            time.sleep(60)
+
         DATA = bet_manage.read_groups()
         bet_manage.write_groups(check_dogon.main(DATA))
+
+        if debug:
+            print("checkd executed")
+            time.sleep(20)
 
 
 if __name__ == "__main__" :
@@ -121,25 +163,22 @@ if __name__ == "__main__" :
         bet_manage.write_groups(GROUP_DATA)
     """
 
-    proc1 = Process(target=fml_sycle)
-    proc2 = Process(target=lld_sycle)
-    proc3 = Process(target=db_sycle)
-    proc4 = Process(target=allb_sycle)
-    proc5 = Process(target=checkd_sycle)
+    debug = '-debug' in sys.argv
 
+    proc1 = Process(target=fml_sycle, args=(debug, ))
+    proc2 = Process(target=lld_sycle, args=(debug, ))
+    proc3 = Process(target=db_sycle, args=(debug, ))
+    proc4 = Process(target=allb_sycle, args=(debug, ))
+    proc5 = Process(target=checkd_sycle, args=(debug, ))
+
+    proc4.start()
     proc1.start()
     proc2.start()
     proc3.start()
-    proc4.start()
     proc5.start()
 
+    proc4.join()
     proc1.join()
     proc2.join()
     proc3.join()
-    proc4.join()
     proc5.join()
-
-
-
-
-

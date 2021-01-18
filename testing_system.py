@@ -8,7 +8,7 @@ from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser
 from global_constants import SERVER_DATA_PATH
 
 import nltk, json, time
-from moduls.group_moduls import Aristocrat_group
+from moduls.group_moduls import Aristocrat_group, SaveMoney_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 def testing_group(group, N) :
@@ -98,6 +98,7 @@ def get_stavka(photo_url, group, debug=False) :
 
     for (tmp, parse) in group.BET_TEMPLATES :
         if tmp(text) :
+            print('iam')
             stavka = parse(photo_url, text_nltk)
 
     return None if (stavka is None) else stavka.__json_repr__()
@@ -150,13 +151,12 @@ def undetected_bets_test(group) :
     driver = create_webdriver()
 
     for link in data[group.NAME] :
-        bet = get_stavka(link, group)
         get_html_with_browser(driver, link)
-        if bet :
-            pprint(bet)
-        else :
+        bet = get_stavka(link, group, debug=True)
+        pprint(bet)
+        s = input()
+        if s == 'w' :
             reupload.append(link)
-        input()
     driver.close()
     data[group.NAME] = reupload
 
@@ -202,6 +202,8 @@ def cf_scrapper2() :
     print(scraper.get("https://betscsgo.in").text)
 
 if __name__ == "__main__" :
+
+    undetected_bets_test(Aristocrat_group)
 
     """
 {

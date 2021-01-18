@@ -1,6 +1,5 @@
 import functools
 from multiprocessing import Pool
-import logging
 import json
 import pickle
 

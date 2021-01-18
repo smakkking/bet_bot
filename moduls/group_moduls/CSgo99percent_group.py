@@ -15,6 +15,7 @@ import logging
 
 WALL_URL = 'https://vk.com/csgo_stavki99'
 NAME = 'CSGO99percent'
+DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 
