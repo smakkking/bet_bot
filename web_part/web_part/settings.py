@@ -25,7 +25,7 @@ SECRET_KEY = 'uqr^+47!1x)4#ohlhdp*5pl21-&y^27z_mf++&su&a&d7d$f3+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bet-bot.online']
 
 AUTH_USER_MODEL = 'UserDataManagment.StandartUser'
 
@@ -127,3 +127,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+STATIC_ROOT = '/home/smaking/static'
+MEDIA_ROOT = '/home/smaking/media'
+
+
+
