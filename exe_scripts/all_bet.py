@@ -23,6 +23,9 @@ def bbet_all(DATA, bkm) :
                     for stavka in DATA[group]['coupon'].bets :
                         if not (client['bookmaker'] in stavka.bk_links.keys()) :
                             continue
+                        if stavka.bk_links[client['bookmaker']] is None :
+                            continue
+
                         result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
                             stavka,
                             client['bet_summ'],
