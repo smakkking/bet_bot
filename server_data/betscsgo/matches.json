@@ -1,0 +1,98 @@
+{
+    "events": [
+        {
+            "begin_date": "2021-01-17T17:30:00",
+            "team1": "SPROUT",
+            "team2": "ALTERNATEATTAX",
+            "link": "https://betscsgo.in/match/266602/",
+            "outcomes": {
+                "game_winner": "266602",
+                "one_map_win": {
+                    "team2": "266615"
+                },
+                "games_count_2.5": "266614",
+                "map1": {},
+                "map2": {}
+            }
+        },
+        {
+            "begin_date": "2021-01-17T20:00:00",
+            "team1": "NA'VIYOUTH",
+            "team2": "GUCCISQUAD",
+            "link": "https://betscsgo.in/match/267101/",
+            "outcomes": {
+                "game_winner": "267101",
+                "one_map_win": {
+                    "team1": "267111",
+                    "team2": "267112"
+                },
+                "games_count_2.5": "267102",
+                "map1": {
+                    "map_winner": "267103"
+                },
+                "map2": {
+                    "map_winner": "267107"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-17T21:50:00",
+            "team1": "BIG",
+            "team2": "TBD",
+            "link": "https://betscsgo.in/match/267265/",
+            "outcomes": {
+                "game_winner": "267265",
+                "one_map_win": {},
+                "games_count_2.5": "267266",
+                "map1": {
+                    "map_winner": "267267"
+                },
+                "map2": {
+                    "map_winner": "267271"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-18T01:00:00",
+            "team1": "HIGHCOAST",
+            "team2": "TRIUMPH",
+            "link": "https://betscsgo.in/match/267253/",
+            "outcomes": {
+                "game_winner": "267253",
+                "one_map_win": {
+                    "team1": "267263",
+                    "team2": "267264"
+                },
+                "games_count_2.5": "267254",
+                "map1": {
+                    "map_winner": "267255"
+                },
+                "map2": {
+                    "map_winner": "267259"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-17T21:00:00",
+            "team1": "BROKENCREW",
+            "team2": "COLDFOXE-SPORTS",
+            "link": "https://betsdota2.fun/match/163961/",
+            "outcomes": {
+                "game_winner": "163961",
+                "one_map_win": {
+                    "team1": "163967",
+                    "team2": "163968"
+                },
+                "games_count_2.5": "163962",
+                "map1": {
+                    "map_winner": "163963"
+                },
+                "map2": {
+                    "map_winner": "163965"
+                }
+            }
+        }
+    ],
+    "last_update_all": "2021-01-17T17:09:22.554361",
+    "last_update_live": "2021-01-17T19:37:10.386784"
+}
