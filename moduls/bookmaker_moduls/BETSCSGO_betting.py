@@ -23,7 +23,7 @@ TAKES_MATCHES_LIVE = False
 
 # corrected params
 MATCHES_UPDATE_TIMEh = 8
-LIVE_MATCHES_UPDATE_TIMEm = 10
+LIVE_MATCHES_UPDATE_TIMEm = 5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
 CURRENT_CF_CLEARANCE        = 'f098055dd6ce3d5b6b9d38927df11d679dc3b3f1-1610880986-0-150'
@@ -360,9 +360,9 @@ def dogon_check(stavka) :
 
         if event == stavka.outcome_index[0] :
             winner = None
-            if btns[0].value_of_css_property('color') == 'rgba(86, 115, 10, 1)':
+            if btns[0].value_of_css_property('color') == 'rgb(86, 115, 10)':
                 winner = bet_manage.reform_team_name(btns[0].text[btns[0].text.find('\n') + 1:])
-            elif btns[1].value_of_css_property('color') == 'rgba(86, 115, 10, 1)':
+            elif btns[1].value_of_css_property('color') == 'rgb(86, 115, 10)':
                 winner = bet_manage.reform_team_name(btns[1].text[btns[1].text.find('\n') + 1:])
 
             browser.close()
@@ -385,7 +385,7 @@ def get_info(stavka) :
     for x in dat:
         # совпадает ли название матча
         if stavka.match_title.find(x['team1']) >= 0 and stavka.match_title.find(x['team2']) >= 0:
-            if type(stavka.outcome_index) is tuple:
+            if type(stavka.outcome_index) is tuple or type(stavka.outcome_index) is list:
                 bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
             else:
                 # исхода может не быть, вылезет KeyError, что делать?????

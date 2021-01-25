@@ -1,17 +1,32 @@
 {
     "17": {
-        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/17",
-        "betscsgo_token": "z1p3XifDC1Zxo6yY5WFH6Ap",
-        "betsdota2_token": "1zpq20W4S4xaz63lVlXK0IZ"
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/17",
+        "betscsgo_token": "eOD8hyQZUqeteXr4lQ69Pl5",
+        "betsdota2_token": "75C4p03xgOh8RSr5jd6U1t2"
     },
     "18": {
-        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/18",
-        "betscsgo_token": "27F5bs9N0EWINGH78V63865",
-        "betsdota2_token": "jO78F5XNe5DKXQgE3TpEVef"
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/18",
+        "betscsgo_token": "E5156s8wCitJ96geY41p5UP",
+        "betsdota2_token": "1lOMYlwPqpk5rwE8tDRVvne"
+    },
+    "19": {
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/19",
+        "betscsgo_token": "X13AT8i9qPi2NP266pKy2y5",
+        "betsdota2_token": "6GbA5JCKz1e7AQ35f4zR3ci"
     },
     "20": {
-        "session": "/home/andreysm/bet_bot/server_data/tmp_data/sessions/20",
-        "betscsgo_token": "srGADCui52hO4zcSLp16KWF",
-        "betsdota2_token": "Ly1B6y9I2RBQX9wo8pg8x5m"
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/20",
+        "betscsgo_token": "98juLzo3MwIoA5z48N7p4T7",
+        "betsdota2_token": "n22D7dVsAC5OdIgCGDX09ki"
+    },
+    "21": {
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/21",
+        "betscsgo_token": "10J5lSJwrpJ4o1Au4oMXKdM",
+        "betsdota2_token": "ARK76D91g4j5lq3cs0mmv7l"
+    },
+    "23": {
+        "session": "/home/smaking/bet_bot/server_data/tmp_data/sessions/23",
+        "betscsgo_token": "00v54Co77UbbrUc8d3069uo",
+        "betsdota2_token": "3mWWzZe5k3bnE87U5WcD9nh"
     }
 }

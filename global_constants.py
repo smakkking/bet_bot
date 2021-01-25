@@ -19,10 +19,6 @@ DATABASE_PATH = BET_PROJECT_ROOT + 'web_part/db.sqlite3'
 # время ожидания по обновлению ссылок на матчи у бк с TAKES_MATCHES_LIVE=False
 MATCHES_UPDATE_TIMEh = 12
 
-# время ожидания по обновлению логинов
-LOGIN_UPDATE_TIMEh = 24
-
-
 from moduls.bookmaker_moduls import BETSCSGO_betting
 from moduls.group_moduls import ExpertMnenie_group, \
                                 CSgoVictory_group, \

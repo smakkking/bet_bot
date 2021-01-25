@@ -2,6 +2,7 @@ import functools
 from multiprocessing import Pool
 import json
 import pickle
+import logging
 
 from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
 import bet_manage
@@ -31,7 +32,13 @@ def bbet_all(DATA, bkm) :
                             client['bet_summ'],
                             session
                         )
-                        print(result, client['id'])
+                        result = json.loads(result)
+                        logging.getLogger("created_bets").info(client['id'])
+                        logging.getLogger("created_bets").info(result['success'])
+                        if not result['success']:
+                            logging.getLogger("created_bets").info(result['error'])
+
+
     bet_manage.file_is_available(SERVER_DATA_PATH + bookmaker + '/sessions.json')
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
         last_ = json.load(f)

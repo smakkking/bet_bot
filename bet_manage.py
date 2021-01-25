@@ -9,6 +9,8 @@ import re
 import json
 import os
 from PIL import Image
+import subprocess
+
 # light selenium
 from selenium import webdriver
 
@@ -318,7 +320,7 @@ def create_webdriver(user_id=None, hdless=False) :
     opts = webdriver.FirefoxOptions()
     opts.headless = True
 
-    obj = webdriver.Firefox(options=opts)
+    obj = webdriver.Firefox(options=opts, executable_path='/usr/bin/geckodriver')
     obj.implicitly_wait(LOAD_TIMEOUT)
     return obj
     
@@ -391,8 +393,7 @@ def file_is_available(file) :
     counter = 0
     while True:
         try:
-            os.rename(file, file)
+            DEVNULL = os.open(os.devnull, os.O_WRONLY)
+            l = subprocess.check_call(["fuser", ALL_POSTS_JSON_PATH], stdout=DEVNULL, stderr=DEVNULL)
+        except subprocess.CalledProcessError:
             break
-        except OSError:
-            print(f"{counter} tries to pass")
-            continue

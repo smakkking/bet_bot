@@ -15,7 +15,7 @@ import bet_manage
 
 
 def update_db_time() :
-    UPDATE_DBh = 5
+    UPDATE_DBh = 7
     now = time.localtime(time.time())
     return now.tm_hour == UPDATE_DBh and now.tm_min == 0 and now.tm_sec <= 30
 
@@ -82,6 +82,7 @@ def checkd_sycle(debug=False):
             time.sleep(60)
 
         DATA = bet_manage.read_groups()
+        # между моментом чтения и моментом записи может пройти 1 минута, за это время могут записаться новые данные, поэтому они потеряются
         bet_manage.write_groups(check_dogon.main(DATA))
 
         if debug:
@@ -150,18 +151,23 @@ if __name__ == "__main__" :
     linear = '-linear' in sys.argv
     if linear:
         # системные скрипты выполнятются редко
-        find_matches_live.main()
+        while True :
+            find_matches_live.main()
 
-        # основные скрипты выполняются постоянно
-        GROUP_DATA = load_last_data.main()
+            # основные скрипты выполняются постоянно
+            GROUP_DATA = load_last_data.main()
 
-        GROUP_DATA = find_all_links.main(GROUP_DATA)
+            GROUP_DATA = find_all_links.main(GROUP_DATA)
 
-        GROUP_DATA = all_bet.main(GROUP_DATA)
+            GROUP_DATA = all_bet.main(GROUP_DATA)
 
-        GROUP_DATA = check_dogon.main(GROUP_DATA)
+            GROUP_DATA = check_dogon.main(GROUP_DATA)
 
-        bet_manage.write_groups(GROUP_DATA)
+            bet_manage.write_groups(GROUP_DATA)
+
+            if update_db_time():
+                reupdate_subscribe.main()
+                relogin_clients.main()
     else :
         debug = '-debug' in sys.argv
 

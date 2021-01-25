@@ -1,98 +1,338 @@
 {
     "events": [
         {
-            "begin_date": "2021-01-17T17:30:00",
-            "team1": "SPROUT",
-            "team2": "ALTERNATEATTAX",
-            "link": "https://betscsgo.in/match/266602/",
+            "begin_date": "2021-01-25T17:20:00",
+            "team1": "IZAKOBOARS",
+            "team2": "TRIDENT(RU)",
+            "link": "https://betscsgo.in/match/268717/",
             "outcomes": {
-                "game_winner": "266602",
+                "game_winner": "268717",
                 "one_map_win": {
-                    "team2": "266615"
+                    "team1": "268725"
                 },
-                "games_count_2.5": "266614",
+                "games_count_2.5": "268718",
+                "map1": {
+                    "map_winner": "268726"
+                },
+                "map2": {
+                    "map_winner": "268730"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T17:10:00",
+            "team1": "LYNGBYVIKINGS",
+            "team2": "GAMERLEGION",
+            "link": "https://betscsgo.in/match/268719/",
+            "outcomes": {
+                "game_winner": "268719",
+                "one_map_win": {
+                    "team1": "268734",
+                    "team2": "268735"
+                },
+                "games_count_2.5": "268720",
+                "map1": {
+                    "map_winner": "268736"
+                },
+                "map2": {
+                    "map_winner": "268740"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T16:05:00",
+            "team1": "FNATIC",
+            "team2": "COL",
+            "link": "https://betscsgo.in/match/268462/",
+            "outcomes": {
+                "game_winner": "268462",
+                "one_map_win": {
+                    "team1": "268489",
+                    "team2": "268490"
+                },
+                "games_count_2.5": "268463",
                 "map1": {},
-                "map2": {}
-            }
-        },
-        {
-            "begin_date": "2021-01-17T20:00:00",
-            "team1": "NA'VIYOUTH",
-            "team2": "GUCCISQUAD",
-            "link": "https://betscsgo.in/match/267101/",
-            "outcomes": {
-                "game_winner": "267101",
-                "one_map_win": {
-                    "team1": "267111",
-                    "team2": "267112"
-                },
-                "games_count_2.5": "267102",
-                "map1": {
-                    "map_winner": "267103"
-                },
                 "map2": {
-                    "map_winner": "267107"
+                    "map_winner": "268485"
                 }
             }
         },
         {
-            "begin_date": "2021-01-17T21:50:00",
-            "team1": "BIG",
-            "team2": "TBD",
-            "link": "https://betscsgo.in/match/267265/",
+            "begin_date": "2021-01-25T16:05:00",
+            "team1": "OG",
+            "team2": "DIGNITAS",
+            "link": "https://betscsgo.in/match/268460/",
             "outcomes": {
-                "game_winner": "267265",
-                "one_map_win": {},
-                "games_count_2.5": "267266",
-                "map1": {
-                    "map_winner": "267267"
+                "game_winner": "268460",
+                "one_map_win": {
+                    "team2": "268472"
                 },
+                "games_count_2.5": "268461",
+                "map1": {},
                 "map2": {
-                    "map_winner": "267271"
+                    "map_winner": "268477"
                 }
             }
         },
         {
-            "begin_date": "2021-01-18T01:00:00",
-            "team1": "HIGHCOAST",
-            "team2": "TRIUMPH",
-            "link": "https://betscsgo.in/match/267253/",
+            "begin_date": "2021-01-25T19:30:00",
+            "team1": "FAZE",
+            "team2": "MOUSESPORTS",
+            "link": "https://betscsgo.in/match/268464/",
             "outcomes": {
-                "game_winner": "267253",
+                "game_winner": "268464",
                 "one_map_win": {
-                    "team1": "267263",
-                    "team2": "267264"
+                    "team1": "268499",
+                    "team2": "268500"
                 },
-                "games_count_2.5": "267254",
+                "games_count_2.5": "268465",
                 "map1": {
-                    "map_winner": "267255"
+                    "map_winner": "268491"
                 },
                 "map2": {
-                    "map_winner": "267259"
+                    "map_winner": "268495"
                 }
             }
         },
         {
-            "begin_date": "2021-01-17T21:00:00",
-            "team1": "BROKENCREW",
-            "team2": "COLDFOXE-SPORTS",
-            "link": "https://betsdota2.fun/match/163961/",
+            "begin_date": "2021-01-25T19:30:00",
+            "team1": "HEROIC",
+            "team2": "MIBR",
+            "link": "https://betscsgo.in/match/268466/",
             "outcomes": {
-                "game_winner": "163961",
+                "game_winner": "268466",
                 "one_map_win": {
-                    "team1": "163967",
-                    "team2": "163968"
+                    "team2": "268501"
                 },
-                "games_count_2.5": "163962",
+                "games_count_2.5": "268467",
                 "map1": {
-                    "map_winner": "163963"
+                    "map_winner": "268502"
                 },
                 "map2": {
-                    "map_winner": "163965"
+                    "map_winner": "268506"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T20:00:00",
+            "team1": "WINSTRIKE",
+            "team2": "OFFSET",
+            "link": "https://betscsgo.in/match/268721/",
+            "outcomes": {
+                "game_winner": "268721",
+                "one_map_win": {
+                    "team2": "268744"
+                },
+                "games_count_2.5": "268722",
+                "map1": {
+                    "map_winner": "268745"
+                },
+                "map2": {
+                    "map_winner": "268749"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T20:00:00",
+            "team1": "SANGAL",
+            "team2": "YOUNGNINJAS",
+            "link": "https://betscsgo.in/match/268723/",
+            "outcomes": {
+                "game_winner": "268723",
+                "one_map_win": {
+                    "team2": "268753"
+                },
+                "games_count_2.5": "268724",
+                "map1": {
+                    "map_winner": "268754"
+                },
+                "map2": {
+                    "map_winner": "268758"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T23:00:00",
+            "team1": "FURIA",
+            "team2": "CLOUD9",
+            "link": "https://betscsgo.in/match/268468/",
+            "outcomes": {
+                "game_winner": "268468",
+                "one_map_win": {
+                    "team2": "268510"
+                },
+                "games_count_2.5": "268469",
+                "map1": {
+                    "map_winner": "268511"
+                },
+                "map2": {
+                    "map_winner": "268515"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T23:00:00",
+            "team1": "VP",
+            "team2": "NIP",
+            "link": "https://betscsgo.in/match/268470/",
+            "outcomes": {
+                "game_winner": "268470",
+                "one_map_win": {
+                    "team1": "268527",
+                    "team2": "268528"
+                },
+                "games_count_2.5": "268471",
+                "map1": {
+                    "map_winner": "268519"
+                },
+                "map2": {
+                    "map_winner": "268523"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T16:55:00",
+            "team1": "WINSTRIKE",
+            "team2": "GAMBIT",
+            "link": "https://betsdota2.fun/match/164663/",
+            "outcomes": {
+                "game_winner": "164663",
+                "one_map_win": {
+                    "team1": "164665",
+                    "team2": "164666"
+                },
+                "games_count_2.5": "164664",
+                "map1": {
+                    "map_winner": "164667"
+                },
+                "map2": {
+                    "map_winner": "164669"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T15:00:00",
+            "team1": "NOBOUNTYHUNTER",
+            "team2": "PUCKCHAMP",
+            "link": "https://betsdota2.fun/match/164688/",
+            "outcomes": {
+                "game_winner": "164688",
+                "one_map_win": {
+                    "team1": "164700",
+                    "team2": "164701"
+                },
+                "games_count_2.5": "164689",
+                "map1": {
+                    "map_winner": "164702"
+                },
+                "map2": {
+                    "map_winner": "164704"
+                },
+                "map3": {
+                    "map_winner": "164832"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T18:00:00",
+            "team1": "HELLBEARSMASHERS",
+            "team2": "ZERORESPECT",
+            "link": "https://betsdota2.fun/match/164690/",
+            "outcomes": {
+                "game_winner": "164690",
+                "one_map_win": {
+                    "team1": "164706",
+                    "team2": "164707"
+                },
+                "games_count_2.5": "164691",
+                "map1": {
+                    "map_winner": "164708"
+                },
+                "map2": {
+                    "map_winner": "164710"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T19:55:00",
+            "team1": "CREEPWAVE",
+            "team2": "HIPPOMANIACS",
+            "link": "https://betsdota2.fun/match/164648/",
+            "outcomes": {
+                "game_winner": "164648",
+                "one_map_win": {
+                    "team1": "164650",
+                    "team2": "164651"
+                },
+                "games_count_2.5": "164649",
+                "map1": {
+                    "map_winner": "164652"
+                },
+                "map2": {
+                    "map_winner": "164654"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T21:00:00",
+            "team1": "NOUNDYING",
+            "team2": "EXTREMUM",
+            "link": "https://betsdota2.fun/match/164692/",
+            "outcomes": {
+                "game_winner": "164692",
+                "one_map_win": {
+                    "team1": "164712",
+                    "team2": "164713"
+                },
+                "games_count_2.5": "164693",
+                "map1": {
+                    "map_winner": "164714"
+                },
+                "map2": {
+                    "map_winner": "164716"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-25T23:00:00",
+            "team1": "0-900",
+            "team2": "HOKORI",
+            "link": "https://betsdota2.fun/match/164678/",
+            "outcomes": {
+                "game_winner": "164678",
+                "one_map_win": {
+                    "team1": "164680",
+                    "team2": "164681"
+                },
+                "games_count_2.5": "164679",
+                "map1": {
+                    "map_winner": "164682"
+                },
+                "map2": {
+                    "map_winner": "164684"
+                }
+            }
+        },
+        {
+            "begin_date": "2021-01-26T02:00:00",
+            "team1": "ARKOSHGAMING",
+            "team2": "THECUT",
+            "link": "https://betsdota2.fun/match/164671/",
+            "outcomes": {
+                "game_winner": "164671",
+                "one_map_win": {
+                    "team2": "164673"
+                },
+                "games_count_2.5": "164672",
+                "map1": {
+                    "map_winner": "164674"
+                },
+                "map2": {
+                    "map_winner": "164676"
                 }
             }
         }
     ],
-    "last_update_all": "2021-01-17T17:09:22.554361",
-    "last_update_live": "2021-01-17T19:37:10.386784"
+    "last_update_all": "2021-01-25T17:37:19.079047",
+    "last_update_live": "2021-01-25T17:50:13.299587"
 }

@@ -37,5 +37,4 @@ def main() :
                 json.dump(x, f, indent=4)
 
 if __name__ == '__main__':
-    while True:
-        main()
+    main()

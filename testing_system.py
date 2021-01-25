@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as bs
 from pprint import pprint
 from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver, read_groups
 
-from global_constants import SERVER_DATA_PATH
+from global_constants import SERVER_DATA_PATH, ALL_POSTS_JSON_PATH
 
 import nltk, json, time
 from moduls.group_moduls import Aristocrat_group, SaveMoney_group
@@ -103,46 +103,6 @@ def get_stavka(photo_url, group, debug=False) :
 
     return None if (stavka is None) else stavka.__json_repr__()
 
-def placebet(login, passwd, i) :
-
-    user = wa.WebAuth(login)
-    session = user.cli_login(passwd)
-
-    head = {
-        'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
-    }
-    #session.headers.update(head)
-    session.cookies.set('cf_clearance', '869adfab27a1a8e792dfedd9959f36cd45e122c1-1610387075-0-150')
-
-    r = session.get('https://betscsgo.in/login/')
-
-    soup = bs(r.text, 'lxml')
-    form_obj = soup.find(id='openidForm')
-
-    r = session.post('https://steamcommunity.com/openid/login', files={
-        'action': (None, form_obj.find('input', {'id': 'actionInput'})['value']),
-        'openid.mode': (None,form_obj.find('input', {'name': 'openid.mode'})['value']),
-        'openidparams': (None,form_obj.find('input', {'name': 'openidparams'})['value']),
-        'nonce': (None,form_obj.find('input', {'name': 'nonce'})['value'])
-    })
-
-    # поиск GetSessionToken
-    GetSesToken = None
-
-    soup = bs(r.text, 'lxml')
-    scr = soup.find_all('script')
-    for script in scr :
-        s = str(script)
-        pos = s.find('GetSessionToken')
-        if pos >= 0 :
-            new_s = s[pos : ]
-            GetSesToken = new_s[new_s.find('\"') +  1 : new_s.find(';') - 1]
-
-    # как пример ставки, не более
-    session.close()
-
-    return GetSesToken
-
 def undetected_bets_test(group) :
     with open(SERVER_DATA_PATH + 'undetected_bets.json', 'r') as f:
         data = json.load(f)
@@ -164,47 +124,27 @@ def undetected_bets_test(group) :
         json.dump(data, f, indent=4)
 
 
-def cf_scrapper() :
-    from requests_html import HTMLSession
+def f1() :
+    with open(ALL_POSTS_JSON_PATH, 'r') as f:
+        json.load(f)
 
-    session = HTMLSession()
-    #session.proxies = {'http':  'socks5://ps3540:A_u0GQ1ODBTwRAKFRfSv@138.124.180.99:8000', 'https': f'socks5://ps3540:A_u0GQ1ODBTwRAKFRfSv@138.124.180.99:8000'}
-    session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
-
-    hosts = [
-        '172.67.22.114',
-        '104.22.29.216',
-        '104.22.28.216',
-        '172.67.167.202',
-        '104.24.117.219',
-        '104.24.116.219',
-        '172.67.27.87',
-        '104.22.79.103',
-        '104.22.78.103'
-    ]
-    for ip in hosts :
-        try :
-            request = session.get('https://' + ip + '/', headers={'host' : 'betscsgo.in'})
-            print('connected successfully')
-        except :
-            continue
-
-    session.close()
-
-    request.html.render()  # драйвер для JS
-
-    print(request.html.html)  # Получаем контент)
-
-def cf_scrapper2() :
-    import cloudscraper
-
-    scraper = cloudscraper.create_scraper()
-    print(scraper.get("https://betscsgo.in").text)
+def f2() :
+    x = {}
+    with open(ALL_POSTS_JSON_PATH, 'r') as f:
+        json.dump(x, f)
 
 if __name__ == "__main__" :
 
-    undetected_bets_test(Aristocrat_group)
+    from multiprocessing import Process
 
+    p1 = Process(target=f1)
+    p2 = Process(target=f2)
+
+    p1.start()
+    p2.start()
+
+    p1.join()
+    p2.join()
     """
 {
         "bk_links": {

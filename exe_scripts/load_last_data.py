@@ -20,7 +20,7 @@ def load_last_data(OLD_DATA, token, group_off) :
         if not (group_off in OLD_DATA.keys() and OLD_DATA[group_off]['text'] == post.text):
             GROUP_OFFSET[group_off].check_templates(post, token)
     except Exception as e:
-        logging.getLogger("load_last_data").error(group_off + " was failed because of " + e)
+        logging.getLogger("load_last_data").error(group_off + " was failed because of " + str(e))
     if post.coupon.bets == []:
         post.parse_bet = False
     return (group_off, post.__dict__())
