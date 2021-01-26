@@ -369,7 +369,6 @@ def reform_team_name(s : str) :
 
 def read_groups() :
 
-    file_is_available(ALL_POSTS_JSON_PATH)
     with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json:
         DATA = json.load(last_posts_json)
 
@@ -383,8 +382,6 @@ def write_groups(t) :
     for x in t.keys() :
         t[x]['coupon'] = t[x]['coupon'].__json_repr__()
 
-    file_is_available(ALL_POSTS_JSON_PATH)
-
     with open(ALL_POSTS_JSON_PATH, 'w', encoding="utf-8") as last_posts_json :
         json.dump(t, last_posts_json, indent=4)
 
@@ -394,6 +391,7 @@ def file_is_available(file) :
     while True:
         try:
             DEVNULL = os.open(os.devnull, os.O_WRONLY)
-            l = subprocess.check_call(["fuser", ALL_POSTS_JSON_PATH], stdout=DEVNULL, stderr=DEVNULL)
+            l = subprocess.check_call(["fuser", ALL_POSTS_JSON_PATH], stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
+            os.close(DEVNULL)
         except subprocess.CalledProcessError:
             break

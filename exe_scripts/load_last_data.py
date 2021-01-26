@@ -15,14 +15,18 @@ def load_last_data(OLD_DATA, token, group_off) :
         post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL, old=OLD_DATA[group_off]['coupon'])
     else:
         post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL)
+
+    # этим обеспечивается загрузка только новых данных
+    post.coupon.dogon = []
+    post.coupon.bets = []
+
     try:
         post.get()
         if not (group_off in OLD_DATA.keys() and OLD_DATA[group_off]['text'] == post.text):
             GROUP_OFFSET[group_off].check_templates(post, token)
     except Exception as e:
         logging.getLogger("load_last_data").error(group_off + " was failed because of " + str(e))
-    if post.coupon.bets == []:
-        post.parse_bet = False
+
     return (group_off, post.__dict__())
 
 

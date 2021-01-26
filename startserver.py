@@ -10,7 +10,7 @@ from exe_scripts import load_last_data, \
                         check_dogon
 from db_manage import   relogin_clients, \
                         reupdate_subscribe
-from global_constants import BET_PROJECT_ROOT, GROUP_OFFSET
+from global_constants import BET_PROJECT_ROOT, GROUP_OFFSET, ALL_POSTS_JSON_PATH
 import bet_manage
 
 
@@ -21,76 +21,146 @@ def update_db_time() :
 
 
 def db_sycle(debug=False) :
-
-    while True :
-        if update_db_time() :
-            reupdate_subscribe.main()
-            relogin_clients.main()
-        if debug:
-            print("db executed")
-            time.sleep(20)
-
+    try :
+        while True :
+            if update_db_time() :
+                reupdate_subscribe.main()
+                relogin_clients.main()
+            if debug:
+                print("db executed")
+                time.sleep(20)
+    except Exception as e:
+        print(f"db_sycle ended: {e}")
+        raise e
 
 def lld_sycle(debug=False) :
-    TIME_WAITsec = 10
-    while True :
-        if update_db_time():
-            print('i sleep')
-            time.sleep(60)
+    TIME_WAITsec = 15
+    try :
+        while True :
+            if update_db_time():
+                print('i sleep')
+                time.sleep(60)
 
-        t = load_last_data.main()
-        DATA = find_all_links.main(t)
+            t = load_last_data.main()
+            DATA = find_all_links.main(t)
 
-        bet_manage.write_groups(DATA)
-        time.sleep(TIME_WAITsec)
+            # предотвращает потерю данных
+            # мы знаем, что старые данные в DATA.coupon.bets и DATA.coupon.dogon удалены
+            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+            with open(ALL_POSTS_JSON_PATH, 'r') as f:
+                new_upload_data = bet_manage.read_groups()
+                for key in GROUP_OFFSET.keys() :
+                    DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+                    DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+                DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+                bet_manage.write_groups(DATA)
 
-        if debug:
-            print("lld executed")
-
+            time.sleep(TIME_WAITsec)
+            if debug:
+                print("lld executed")
+    except Exception as e:
+        print(f"lld_sycle ended: {e}")
+        raise e
 
 def fml_sycle(debug=False):
-    while True :
-        if update_db_time():
-            print('i sleep')
-            time.sleep(60)
+    try :
+        while True :
+            if update_db_time():
+                print('i sleep')
+                time.sleep(60)
 
-        find_matches_live.main()
+            find_matches_live.main()
 
-        if debug:
-            print("fml executed")
-            time.sleep(20)
-
+            if debug:
+                print("fml executed")
+                time.sleep(20)
+    except Exception as e:
+        print(f"fml_sycle ended: {e}")
+        raise e
 
 def allb_sycle(debug=False):
-    while True:
-        if update_db_time():
-            print('i sleep')
-            time.sleep(60)
+    try:
+        while True:
+            if update_db_time():
+                print('i sleep')
+                time.sleep(60)
 
-        DATA = bet_manage.read_groups()
-        DATA = all_bet.main(DATA)
+            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+            DATA = bet_manage.read_groups()
 
-        bet_manage.write_groups(DATA)
+            for x in DATA.keys():
+                DATA[x]['coupon'].dogon = []
 
-        if debug:
-            print("allb executed")
-            time.sleep(20)
+            DATA = all_bet.main(DATA)
 
+            # предотвращает потерю данных
+            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+            with open(ALL_POSTS_JSON_PATH, 'r') as f:
+                new_upload_data = bet_manage.read_groups()
+
+                for key in GROUP_OFFSET.keys():
+                    DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+
+                    for x in DATA[key]['coupon'].bets:
+                        try :
+                            pos = new_upload_data[key]['coupon'].bets.index(x)
+                        except ValueError:
+                            continue
+                        del new_upload_data[key]['coupon'].bets[pos]
+                    DATA[key]['coupon'].bets = new_upload_data[key]['coupon'].bets
+                    # нужно ли обрабатывать
+                    DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+                bet_manage.write_groups(DATA)
+
+            if debug:
+                print("allb executed")
+                time.sleep(20)
+    except Exception as e:
+        print(f"allb_sycle ended: {e}")
+        raise e
 
 def checkd_sycle(debug=False):
-    while True :
-        if update_db_time():
-            print('i sleep')
-            time.sleep(60)
+    try:
+        while True :
+            if update_db_time():
+                print('i sleep')
+                time.sleep(60)
 
-        DATA = bet_manage.read_groups()
-        # между моментом чтения и моментом записи может пройти 1 минута, за это время могут записаться новые данные, поэтому они потеряются
-        bet_manage.write_groups(check_dogon.main(DATA))
+            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+            DATA = bet_manage.read_groups()
 
-        if debug:
-            print("checkd executed")
-            time.sleep(20)
+            for x in DATA.keys():
+                DATA[x]['coupon'].bets = []
 
+            DATA = check_dogon.main(DATA)
+
+            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+            with open(ALL_POSTS_JSON_PATH, 'r') as f:
+                new_upload_data = bet_manage.read_groups()
+
+                for key in GROUP_OFFSET.keys() :
+                    DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+
+                    for x in DATA[key]['coupon'].dogon:
+                        try :
+                            pos = new_upload_data[key]['coupon'].dogon.index(x)
+                        except ValueError:
+                            continue
+                        del new_upload_data[key]['coupon'].dogon[pos]
+
+                    DATA[key]['coupon'].dogon = new_upload_data[key]['coupon'].dogon
+
+                    # нужно ли обрабатывать
+                    DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+
+                bet_manage.write_groups(DATA)
+
+            if debug:
+                print("checkd executed")
+                time.sleep(20)
+    except Exception as e:
+        print(f"checkd_sycle ended: {e}")
+        raise e
 
 if __name__ == "__main__" :
 
@@ -150,20 +220,31 @@ if __name__ == "__main__" :
 
     config.dictConfig(dictLogConfig)
 
-    linear = '-linear' in sys.argv
-    if linear:
-        # системные скрипты выполнятются редко
+    if '-linear' in sys.argv:
+
+        debug = '-debug' in sys.argv
+
         while True :
             find_matches_live.main()
+            if debug:
+                print("fml executed")
 
             # основные скрипты выполняются постоянно
             GROUP_DATA = load_last_data.main()
+            if debug:
+                print("lld executed")
 
             GROUP_DATA = find_all_links.main(GROUP_DATA)
+            if debug:
+                print("fal executed")
 
             GROUP_DATA = all_bet.main(GROUP_DATA)
+            if debug:
+                print("allb executed")
 
             GROUP_DATA = check_dogon.main(GROUP_DATA)
+            if debug:
+                print("checkd executed")
 
             bet_manage.write_groups(GROUP_DATA)
 

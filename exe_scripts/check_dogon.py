@@ -33,6 +33,7 @@ def check_and_delete(DATA, data_key) :
 
 
 def main(DATA):
+    # возможно переделать на параллельное выполнение
     DATA = dict(map(functools.partial(check_and_delete, DATA), DATA.keys()))
 
     return DATA

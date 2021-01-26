@@ -83,9 +83,7 @@ def main(DATA : dict) :
             if x.dogon and x.outcome_index[1] <= 4 :
                 DATA[group]['coupon'].add_bet(x, to_dogon=True)
 
-    # очистка coupon.bets у всех групп
-    for x in DATA.keys() :
-        DATA[x]['coupon'].bets = []
+
     return DATA
 
 
