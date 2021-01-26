@@ -32,7 +32,7 @@ def db_sycle(debug=False) :
 
 
 def lld_sycle(debug=False) :
-    TIME_WAITsec = 15
+    TIME_WAITsec = 10
     while True :
         if update_db_time():
             print('i sleep')
@@ -68,7 +68,9 @@ def allb_sycle(debug=False):
             time.sleep(60)
 
         DATA = bet_manage.read_groups()
-        bet_manage.write_groups(all_bet.main(DATA))
+        DATA = all_bet.main(DATA)
+
+        bet_manage.write_groups(DATA)
 
         if debug:
             print("allb executed")
