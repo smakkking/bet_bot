@@ -3,7 +3,7 @@
 import steam.webauth as wa
 from bs4 import BeautifulSoup as bs
 from pprint import pprint
-from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver, read_groups
+from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser, create_webdriver, Stavka
 
 from global_constants import SERVER_DATA_PATH, ALL_POSTS_JSON_PATH
 
@@ -124,27 +124,32 @@ def undetected_bets_test(group) :
         json.dump(data, f, indent=4)
 
 
-def f1() :
-    with open(ALL_POSTS_JSON_PATH, 'r') as f:
-        json.load(f)
+def proxy_get():
+    from requests import Session
+    sess = Session()
 
-def f2() :
-    x = {}
-    with open(ALL_POSTS_JSON_PATH, 'r') as f:
-        json.dump(x, f)
+    head = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
+    sess.headers.update(head)
+
+    sess.cookies.set('cf_clearance', 'fd7cee1d455ba16f054e95fcb9f5265370f5d36a-1612885796-0-150')
+
+    req = sess.get('https://betscsgo.in/match/270528/')
+
+    pos = req.text.find('matches        =')
+    text = req.text[pos + len('matches        ='):]
+
+    pos = text.find(';')
+    text = text[: pos]
+
+    t = json.loads(text)
+
+    pprint(t)
+
+    sess.close()
+
 
 if __name__ == "__main__" :
-
-    from multiprocessing import Process
-
-    p1 = Process(target=f1)
-    p2 = Process(target=f2)
-
-    p1.start()
-    p2.start()
-
-    p1.join()
-    p2.join()
+    proxy_get()
     """
 {
         "bk_links": {

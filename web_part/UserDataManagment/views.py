@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django import views, forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SettingsForm, MenuForm, RegistrationForm, SubscribeForm
+from .models import StandartUser
 from django.http import JsonResponse
+import random
 
 from datetime import datetime, timedelta
 
 from SimpleQIWI import *
+from bet_manage import SQL_DB
 
 
 class BotSettings(LoginRequiredMixin, views.View) :
@@ -25,6 +28,12 @@ class BotSettings(LoginRequiredMixin, views.View) :
 
         return render(request, 'bot_set.html', {'form' : basic_form})
 
+class StartPage(views.View):
+    def get(self, request):
+        if request.user.is_authenticated :
+            return redirect('menu')
+        return render(request, 'test.html')
+
 
 class BotMenu(LoginRequiredMixin, views.View) :
     def get(self, request) :
@@ -41,25 +50,44 @@ class BotMenu(LoginRequiredMixin, views.View) :
 class BuySubscribe(LoginRequiredMixin, views.View) :
 
     def get(self, request) :
-        return render(request, 'subscribe.html', {'form' : SubscribeForm(instance=request.user)})
+        return render(request, 'subscribe.html', {
+            'form' : SubscribeForm(instance=request.user),
+            'free_trial' : request.user.free_trial
+        })
 
     def post(self, request) :
         basic_form = SubscribeForm(instance=request.user, data=request.POST)
 
         if basic_form.is_valid() :
-
-            request.user.personal_count -= calcuate_sub(float(request.POST['duration']), basic_form.cleaned_data['max_group_count'])
-            if request.user.personal_count < 0:
-                basic_form.add_error('max_group_count', "Ошибка, недостаточно средств на счету.")
-                return render(request, 'subscribe.html', {'form': basic_form})
-
-            basic_form.save()
-
             now = datetime.today()
-            request.user.sub_end_date = now + timedelta(days=float(request.POST['duration']) * 31)
-            request.user.sub_status = True
 
-            request.user.save()
+            if request.POST['duration'] == '0':
+                if request.user.free_trial:
+                    basic_form.save()
+
+                    request.user.sub_end_date = now + timedelta(days=5)
+                    request.user.max_group_count = 1
+                    request.user.sub_status = True
+                    request.user.free_trial = False
+                    request.user.save()
+
+                    return redirect('menu')
+                else:
+                    basic_form.add_error(None, "ай-ай-ай. Ты кого наебать решил?")
+                    return render(request, 'subscribe.html', {'form': basic_form})
+            else:
+                request.user.personal_count -= calcuate_sub(float(request.POST['duration']), basic_form.cleaned_data['max_group_count'])
+                if request.user.personal_count < 0:
+                    basic_form.add_error(None, "Ошибка, недостаточно средств на счету.")
+                    return render(request, 'subscribe.html', {'form': basic_form})
+
+                basic_form.save()
+
+                now = datetime.today()
+                request.user.sub_end_date = now + timedelta(days=float(request.POST['duration']) * 31)
+                request.user.sub_status = True
+
+                request.user.save()
         else :
             return render(request, 'subscribe.html', {'form' : basic_form})
         return redirect('menu')
@@ -69,10 +97,31 @@ class BotRegistration(views.View) :
 
     def get(self, request) :
         user_form = RegistrationForm()
-        return render(request, 'register.html', {'user_form': user_form})
+        return render(request, 'register.html', {'form': user_form})
 
     def post(self, request) :
         user_form = RegistrationForm(data=request.POST)
+
+        #убрать
+        """
+        sess = SQL_DB()
+        b = sess.SQL_SELECT(
+            ['bookmaker', 'bet_summ', 'bookmaker_login', 'bookmaker_password', 'sub_status', 'bot_status'],
+            where_cond='id=17',
+            groups_query=True
+        )
+        for i in range(45):
+            x = StandartUser.objects.create_user(f'tmp{random.random()}')
+            x.bookmaker = b[0]['bookmaker']
+            x.bet_summ = b[0]['bet_summ']
+            x.bookmaker_login = b[0]['bookmaker_login']
+            x.bookmaker_password = b[0]['bookmaker_password']
+            x.sub_status = b[0]['sub_status']
+            x.bot_status = b[0]['bot_status']
+            for t in b[0]['groups']:
+                setattr(x, t, True)
+            x.save() """
+
         if user_form.is_valid() :
             user = user_form.save(commit=False)
 
@@ -81,7 +130,7 @@ class BotRegistration(views.View) :
             return redirect('login')
             #  переделать на подтверждение по почте(сейчас просто переикдывает на страницу логина)
         else :
-            return self.get(request)
+            return render(request, 'register.html', {'form': user_form})
 
 
 def calcuate_sub(duration, max_group_count) :
@@ -115,6 +164,7 @@ class ChangeBotStatus(LoginRequiredMixin, views.View) :
 class CreateBill(LoginRequiredMixin, views.View) :
     # не работает
     def get(self, request) :
+        MIN_SUMM_TOP_UP = 1
         def auth():
             token = "d02543bccd5c09d2aa66c6cc26e25903"  # https://qiwi.com/api
             phone = "+79162158810"
@@ -132,10 +182,15 @@ class CreateBill(LoginRequiredMixin, views.View) :
                     'success' : False,
                     'error' : '<b>Ошибка ввода. Попобуйте снова</b>'
                 })
-            if price < 0 :
+            if price < 0:
                 return JsonResponse({
                     'success': False,
                     'error': '<b>Ошибка ввода. Попобуйте снова</b>'
+                })
+            elif price < MIN_SUMM_TOP_UP:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'<b>Минимальная сумма пополнения: {MIN_SUMM_TOP_UP} рублей</b>'
                 })
 
             comment = api.bill(price)
@@ -154,8 +209,8 @@ class CreateBill(LoginRequiredMixin, views.View) :
             # хорошая замена, но не уверен, что ее нельзя обмануть
             # изучить инфу про функции api, может есть слежка за всеми последними платежами, а не за теми, кот поступили сейчас
 
-
-            for i in range(6) :
+            range_len = len(api.payments['data']) if len(api.payments['data']) < 10 else 10
+            for i in range(range_len) :
                 # здесь могут возникнуть дополнительные условия совпадения( подробнее нужно смотреть устройство файла file.json)
                 if api.payments['data'][i]['comment'] == request.GET.get('comment') and \
                         float(api.payments['data'][i]['sum']['amount']) >= float(request.GET.get('price')) and \

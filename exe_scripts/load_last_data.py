@@ -11,15 +11,7 @@ from exe_scripts import find_all_links
 
 def load_last_data(OLD_DATA, token, group_off) :
     # OLD_DATA - словари, содержащие экземпляры coupon
-    if group_off in OLD_DATA.keys():
-        post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL, old=OLD_DATA[group_off]['coupon'])
-    else:
-        post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL)
-
-    # этим обеспечивается загрузка только новых данных
-    post.coupon.dogon = []
-    post.coupon.bets = []
-
+    post = bet_manage.LastGroupPost(GROUP_OFFSET[group_off].WALL_URL)
     try:
         post.get()
         if not (group_off in OLD_DATA.keys() and OLD_DATA[group_off]['text'] == post.text):
@@ -30,15 +22,19 @@ def load_last_data(OLD_DATA, token, group_off) :
     return (group_off, post.__dict__())
 
 
-def main() :
+def main(queue=None) :
     YandexAPI_detection.create_new_token()
 
-    try :
-        bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+    if queue:
+        queue.put(1, block=True)
+    # если по каким-то неведомым причинам произошла потеря данных и в файл записалось пустота, что он должен его обновить
+    try:
         with open(ALL_POSTS_JSON_PATH, 'r', encoding="utf-8") as last_posts_json :
             DATA = json.load(last_posts_json)
-    except Exception:
+    except json.decoder.JSONDecodeError:
         DATA = {}
+    if queue:
+        queue.get()
 
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(load_last_data, DATA, YandexAPI_detection.iam_token), GROUP_OFFSET.keys()))

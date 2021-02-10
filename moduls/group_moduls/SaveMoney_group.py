@@ -7,6 +7,7 @@ import logging
 WALL_URL = 'https://vk.com/prognozi_dota_csgo'
 NAME = 'savemoney'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
+TITLE = "SaveMoney CSGO | Прогнозы и ставки CS:GO & DOTA2"
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES  # + other bookmakers templates
 

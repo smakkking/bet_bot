@@ -1,7 +1,10 @@
-from logging import config
+from logging import config, getLogger
 import time
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 import sys
+import signal
+import os
+import random
 
 from exe_scripts import load_last_data, \
                         all_bet, \
@@ -10,177 +13,219 @@ from exe_scripts import load_last_data, \
                         check_dogon
 from db_manage import   relogin_clients, \
                         reupdate_subscribe
-from global_constants import BET_PROJECT_ROOT, GROUP_OFFSET, ALL_POSTS_JSON_PATH
+from global_constants import GROUP_OFFSET, SERVER_DATA_PATH
 import bet_manage
 
+TIME_WAITsec = 5
 
 def update_db_time() :
     UPDATE_DBh = 7
     now = time.localtime(time.time())
-    return now.tm_hour == UPDATE_DBh and now.tm_min == 0 and now.tm_sec <= 30
+    return now.tm_hour == UPDATE_DBh and now.tm_min == 0 and now.tm_sec <= 10
 
 
-def db_sycle(debug=False) :
+def db_sycle(pid1, pid2, pid3, pid4) :
     try :
         while True :
             if update_db_time() :
-                reupdate_subscribe.main()
+                os.kill(pid1, signal.SIGSTOP)
+                os.kill(pid2, signal.SIGSTOP)
+                os.kill(pid3, signal.SIGSTOP)
+                os.kill(pid4, signal.SIGSTOP)
+
                 relogin_clients.main()
-            if debug:
-                print("db executed")
-                time.sleep(20)
+                reupdate_subscribe.main()
+
+                os.kill(pid1, signal.SIGCONT)
+                os.kill(pid2, signal.SIGCONT)
+                os.kill(pid3, signal.SIGCONT)
+                os.kill(pid4, signal.SIGCONT)
+
+                getLogger("server_data_update").info("ended normally")
+    except KeyboardInterrupt:
+        return
     except Exception as e:
-        print(f"db_sycle ended: {e}")
-        raise e
+        getLogger("server_data_update").critical(f"stopped with {e}")
+        os.kill(pid1, signal.SIGCONT)
+        os.kill(pid2, signal.SIGCONT)
+        os.kill(pid3, signal.SIGCONT)
+        os.kill(pid4, signal.SIGCONT)
 
-def lld_sycle(debug=False) :
-    TIME_WAITsec = 15
-    try :
-        while True :
-            if update_db_time():
-                print('i sleep')
-                time.sleep(60)
 
-            t = load_last_data.main()
+
+def lld_sycle(queue, debug=False) :
+    while True :
+        try:
+            t = load_last_data.main(queue)
             DATA = find_all_links.main(t)
 
-            # предотвращает потерю данных
-            # мы знаем, что старые данные в DATA.coupon.bets и DATA.coupon.dogon удалены
-            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
-            with open(ALL_POSTS_JSON_PATH, 'r') as f:
-                new_upload_data = bet_manage.read_groups()
-                for key in GROUP_OFFSET.keys() :
-                    DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
-                    DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
-                DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
-                bet_manage.write_groups(DATA)
+            queue.put(1, block=True)
 
-            time.sleep(TIME_WAITsec)
+            new_upload_data = bet_manage.read_groups()
+            for key in GROUP_OFFSET.keys():
+                DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+                DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+            DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+            bet_manage.write_groups(DATA)
+
+            queue.get()
+
             if debug:
                 print("lld executed")
-    except Exception as e:
-        print(f"lld_sycle ended: {e}")
-        raise e
+                break
+            time.sleep(TIME_WAITsec * 2)
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            getLogger("load_last_data").critical(f"stopped with {e}")
+            if queue.full():
+                queue.get()
+            if debug:
+                raise e
+            time.sleep(TIME_WAITsec)
+
 
 def fml_sycle(debug=False):
-    try :
-        while True :
-            if update_db_time():
-                print('i sleep')
-                time.sleep(60)
+    while True :
+        try:
+            duration = time.time()
 
             find_matches_live.main()
-
             if debug:
                 print("fml executed")
-                time.sleep(20)
-    except Exception as e:
-        print(f"fml_sycle ended: {e}")
-        raise e
+                break
 
-def allb_sycle(debug=False):
-    try:
-        while True:
-            if update_db_time():
-                print('i sleep')
-                time.sleep(60)
+            if time.time() - duration < 5:
+                time.sleep(TIME_WAITsec)
+            else:
+                getLogger("find_matches_live").info("ended normally")
 
-            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            getLogger("find_matches_live").critical(f"stopped with {e}")
+            if debug:
+                raise e
+
+
+def allb_sycle(queue, debug=False):
+    while True:
+        try:
+            duration = time.time()
+
+            queue.put(1, block=True)
             DATA = bet_manage.read_groups()
+            queue.get()
 
             for x in DATA.keys():
                 DATA[x]['coupon'].dogon = []
-
             DATA = all_bet.main(DATA)
 
-            # предотвращает потерю данных
-            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
-            with open(ALL_POSTS_JSON_PATH, 'r') as f:
-                new_upload_data = bet_manage.read_groups()
+            if time.time() - duration < 3:
+                time.sleep(TIME_WAITsec)
+            else:
+                getLogger("all_bet").info("ended normally")
 
-                for key in GROUP_OFFSET.keys():
-                    DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
 
-                    for x in DATA[key]['coupon'].bets:
-                        try :
-                            pos = new_upload_data[key]['coupon'].bets.index(x)
-                        except ValueError:
-                            continue
-                        del new_upload_data[key]['coupon'].bets[pos]
-                    DATA[key]['coupon'].bets = new_upload_data[key]['coupon'].bets
-                    # нужно ли обрабатывать
-                    DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
-                bet_manage.write_groups(DATA)
+            queue.put(1, block=True)
+
+            new_upload_data = bet_manage.read_groups()
+            for key in GROUP_OFFSET.keys():
+                DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+                DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+                DATA[key]['coupon'].bets = [x for x in DATA[key]['coupon'].bets if
+                                             x.id not in DATA[key]['coupon'].delete_id['bets']]
+
+
+                # нужно ли обрабатывать
+                DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+                DATA[key]['text'] = new_upload_data[key]['text']
+            bet_manage.write_groups(DATA)
+
+            queue.get()
 
             if debug:
                 print("allb executed")
-                time.sleep(20)
-    except Exception as e:
-        print(f"allb_sycle ended: {e}")
-        raise e
+                break
 
-def checkd_sycle(debug=False):
-    try:
-        while True :
-            if update_db_time():
-                print('i sleep')
-                time.sleep(60)
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            getLogger("all_bet").critical(f"stopped with {e}")
+            if queue.full():
+                queue.get()
+            if debug:
+                raise e
+            time.sleep(TIME_WAITsec)
 
-            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
+
+def checkd_sycle(queue, debug=False):
+    while True :
+        try:
+            duration = time.time()
+
+            queue.put(1, block=True)
             DATA = bet_manage.read_groups()
+            queue.get()
 
             for x in DATA.keys():
                 DATA[x]['coupon'].bets = []
 
             DATA = check_dogon.main(DATA)
 
-            bet_manage.file_is_available(ALL_POSTS_JSON_PATH)
-            with open(ALL_POSTS_JSON_PATH, 'r') as f:
-                new_upload_data = bet_manage.read_groups()
+            time.sleep(TIME_WAITsec * 2)
 
-                for key in GROUP_OFFSET.keys() :
-                    DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+            queue.put(1, block=True)
 
-                    for x in DATA[key]['coupon'].dogon:
-                        try :
-                            pos = new_upload_data[key]['coupon'].dogon.index(x)
-                        except ValueError:
-                            continue
-                        del new_upload_data[key]['coupon'].dogon[pos]
+            new_upload_data = bet_manage.read_groups()
+            for key in GROUP_OFFSET.keys() :
+                DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+                DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+                DATA[key]['coupon'].dogon = [x for x in DATA[key]['coupon'].dogon
+                                             if x.id not in DATA[key]['coupon'].delete_id['dogon']]
 
-                    DATA[key]['coupon'].dogon = new_upload_data[key]['coupon'].dogon
+                # нужно ли обрабатывать
+                DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
+                DATA[key]['text'] = new_upload_data[key]['text']
+            bet_manage.write_groups(DATA)
 
-                    # нужно ли обрабатывать
-                    DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
-
-                bet_manage.write_groups(DATA)
+            queue.get()
 
             if debug:
                 print("checkd executed")
-                time.sleep(20)
-    except Exception as e:
-        print(f"checkd_sycle ended: {e}")
-        raise e
+                break
+
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            getLogger("check_dogon").critical(f"stopped with {e}")
+
+            if queue.full():
+                queue.get()
+
+            if debug:
+                raise e
+            time.sleep(TIME_WAITsec)
+
 
 if __name__ == "__main__" :
-
     dictLogConfig = {
         "version":1,
         "handlers":{
             "script":{
-                "class":"logging.FileHandler",
-                "formatter":"myFormatter",
-                "filename": BET_PROJECT_ROOT + "exe_scripts/script_info.log"
+                "class": "logging.FileHandler",
+                "formatter": "myFormatter",
+                "filename": SERVER_DATA_PATH + "logs/script_info.log"
             },
             "groups":{
                 "class": "logging.FileHandler",
                 "formatter": "myFormatter",
-                "filename":BET_PROJECT_ROOT + 'moduls/group_moduls/groups.log'
+                "filename": SERVER_DATA_PATH + 'logs/groups.log'
             },
             "bets":{
                 "class": "logging.FileHandler",
                 "formatter": "myFormatter",
-                "filename": BET_PROJECT_ROOT + "exe_scripts/bet_info.log"
+                "filename": SERVER_DATA_PATH + "logs/bet_info.log"
             }
         },
         "loggers":{
@@ -204,6 +249,14 @@ if __name__ == "__main__" :
                 "handlers": ["script"],
                 "level": "INFO",
             },
+            "created_bets": {
+                "handlers": ["bets"],
+                "level": "INFO",
+            },
+            "server_data_update" : {
+                "handlers": ["script"],
+                "level": "INFO",
+            },
         },
         "formatters":{
             "myFormatter":{
@@ -211,18 +264,18 @@ if __name__ == "__main__" :
             }
         }
     }
-
     for key in GROUP_OFFSET.keys() :
         dictLogConfig['loggers'][key] = {
             "handlers": ["groups"],
             "level": "INFO",
         }
-
     config.dictConfig(dictLogConfig)
+
 
     if '-linear' in sys.argv:
 
         debug = '-debug' in sys.argv
+
 
         while True :
             find_matches_live.main()
@@ -241,7 +294,7 @@ if __name__ == "__main__" :
             GROUP_DATA = all_bet.main(GROUP_DATA)
             if debug:
                 print("allb executed")
-
+            # больше не работает
             GROUP_DATA = check_dogon.main(GROUP_DATA)
             if debug:
                 print("checkd executed")
@@ -254,20 +307,25 @@ if __name__ == "__main__" :
     else :
         debug = '-debug' in sys.argv
 
-        proc1 = Process(target=fml_sycle, args=(debug, ))
-        proc2 = Process(target=lld_sycle, args=(debug, ))
-        proc3 = Process(target=db_sycle, args=(debug, ))
-        proc4 = Process(target=allb_sycle, args=(debug, ))
-        proc5 = Process(target=checkd_sycle, args=(debug, ))
+        all_posts_json_qu = Queue(maxsize=1)
 
-        proc4.start()
+        proc1 = Process(target=fml_sycle, args=(debug, ))
+        proc2 = Process(target=lld_sycle, args=(all_posts_json_qu, debug, ))
+        proc3 = Process(target=allb_sycle, args=(all_posts_json_qu, debug, ))
+        proc4 = Process(target=checkd_sycle, args=(all_posts_json_qu, debug, ))
+
         proc1.start()
         proc2.start()
         proc3.start()
-        proc5.start()
+        proc4.start()
 
-        proc4.join()
-        proc1.join()
-        proc2.join()
-        proc3.join()
-        proc5.join()
+        if not debug :
+            proc5 = Process(target=db_sycle, args=(proc1.pid, proc2.pid, proc3.pid, proc4.pid))
+            proc5.start()
+            proc5.join()
+            pass
+
+        #proc1.join()
+        #proc2.join()
+        #proc3.join()
+        #proc4.join()

@@ -6,8 +6,10 @@ from multiprocessing import Pool
 from dateutil import parser
 import steam.webauth as wa
 from bs4 import BeautifulSoup as bs
-import time
-
+from selenium.common.exceptions import WebDriverException
+import logging
+from selenium.common.exceptions import StaleElementReferenceException as parasha_exception
+from requests import Session
 
 import bet_manage
 from global_constants import SERVER_DATA_PATH
@@ -22,12 +24,12 @@ TAKES_MATCHES_LIVE = False
 
 
 # corrected params
-MATCHES_UPDATE_TIMEh = 8
+MATCHES_UPDATE_TIMEh = 1
 LIVE_MATCHES_UPDATE_TIMEm = 5
 
 # менять, когда меняешь сеть, см в куках(это куки для chrome)
-CURRENT_CF_CLEARANCE        = 'f098055dd6ce3d5b6b9d38927df11d679dc3b3f1-1610880986-0-150'
-CURRENT_CF_CLEARANCE_add    = '556c840f9378cb59aa7fba501fafb5ee7d7e878f-1610881022-0-150'
+CURRENT_CF_CLEARANCE        = 'fd7cee1d455ba16f054e95fcb9f5265370f5d36a-1612885796-0-150'
+CURRENT_CF_CLEARANCE_add    = '08b24ecbfedb22964cd9a8e537ec93f8dbef4057-1612885909-0-150'
 
 # когда записываешь данные ничего к этим строкам не добавлять
 OFFSET_TABLE = {
@@ -35,7 +37,7 @@ OFFSET_TABLE = {
 
     'Победа в матче' : 'game_winner',
 
-    'выиграет одну карту' : 'one_map_win', # нет правильной обработки
+    'выиграет одну карту' : 'one_map_win',
     'выиграют одну карту' : 'one_map_win',
 
     'Количество карт 2.5' : 'games_count_2.5'
@@ -46,13 +48,6 @@ OFFSET_TABLE = {
 def find_vs(words : list, idx : int) :
     right_team = ''
     left_team = ''
-    ndx = idx + 1
-    while (re.search('[A-Za-z0-9().\']+', words[ndx]) and words[ndx].find(':') < 0) :
-        if (right_team.upper().find(words[ndx].upper()) < 0) :
-            right_team = right_team + ' ' + words[ndx]
-            ndx += 1
-        else :
-            break
 
     ndx = idx - 1
     while (re.search('[A-Za-z0-9().\']+', words[ndx]) and ndx >= 0 and words[ndx].find(':') < 0) :
@@ -62,9 +57,21 @@ def find_vs(words : list, idx : int) :
         else :
             break
 
-    return bet_manage.reform_team_name(left_team) + ' vs ' + bet_manage.reform_team_name(right_team)
+    left_team = bet_manage.reform_team_name(left_team)
 
+    ndx = idx + 1
+    while (re.search('[A-Za-z0-9().\']+', words[ndx]) and words[ndx].find(':') < 0) :
+        if left_team.find(words[ndx].upper()) >= 0:
+            break
+        if (right_team.upper().find(words[ndx].upper()) < 0) :
+            right_team = right_team + ' ' + words[ndx]
+            ndx += 1
+        else :
+            break
 
+    right_team = bet_manage.reform_team_name(right_team)
+
+    return left_team + ' vs ' + right_team
 def template1(text: str) :
     temp = [
         r'ПОБЕДА\s*НА\s*КАРТЕ',
@@ -130,6 +137,63 @@ def parse2(photo_url: str, words: list) :
 
     return res
 
+def template5(text : str):
+    temp = [
+        ['ВЫИГРАЮТ', 'ВЫИГРАЕТ'],
+        'ОДНУ',
+        'КАРТУ',
+        'СУММА',
+        'СТАВКИ',
+    ]
+    not_temp = [
+
+    ]
+
+    flag = True
+    for x in temp :
+        if type(x) is list:
+            t = False
+            for z in x:
+                t = t or text.find(z) >= 0
+            flag = flag and t
+        else:
+            flag = flag and text.find(x) >= 0
+
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse5(photo_url: str, words: list):
+    res = bet_manage.Stavka()
+
+    res.match_title = find_vs(words, words.index('vs'))
+
+    res.sum = float(words[words.index('Сумма') + 3])
+
+    try:
+        ndx = words.index('ВЫИГРАЮТ') - 1
+    except ValueError:
+        ndx = words.index('ВЫИГРАЕТ') - 1
+    winner = ''
+    while (re.search('[A-Za-z0-9().\']+', words[ndx]) and
+            ndx >= 0 and
+            words[ndx].find(':') < 0 and
+            res.match_title.find(words[ndx].upper() + winner) >= 0
+    ):
+        winner = words[ndx].upper() + winner
+        ndx -= 1
+
+    res.outcome_index = (OFFSET_TABLE['выиграет одну карту'], winner)
+
+    side = bet_manage.define_side_winner(photo_url)
+    if (side == 'left') :
+        res.winner = 'YES'
+    elif (side == 'right') :
+        res.winner = 'NO'
+
+    return res
+
+
+
 
 def template3(text: str) :
     temp = [
@@ -138,7 +202,8 @@ def template3(text: str) :
     ]
     not_temp = [
         'СУММА',
-        'НА'
+        'НА',
+        '+', '-'
     ]
 
     flag = True
@@ -174,7 +239,8 @@ def template4(text : str) :
         r'ПОБЕДА\s*НА\s*КАРТЕ',
     ]
     not_temp = [
-        'СУММА'
+        'СУММА',
+        '+', '-'
     ]
 
     flag = True
@@ -205,12 +271,12 @@ def parse4(photo_url: str, words: list) :
     return res
 
 
-
 PHOTO_PARSING_TEMPLATES = [
     (template1, parse1),
     (template2, parse2),
     (template3, parse3),
     (template4, parse4),
+    (template5, parse5),
 ]
 
 
@@ -241,11 +307,11 @@ def create_session(client_login=None, client_passwd=None) :
     session = user.cli_login(client_passwd)
 
     head = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
     }
     session.headers.update(head)
-
     session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+
 
     r = session.get(WALL_URL + '/login/')
 
@@ -260,6 +326,8 @@ def create_session(client_login=None, client_passwd=None) :
     })
 
     # поиск GetSessionToken
+
+    GetSesToken_betscsgo = ''
     soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
     for script in scr:
@@ -272,6 +340,7 @@ def create_session(client_login=None, client_passwd=None) :
     session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
     r = session.get(WALL_URL_add)
 
+    GetSesToken_betsdota2 = ''
     soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
     for script in scr:
@@ -288,22 +357,29 @@ def create_session(client_login=None, client_passwd=None) :
     }
 
 
-
-
 def make_bet(stavka, summ, session) :
     domen = stavka.bk_links[NAME]['link'][ :stavka.bk_links[NAME]['link'].find('match') - 1]
+
+    if domen == WALL_URL:
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+    elif domen == WALL_URL_add :
+        session['session'].cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
 
     base_str = domen + '/index/placebet/'
 
     # здесь формируем запрос
     base_str += stavka.bk_links[NAME]['bet_id'] + '/'
 
-    # не раб с больше\меньше
-
-    if stavka.winner.find(stavka.bk_links[NAME]['team1']) >= 0 :
+    # не раб с больше\меньше и выигрыванием одной карты
+    if stavka.winner == 'YES':
         base_str += '1/'
-    elif stavka.winner.find(stavka.bk_links[NAME]['team2']) >= 0 :
+    elif stavka.winner == 'NO':
         base_str += '2/'
+    else:
+        if stavka.winner.find(stavka.bk_links[NAME]['team1']) >= 0 :
+            base_str += '1/'
+        elif stavka.winner.find(stavka.bk_links[NAME]['team2']) >= 0 :
+            base_str += '2/'
 
     base_str += str(summ * stavka.summ_multiplier) + '/'
 
@@ -339,197 +415,186 @@ def make_bet(stavka, summ, session) :
 
 
 def dogon_check(stavka) :
-    browser = init_config()
+    sess = Session()
+    head = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
+    sess.headers.update(head)
 
-    if stavka.bk_links[NAME]['link'].find(WALL_URL) >= 0 :
-        bet_manage.get_html_with_browser(browser, stavka.bk_links[NAME]['link'], sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE)])
-    elif stavka.bk_links[NAME]['link'].find(WALL_URL_add) >= 0 :
-        bet_manage.get_html_with_browser(
-            browser, stavka.bk_links[NAME]['link'],
-            sec=5, cookies=[('cf_clearance', CURRENT_CF_CLEARANCE_add)]
-        )
-    alloutcomes_xPath = '//*[@id="bm-additionals"]/div[' + str(stavka.outcome_index[1] + 1) + ']/div[2]/div'
-    outcomes = browser.find_elements_by_xpath(alloutcomes_xPath)
+    if stavka.bk_links[NAME]['link'].find(WALL_URL) >= 0:
+        sess.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
+    elif stavka.bk_links[NAME]['link'].find(WALL_URL_add) >= 0:
+        sess.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
 
-    for out in outcomes :
-        if out.get_attribute('class').find('has-score') >= 0:
-            event = OFFSET_TABLE['Победа на карте']
-        else :
-            event = OFFSET_TABLE[out.find_element_by_class_name('bma-title').text]
-        btns = out.find_elements_by_tag_name('button')
+    req = sess.get(stavka.bk_links[NAME]['link'])
 
-        if event == stavka.outcome_index[0] :
-            winner = None
-            if btns[0].value_of_css_property('color') == 'rgb(86, 115, 10)':
-                winner = bet_manage.reform_team_name(btns[0].text[btns[0].text.find('\n') + 1:])
-            elif btns[1].value_of_css_property('color') == 'rgb(86, 115, 10)':
-                winner = bet_manage.reform_team_name(btns[1].text[btns[1].text.find('\n') + 1:])
+    pos = req.text.find('matches        =')
+    text = req.text[pos + len('matches        ='):]
 
-            browser.close()
-            browser.quit()
+    pos = text.find(';')
+    text = text[: pos]
 
-            if winner :
-                if winner == stavka.winner :
-                    return True
-                else :
-                    return False
-            else :
+    t = json.loads(text)
+
+    sess.close()
+
+    for outcome in t:
+        if 'm_mapindex' in outcome.keys() and int(outcome['m_mapindex']) == stavka.outcome_index[1]:
+            if outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs') or \
+                outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs'):
+                return True
+            elif outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs') or \
+                    outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs'):
+                return False
+            elif outcome['m_status'] == '5':
+                # случай если ставка отменена
+                return True
+            else:
                 return None
+    # рабочая старая версия лежит в папке bet-bot
 
 
-def get_info(stavka) :
-    bet_manage.file_is_available(SERVER_DATA_PATH + NAME + '/matches.json')
-    with open(SERVER_DATA_PATH + NAME + '/matches.json', 'r', encoding="utf-8") as f:
-        dat = json.load(f)
-        dat = dat['events']
+def get_info(stavka, dat) :
     for x in dat:
         # совпадает ли название матча
         if stavka.match_title.find(x['team1']) >= 0 and stavka.match_title.find(x['team2']) >= 0:
-            if type(stavka.outcome_index) is tuple or type(stavka.outcome_index) is list:
-                bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
-            else:
-                # исхода может не быть, вылезет KeyError, что делать?????
-
-                bet_id = x['outcomes'][stavka.outcome_index]
-            return {
-                'team1': x['team1'],
-                'team2': x['team2'],
-                'bet_id': bet_id,
-                'link': x['link']
-            }
-
+            try:
+                if type(stavka.outcome_index) is tuple or type(stavka.outcome_index) is list:
+                    if stavka.outcome_index[0] == OFFSET_TABLE['Победа на карте']:
+                        bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
+                    elif stavka.outcome_index[0] == OFFSET_TABLE['выиграет одну карту']:
+                        if stavka.outcome_index[1].find(x['team1']) >= 0:
+                            bet_id = x['outcomes']['one_map_win']['team1']
+                        else:
+                            bet_id = x['outcomes']['one_map_win']['team2']
+                else:
+                    bet_id = x['outcomes'][stavka.outcome_index]
+                return {
+                    'team1': x['team1'],
+                    'team2': x['team2'],
+                    'bet_id': bet_id,
+                    'link': x['link']
+                }
+            except KeyError:
+                return None
 
 # specific functions
 
 def find_matches(update_live, update_all, web_dict: tuple):
-    def get_match(match) :
-        # победа
-        try:
-            t1 = browser.find_element_by_xpath('//*[@id="sys-container"]/div[2]')
-            match['outcomes'][OFFSET_TABLE['Победа в матче']] = t1.get_attribute('data-id')
-        except:
-            pass
+    def get_match(match, sess) :
+        req = sess.get(match['link'])
 
-        # доп события
-        t2 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[1]/div[2]/div')
-        if t2 != []:
-            match['outcomes']['one_map_win'] = {}
-            for x in t2:
+        pos = req.text.find('matches        =')
+        text = req.text[pos + len('matches        ='):]
 
-                formed_text = bet_manage.reform_team_name(x.find_element_by_class_name('bma-title').text)
+        pos = text.find(';')
+        text = text[: pos]
 
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        if OFFSET_TABLE[title] == 'one_map_win':
-                            if formed_text.find(match['team1']) >= 0:
-                                match['outcomes'][OFFSET_TABLE[title]]['team1'] = x.get_attribute('data-id')
-                            elif formed_text.find(match['team2']) >= 0:
-                                match['outcomes'][OFFSET_TABLE[title]]['team2'] = x.get_attribute('data-id')
-                        else:
-                            match['outcomes'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+        t = json.loads(text)
 
-        # карта 1
-        t31 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[2]/div[2]/div')
-        if t31 != []:
-            match['outcomes']['map1'] = {}
-            for x in t31:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map1'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-        # карта 2
-        t32 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[3]/div[2]/div')
-        if t32 != []:
-            match['outcomes']['map2'] = {}
-            for x in t32:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map2'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
-        # карта 3
-        t33 = browser.find_elements_by_xpath('//*[@id="bm-additionals"]/div[4]/div[2]/div')
-        if t33 != []:
-            match['outcomes']['map3'] = {}
-            for x in t33:
-                for title in OFFSET_TABLE.keys():
-                    if x.find_element_by_class_name('bma-title').text.find(title) >= 0:
-                        match['outcomes']['map3'][OFFSET_TABLE[title]] = x.get_attribute('data-id')
+        match['outcomes']['map1'] = {}
+        match['outcomes']['map2'] = {}
+        match['outcomes']['map3'] = {}
+        match['outcomes']['map4'] = {}
+        match['outcomes']['map5'] = {}
+        match['outcomes'][OFFSET_TABLE['выиграет одну карту']] = {}
+
+        for outcome in t:
+            if outcome['m_comment'] == '' or ('m_mapindex' in outcome.keys() and outcome['m_mapindex'] == '0'):
+                # победа в матче
+                match['outcomes']['game_winner'] = outcome['m_id']
+            elif 'm_mapindex' in outcome.keys():
+                # победа на карте
+                match['outcomes']['map' + str(outcome['m_mapindex'])]['map_winner'] = outcome['m_id']
+            elif outcome['m_comment'].find('одну карту') >= 0:
+                # команда выиграет одну карту
+
+                if bet_manage.reform_team_name(outcome['m_comment']).find(match['team1']) >= 0:
+                    match['outcomes'][OFFSET_TABLE['выиграет одну карту']][match['team1']] = outcome['m_id']
+                elif bet_manage.reform_team_name(outcome['m_comment']).find(match['team2']) >= 0:
+                    match['outcomes'][OFFSET_TABLE['выиграет одну карту']][match['team2']] = outcome['m_id']
+            elif outcome['m_comment'] in OFFSET_TABLE.keys():
+                match['outcomes'][OFFSET_TABLE[outcome['m_comment']]] = outcome['m_id']
 
 
     last_date = web_dict[2]
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
     bbb = {}
-    browser = init_config()
 
-    bet_manage.get_html_with_browser(browser, web_dict[0], sec=5, cookies=[('cf_clearance', web_dict[1]), ])
-    try :
+    sess = Session()
+    head = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
+    sess.headers.update(head)
+    sess.cookies.set('cf_clearance', web_dict[1])
+
+
+    try:
+        browser = init_config()
+
+        bet_manage.get_html_with_browser(browser, web_dict[0], sec=10, cookies=[('cf_clearance', web_dict[1])])
+
         matches = browser.find_elements_by_xpath(xPath_matches)
-    except :
-        assert False, "can't find matches on web_page"
-    for a in matches:
-        if a == matches[len(matches) - 1] or a.text == 'Нет активных матчей':
-            continue
-        try:
-            begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%d.%m %H:%M')
-        except ValueError:
-            begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%H:%M')
-            begin = begin.replace(day=datetime.now().day, month=datetime.now().month)
-        begin = begin.replace(year=datetime.now().year)
 
-        # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
+        for a in matches:
+            if a == matches[-1] or a.text == 'Нет активных матчей':
+                continue
+            try:
+                begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%d.%m %H:%M')
+            except ValueError:
+                begin = datetime.strptime(a.find_element_by_class_name('sys-datetime').text, '%H:%M')
+                begin = begin.replace(day=datetime.now().day, month=datetime.now().month)
+            begin = begin.replace(year=datetime.now().year)
 
-        if begin - datetime.now() > timedelta(hours=MATCHES_UPDATE_TIMEh + 4):
-            continue
-        if begin > datetime.now() and update_live:
-            continue
+            # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
 
-        event_info = {}
-        left_team = a.find_element_by_class_name('bet-team_left ').find_element_by_class_name('bet-team__name')
-        right_team = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
+            if begin - datetime.now() > timedelta(hours=4):
+                continue
+            if begin > datetime.now() and update_live:
+                continue
 
-        event_info['begin_date'] = begin.isoformat()
-        event_info['team1'] = bet_manage.reform_team_name(
-            left_team.text.replace(left_team.find_element_by_tag_name('div').text, ''))
-        event_info['team2'] = bet_manage.reform_team_name(
-            right_team.text.replace(right_team.find_element_by_tag_name('div').text, ''))
+            event_info = {}
+            left_team = a.find_element_by_class_name('bet-team_left ').find_element_by_class_name('bet-team__name')
+            right_team = a.find_element_by_class_name('bet-team_right ').find_element_by_class_name('bet-team__name')
 
-        bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
-    new_data = []
-    for match in last_date:
+            event_info['begin_date'] = begin.isoformat()
+            event_info['team1'] = bet_manage.reform_team_name(
+                left_team.text.replace(left_team.find_element_by_tag_name('div').text, ''))
+            event_info['team2'] = bet_manage.reform_team_name(
+                right_team.text.replace(right_team.find_element_by_tag_name('div').text, ''))
 
-        if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=3):
-            # deleting old events
-            continue
-        elif (update_live and datetime.now() > parser.parse(match['begin_date'])) or update_all:
+            bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
+
+        new_data = []
+        for match in last_date:
+
+            if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=4):
+                # deleting old events
+                continue
+            elif (update_live and datetime.now() > parser.parse(match['begin_date'])) or update_all:
+                match['outcomes'] = {}
+                get_match(match, sess)
+
+                if match['link'] in bbb :
+                    del bbb[match['link']]
+            new_data.append(match)
+
+        for match_key in bbb.keys():
+            match = bbb[match_key]
+            match['link'] = match_key
             match['outcomes'] = {}
-            bet_manage.get_html_with_browser(browser, match['link'])
+            get_match(match, sess)
 
-            get_match(match)
+        new_data.extend(bbb.values())
 
-            if match['link'] in bbb :
-                del bbb[match['link']]
-        new_data.append(match)
+    except WebDriverException:
+        logging.getLogger("find_matches_live").error("BETSCSGO.find_matches connection refused")
+        new_data = last_date
+    finally:
+        browser.quit()
+        sess.close()
 
-    for match_key in bbb.keys():
-        match = bbb[match_key]
-        match['link'] = match_key
-        match['outcomes'] = {}
-
-        bet_manage.get_html_with_browser(browser, match_key)
-
-        get_match(match)
-
-    new_data.extend(bbb.values())
-
-    browser.close()
-    browser.quit()
     return new_data
 
 
-def init_config(chrome_dir_path=None) :
-    # о структуре словаря см scan_database.py
-    if chrome_dir_path is None :
-        driver = bet_manage.create_webdriver()
-    else :
-        driver = bet_manage.create_webdriver(user_id=chrome_dir_path)
+def init_config() :
+    driver = bet_manage.create_webdriver()
     return driver
 
 

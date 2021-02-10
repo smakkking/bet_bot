@@ -3,13 +3,54 @@ from multiprocessing import Pool
 import json
 import pickle
 import logging
+import copy
+
 
 from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
 import bet_manage
 from exe_scripts import scan_database
 
+def bbet_client(DATA, sessions, client):
+    if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API:
+        # ставить по api возможности пока нет
+        pass
+    else:
+        try:
+            session = sessions[str(client['id'])]
+        except KeyError:
+            return
+        for group in client['groups']:
+            if DATA[group]['parse_bet']:
+                for stavka in DATA[group]['coupon'].bets:
+                    if not (client['bookmaker'] in stavka.bk_links.keys()):
+                        continue
+                    if stavka.bk_links[client['bookmaker']] is None:
+                        continue
+
+                    result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
+                        stavka,
+                        client['bet_summ'],
+                        session
+                    )
+                    try:
+                        result = json.loads(result)
+                    except json.decoder.JSONDecodeError:
+                        result = {
+                            'success': False,
+                            'error': "unknown"
+                        }
+                    logging.getLogger("created_bets").info(client['id'])
+                    logging.getLogger("created_bets").info(result['success'])
+                    if not result['success']:
+                        logging.getLogger("created_bets").error(result['error'])
 
 def bbet_all(DATA, bkm) :
+
+    bookmaker = bkm['clients'][0]['bookmaker']
+
+    with Pool(processes=len(bkm['clients'])) as p:
+        p.map(functools.partial(bbet_client, DATA, bkm['sessions']), bkm['clients'])
+    """
     for client in bkm['clients'] :
 
         bookmaker = client['bookmaker']
@@ -18,7 +59,10 @@ def bbet_all(DATA, bkm) :
             # ставить по api возможности пока нет
             pass
         else :
-            session = bkm['sessions'][str(client['id'])]
+            try:
+                session = bkm['sessions'][str(client['id'])]
+            except KeyError:
+                continue
             for group in client['groups'] :
                 if DATA[group]['parse_bet'] :
                     for stavka in DATA[group]['coupon'].bets :
@@ -32,18 +76,22 @@ def bbet_all(DATA, bkm) :
                             client['bet_summ'],
                             session
                         )
-                        result = json.loads(result)
+                        try:
+                            result = json.loads(result)
+                        except json.decoder.JSONDecodeError:
+                            result = {
+                                'success' : False,
+                                'error' : "unknown"
+                            }
                         logging.getLogger("created_bets").info(client['id'])
                         logging.getLogger("created_bets").info(result['success'])
                         if not result['success']:
                             logging.getLogger("created_bets").info(result['error'])
+    """
 
-
-    bet_manage.file_is_available(SERVER_DATA_PATH + bookmaker + '/sessions.json')
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
         last_ = json.load(f)
 
-    bet_manage.file_is_available(SERVER_DATA_PATH + bookmaker + '/sessions.json')
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
         for key in last_.keys() :
             bkm['sessions'][key]['session'] = last_[key]['session']
@@ -72,16 +120,17 @@ def main(DATA : dict) :
     for client in clients_DATA :
         bkm[client['bookmaker']]['clients'].append(client)
 
-
-    with Pool(processes=len(bkm.values())) as pool:
-        pool.map(functools.partial(bbet_all, DATA), bkm.values())
+    bbet_all(DATA, bkm['betscsgo'])
 
 
     # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
     for group in DATA.keys() :
         for x in DATA[group]['coupon'].bets :
-            if x.dogon and x.outcome_index[1] <= 4 :
-                DATA[group]['coupon'].add_bet(x, to_dogon=True)
+            if x.dogon and x.outcome_index[1] < 4 :
+                t = copy.deepcopy(x)
+                t.change_id()
+                DATA[group]['coupon'].add_bet(t, to_dogon=True)
+            DATA[group]['coupon'].delete_id['bets'].append(x.id)
 
 
     return DATA

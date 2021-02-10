@@ -19,7 +19,6 @@ class StandartUser(AbstractUser):
         null=True,
         blank=True,
         verbose_name='Логин для аккаунта букмекерской конторы',
-        unique=True,
     )
 
     bookmaker_password = models.CharField(
@@ -27,17 +26,6 @@ class StandartUser(AbstractUser):
         null=True,
         blank=True,
         verbose_name='Пароль от аккаунта букмекерской конторы',
-        unique=True,
-    )
-
-    dogon_on = models.BooleanField(
-        default=False,
-        verbose_name="Использовать ли тактику догона в группах"
-    )
-
-    bookmaker_last_login = models.DateTimeField(
-        null=True,
-        blank=True,
     )
 
     # поля по пользователю
@@ -49,14 +37,6 @@ class StandartUser(AbstractUser):
     sub_end_date = models.DateField(
         verbose_name='Дата окончания действия подписки',
         null=True,
-        blank=True,
-    )
-
-    chrome_dir_path = models.CharField(
-        verbose_name="id папки с chrome-профилем",
-        max_length=64,
-        null=True,
-        unique=True,
         blank=True,
     )
 
@@ -72,7 +52,7 @@ class StandartUser(AbstractUser):
         default=0,
         validators=[
             MaxValueValidator(len(GROUP_OFFSET.keys())),
-            MinValueValidator(1, message="Количество групп не может быть отрицательным")
+            MinValueValidator(0, message="Количество групп не может быть отрицательным")
         ],
         verbose_name="Количество групп"
     )
@@ -85,43 +65,19 @@ class StandartUser(AbstractUser):
         ],
     )
 
+    free_trial = models.BooleanField(
+        default=True
+    )
+
     # поля для групп
-    CSgoVictory = models.BooleanField(
-        default=False,
-        verbose_name="CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2",
-        help_text='<a href="' + GROUP_OFFSET['CSgoVictory'].WALL_URL + '"> подробнее </a>',
-    )
 
-    ExpertMnenie = models.BooleanField(
-        default=False,
-        verbose_name="Экспертное мнение CSGO | Прогнозы CS:GO & DOTA 2", 
-        help_text='<a href="' + GROUP_OFFSET['ExpertMnenie'].WALL_URL + '"> подробнее </a>',
-    )
-
-    BetsPedia = models.BooleanField(
-        default=False,
-        verbose_name="BETSPEDIA CS:GO | ПРОГНОЗЫ CSGO & DOTA 2",
-        help_text='<a href="' + GROUP_OFFSET['BetsPedia'].WALL_URL + '"> подробнее </a>',
-    )
-
-    aristocratical = models.BooleanField(
-        default=False,
-        verbose_name="Аристократ CS:GO | Прогнозы и ставки CSGO & Dota",
-        help_text='<a href="' + GROUP_OFFSET['aristocratical'].WALL_URL + '"> подробнее </a>',
-    )
-
-    savemoney = models.BooleanField(
-        default=False,
-        verbose_name="SaveMoney CSGO | Прогнозы и ставки CS:GO & DOTA2",
-        help_text='<a href="' + GROUP_OFFSET['savemoney'].WALL_URL + '"> подробнее </a>',
-    )
-
-    CSGO99percent = models.BooleanField(
-        default=False,
-        verbose_name="99% CS:GO | ПРОГНОЗЫ CSGO & DOTA 2",
-        help_text='<a href="' + GROUP_OFFSET['CSGO99percent'].WALL_URL + '"> подробнее </a>',
-    )
-
+    for group in GROUP_OFFSET.keys():
+        s = f"""{group} = models.BooleanField(
+            default=False,
+            verbose_name="{GROUP_OFFSET[group].TITLE}",
+            help_text='<a href="{GROUP_OFFSET[group].WALL_URL}"> подробнее </a>',)
+        """
+        exec(s)
 
     def __str__(self):
         return self.username

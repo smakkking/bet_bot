@@ -4,18 +4,10 @@ import bet_manage
 import nltk
 import logging
 
-# поле для комментов
-# нужны еще шаблоны(так как по стандартным не выдает)
-# не добавлено в бд
-# нет в GROUP_OFFSET
-#
-#
-#
-
-
 WALL_URL = 'https://vk.com/csgo_stavki99'
 NAME = 'CSGO99percent'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
+TITLE = "99% CS:GO | ПРОГНОЗЫ CSGO & DOTA 2"
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

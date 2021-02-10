@@ -2,11 +2,10 @@ from django.contrib import admin
 from django.urls import path
 from UserDataManagment import views
 from django.conf.urls import include
-from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name="test.html")),
+    path('', views.StartPage.as_view(), name='start_page'),
     path('account/registration/', views.BotRegistration.as_view(), name='registration'),
     path('account/settings/', views.BotSettings.as_view(), name='settings'),
     path('account/', include('django.contrib.auth.urls')),

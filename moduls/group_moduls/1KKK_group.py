@@ -1,14 +1,14 @@
+from moduls.bookmaker_moduls import BETSCSGO_betting
+
 import bet_manage
 import nltk
 import logging
 
-from moduls.bookmaker_moduls import BETSCSGO_betting
 
-WALL_URL = 'https://vk.com/victorybets_stavki'
-NAME = 'CSgoVictory'
+WALL_URL = 'https://vk.com/1kkk_bets'
+NAME = '1kkk'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
-TITLE = 'CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2'
-
+TITLE = "1ККК | ПРОГНОЗЫ CSGO & DOTA 2"
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 
@@ -16,7 +16,6 @@ BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers te
 # like BET_TEMPLATES += [(template, parse)]
 
 def check_templates(post, token) :
-    # есть другие варианты шаблонов, которых у меня пока нет(две ставки на одной картинке)
     for photo_url in post.photo_list :
         obj = bet_manage.YandexAPI_detection(photo_url, token)
         text = obj.text_detection()
@@ -29,6 +28,8 @@ def check_templates(post, token) :
         if not has_template :
             logging.getLogger(NAME).info("no templates for: " + photo_url)
     dogon(post)
+    if post.coupon.bets == [] :
+        post.parse_bet = False
 
 
 def dogon(post) :

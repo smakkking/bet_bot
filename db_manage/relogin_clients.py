@@ -1,18 +1,26 @@
 import json
 import pickle
+import shutil
+import os
 
 from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
-from exe_scripts import scan_database
+from bet_manage import SQL_DB
+
 
 def main() :
-
-    data = scan_database.main()
+    a = SQL_DB()
+    data = a.SQL_SELECT(
+        ['bookmaker', 'id', 'bookmaker_login', 'bookmaker_password'],
+        where_cond='sub_status=1'
+    )
 
     for v in BOOKMAKER_OFFSET.keys() :
         if BOOKMAKER_OFFSET[v].HAS_API :
             continue
 
         session_array = {}
+        shutil.rmtree(SERVER_DATA_PATH + 'tmp_data/sessions')
+        os.mkdir(SERVER_DATA_PATH + 'tmp_data/sessions')
         for client in data :
             if client['bookmaker'] == v :
                 sess_info = BOOKMAKER_OFFSET[client['bookmaker']].create_session(

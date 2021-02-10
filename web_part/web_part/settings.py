@@ -23,11 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'uqr^+47!1x)4#ohlhdp*5pl21-&y^27z_mf++&su&a&d7d$f3+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True
 
-ALLOWED_HOSTS = ['bet-bot.online', '109.252.72.198', '0.0.0.0', '178.154.247.124']
+ALLOWED_HOSTS = ['bet-bot.online', '109.252.72.198', '0.0.0.0', '127.0.0.1', '84.252.128.241']
 
 LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'start_page'
 
 AUTH_USER_MODEL = 'UserDataManagment.StandartUser'
 
@@ -41,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'UserDataManagment',
+    'UserDataManagment'
 ]
 
 MIDDLEWARE = [

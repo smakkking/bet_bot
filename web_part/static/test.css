@@ -14,7 +14,7 @@
 .container,
 .grid {
   margin: 0 auto;
-  width: 960px;
+
 }
 .container {
   padding-left: 30px;
@@ -32,7 +32,7 @@
   vertical-align: top;
 }
 .col-1-3 {
-  width: 33.33%;
+  width: 30%;
 }
 .col-2-3 {
   width: 66.66%;
@@ -68,7 +68,7 @@ h1, h3, h4, h5, p {
 }
 
 h1, h2, h3, h4 {
-  color: #648880;
+  color: #28b578;
 }
 
 h1 {
@@ -128,7 +128,7 @@ h5 {
 */
 
 .logo {
-  border-top: 4px solid #648880;
+  border-top: 4px solid #28b578;
   float: left;
   font-size: 48px;
   line-height: 44px;
@@ -151,7 +151,7 @@ h5 {
 */
 
 .primary-footer {
-  color: #648880;
+  color: #28b578;
   font-size: 14px;
   padding-bottom: 44px;
   padding-top: 44px;
@@ -190,7 +190,7 @@ h5 {
 */
 
 a {
-  color: #648880;
+  color: #28b578;
   text-decoration: none;
 }
 a:hover {

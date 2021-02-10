@@ -7,7 +7,6 @@ import urllib
 import base64
 import re
 import json
-import os
 from PIL import Image
 import subprocess
 
@@ -18,7 +17,7 @@ from selenium import webdriver
 from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, ALL_POSTS_JSON_PATH
 
 
-LOAD_TIMEOUT = 0.5  # sec
+LOAD_TIMEOUT = 0.75  # sec
 
 
 class Stavka :
@@ -27,6 +26,7 @@ class Stavka :
         self.bk_links = {}
         self.summ_multiplier = 1
         self.sum = 0
+        self.id = int(str(time.time()).replace('.', ''))
 
         if bets is None :
             self.match_title = ''
@@ -39,6 +39,7 @@ class Stavka :
             self.outcome_index = bets['outcome_index']
             self.dogon = bets['dogon']
             self.summ_multiplier = bets['summ_multiplier']
+            self.id = bets['id']
             if 'sum' in bets.keys():
                 self.sum = bets['sum']
             if 'bk_links' in bets.keys() :
@@ -60,11 +61,20 @@ class Stavka :
     def set_bk_link(self, bk_name, params={}):
         self.bk_links[bk_name] = params
 
+    def change_id(self):
+        self.id = int(str(time.time()).replace('.', ''))
+
 
 class Coupon :
     def __init__(self, type_x='ordn', coup_data: dict=None) :
         self.bets = []
         self.dogon = []
+
+        # управление своевременным удалением из ставок
+        self.delete_id = {
+            'bets' : [],
+            'dogon' : []
+        }
         self.type = type_x
         if coup_data :
             self.type = coup_data['type']
@@ -101,28 +111,19 @@ class LastGroupPost:
     token = 'b43bde71b43bde71b43bde7135b44ed5a0bb43bb43bde71eb83d753b1a8f54e925ecaec'
     ver = 5.92
 
-    def __init__(self, wall_url : str, old=None) :
+    def __init__(self, wall_url : str) :
         self.text = ''
         self.photo_list = []
         self.parse_bet = True
-        self.coupon = Coupon(coup_data=old)
+        self.coupon = Coupon()
         self.wall_domain = wall_url[wall_url.rfind('/') + 1 : ]
 
     def add_photo(self, photo) :
         self.photo_list.append(photo)
 
-    def __json_repr__(self) :
-        return dict([
-            ('text', self.text), 
-            ('photo_list', self.photo_list), 
-            ('parse_bet', self.parse_bet), 
-            ('coupon', self.coupon.__json_repr__()),
-        ])
-
     def __dict__(self):
         return dict([
             ('text', self.text),
-            ('photo_list', self.photo_list),
             ('parse_bet', self.parse_bet),
             ('coupon', self.coupon),
         ])
@@ -143,8 +144,8 @@ class LastGroupPost:
                 'offset' : offset,
             })
             posts = resp.json()['response']['items']
-        except :
-            assert False, "error in requesting group wall"
+        except Exception as e:
+            raise AssertionError("error in requesting group wall") from e
 
         if count == 2 :
             try :
@@ -156,9 +157,17 @@ class LastGroupPost:
                 if 'attachments' in p.keys() :
                     for at in p['attachments'] :
                         if at['type'] == 'photo' :
-                            self.add_photo(at['photo']['sizes'][len(at['photo']['sizes']) - 1]['url'])
-            except :
-                assert False, "error in vk_api"
+                            # какого размера фото выбирать
+                            need_photo = None
+                            for photo in at['photo']['sizes']:
+                                if photo['type'] == "x":
+                                    need_photo = photo['url']
+                            if need_photo:
+                                self.add_photo(need_photo)
+                            else:
+                                self.add_photo(at['photo']['sizes'][-1]['url'])
+            except Exception as e:
+                raise AssertionError("error in vk_api") from e
         else : 
             # для большого числа постов сохраяются только фото         
             for p in posts :
@@ -316,7 +325,7 @@ def get_html_with_browser(browser, url, sec=0, cookies=None) :
 
     return browser.page_source
 
-def create_webdriver(user_id=None, hdless=False) :
+def create_webdriver() :
     opts = webdriver.FirefoxOptions()
     opts.headless = True
 
@@ -390,8 +399,8 @@ def file_is_available(file) :
     counter = 0
     while True:
         try:
-            DEVNULL = os.open(os.devnull, os.O_WRONLY)
-            l = subprocess.check_call(["fuser", ALL_POSTS_JSON_PATH], stdout=DEVNULL, stderr=DEVNULL, close_fds=True)
-            os.close(DEVNULL)
+            l = subprocess.check_call(["fuser", ALL_POSTS_JSON_PATH], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
             break
+        except:
+            print("unknown error")
