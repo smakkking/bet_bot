@@ -149,7 +149,31 @@ def proxy_get():
 
 
 if __name__ == "__main__" :
-    proxy_get()
+
+    import grequests
+    import requests
+
+    N_MAX = 50
+
+    sess_ = []
+    for _ in range(N_MAX):
+        x = requests.Session()
+        x.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
+        x.headers.update({
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
+        })
+        sess_.append(x)
+
+    urls = [
+        ('https://betscsgo.in', x) for x in sess_
+    ]
+    duration = time.time()
+    rs = (grequests.get(u[0], session=u[1]) for u in urls)
+
+    t = grequests.map(rs)
+
+    print(t)
+    print(f"ended by {time.time() - duration} sec")
     """
 {
         "bk_links": {
@@ -168,6 +192,4 @@ if __name__ == "__main__" :
         "dogon": false
     }
     """
-
-    '(python3 find_matches_live.py) | (python3 load_last_data.py) | (python3 all_bet.py) | (python3 check_dogon.py) '
     'https://sun9-20.userapi.com/impf/O_fBuxflvvuDAQ4hWiKkClU5kevKL2TUgChlwg/7Xg3HApXyTQ.jpg?size=557x480&quality=96&proxy=1&sign=1e2691b1dc2b48878c7a4daf9d7c8289&c_uniq_tag=DhzWafUB25cMqfx5L4Dy0p8CqPoppvFNGF7jBg8-S_M&type=album'

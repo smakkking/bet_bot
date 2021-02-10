@@ -97,8 +97,6 @@ def fml_sycle(debug=False):
 
             if time.time() - duration < 5:
                 time.sleep(TIME_WAITsec)
-            else:
-                getLogger("find_matches_live").info("ended normally")
 
         except KeyboardInterrupt:
             break
@@ -162,8 +160,6 @@ def allb_sycle(queue, debug=False):
 def checkd_sycle(queue, debug=False):
     while True :
         try:
-            duration = time.time()
-
             queue.put(1, block=True)
             DATA = bet_manage.read_groups()
             queue.get()

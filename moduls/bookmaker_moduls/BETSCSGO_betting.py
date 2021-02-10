@@ -24,10 +24,8 @@ TAKES_MATCHES_LIVE = False
 
 
 # corrected params
-MATCHES_UPDATE_TIMEh = 1
 LIVE_MATCHES_UPDATE_TIMEm = 5
 
-# менять, когда меняешь сеть, см в куках(это куки для chrome)
 CURRENT_CF_CLEARANCE        = 'fd7cee1d455ba16f054e95fcb9f5265370f5d36a-1612885796-0-150'
 CURRENT_CF_CLEARANCE_add    = '08b24ecbfedb22964cd9a8e537ec93f8dbef4057-1612885909-0-150'
 
@@ -282,24 +280,13 @@ PHOTO_PARSING_TEMPLATES = [
 
 # necessary functions
 
-def find_bet(last_date, update_live=False, update_all=False) :
-
-    # вроде работает
-    betscsgo = []
-    betsdota2 = []
-    for x in last_date :
-        if x['link'].find(WALL_URL) >= 0:
-            betscsgo.append(x)
-        elif x['link'].find(WALL_URL_add) >= 0 :
-            betsdota2.append(x)
+def find_bet() :
     with Pool(processes=2) as pool:
         new_d = pool.map(
-            functools.partial(find_matches, update_live, update_all),
-            [(WALL_URL, CURRENT_CF_CLEARANCE, betscsgo), (WALL_URL_add, CURRENT_CF_CLEARANCE_add, betsdota2)]
+            find_matches,
+            [(WALL_URL, CURRENT_CF_CLEARANCE), (WALL_URL_add, CURRENT_CF_CLEARANCE_add)]
         )
-    new_d = new_d[0] + new_d[1]
-
-    return new_d
+    return new_d[0] + new_d[1]
 
 
 def create_session(client_login=None, client_passwd=None) :
@@ -405,6 +392,7 @@ def make_bet(stavka, summ, session) :
             GetSesToken = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
 
     if GetSesToken:
+        logging.getLogger("all_bet").info("the token has changed")
         r = session['session'].get(base_str + GetSesToken)
         if domen == WALL_URL :
             session['betscsgo_token'] = GetSesToken
@@ -478,7 +466,7 @@ def get_info(stavka, dat) :
 
 # specific functions
 
-def find_matches(update_live, update_all, web_dict: tuple):
+def find_matches(web_dict: tuple):
     def get_match(match, sess) :
         req = sess.get(match['link'])
 
@@ -514,23 +502,23 @@ def find_matches(update_live, update_all, web_dict: tuple):
             elif outcome['m_comment'] in OFFSET_TABLE.keys():
                 match['outcomes'][OFFSET_TABLE[outcome['m_comment']]] = outcome['m_id']
 
-
-    last_date = web_dict[2]
     xPath_matches = '//*[@id="bets-block"]/div[1]/div[2]/div/div/div/div'
-    bbb = {}
+    bbb = []
 
     sess = Session()
     head = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'}
     sess.headers.update(head)
     sess.cookies.set('cf_clearance', web_dict[1])
 
-
     try:
         browser = init_config()
 
-        bet_manage.get_html_with_browser(browser, web_dict[0], sec=10, cookies=[('cf_clearance', web_dict[1])])
+        bet_manage.get_html_with_browser(browser, web_dict[0], sec=15, cookies=[('cf_clearance', web_dict[1])])
 
         matches = browser.find_elements_by_xpath(xPath_matches)
+
+        if matches == []:
+            raise AssertionError
 
         for a in matches:
             if a == matches[-1] or a.text == 'Нет активных матчей':
@@ -544,9 +532,7 @@ def find_matches(update_live, update_all, web_dict: tuple):
 
             # здесь отсеиваются матчи, чтобы не обрабатывать их неск раз
 
-            if begin - datetime.now() > timedelta(hours=4):
-                continue
-            if begin > datetime.now() and update_live:
+            if begin - datetime.now() > timedelta(hours=1, minutes=30):
                 continue
 
             event_info = {}
@@ -559,38 +545,16 @@ def find_matches(update_live, update_all, web_dict: tuple):
             event_info['team2'] = bet_manage.reform_team_name(
                 right_team.text.replace(right_team.find_element_by_tag_name('div').text, ''))
 
-            bbb[a.find_element_by_class_name('sys-matchlink').get_attribute('href')] = event_info
+            event_info['link'] = a.find_element_by_class_name('sys-matchlink').get_attribute('href')
+            event_info['outcomes'] = {}
+            get_match(event_info, sess)
 
-        new_data = []
-        for match in last_date:
-
-            if datetime.now() - parser.parse(match['begin_date']) > timedelta(hours=4):
-                # deleting old events
-                continue
-            elif (update_live and datetime.now() > parser.parse(match['begin_date'])) or update_all:
-                match['outcomes'] = {}
-                get_match(match, sess)
-
-                if match['link'] in bbb :
-                    del bbb[match['link']]
-            new_data.append(match)
-
-        for match_key in bbb.keys():
-            match = bbb[match_key]
-            match['link'] = match_key
-            match['outcomes'] = {}
-            get_match(match, sess)
-
-        new_data.extend(bbb.values())
-
-    except WebDriverException:
-        logging.getLogger("find_matches_live").error("BETSCSGO.find_matches connection refused")
-        new_data = last_date
+            bbb.append(event_info)
     finally:
         browser.quit()
         sess.close()
 
-    return new_data
+    return bbb
 
 
 def init_config() :

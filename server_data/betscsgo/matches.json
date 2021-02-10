@@ -1,336 +1,120 @@
 {
     "events": [
         {
-            "begin_date": "2021-02-09T21:27:00",
-            "team1": "VITALITY",
+            "begin_date": "2021-02-10T22:35:00",
+            "team1": "COL",
             "team2": "EG",
-            "link": "https://betscsgo.in/match/271535/",
+            "link": "https://betscsgo.in/match/271800/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "271545"
+                    "map_winner": "271866"
                 },
                 "map2": {
-                    "map_winner": "271549"
-                },
-                "map3": {
-                    "map_winner": "271881"
-                },
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "EG": "271679"
-                },
-                "game_winner": "271535",
-                "games_count_2.5": "271536"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "ANONYMO",
-            "team2": "ALTERNATEATTAX",
-            "link": "https://betscsgo.in/match/271569/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271619"
-                },
-                "map2": {
-                    "map_winner": "271622"
+                    "map_winner": "271870"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "ANONYMO": "271625"
+                    "COL": "271982",
+                    "EG": "271983"
                 },
-                "game_winner": "271569",
-                "games_count_2.5": "271570"
+                "game_winner": "271800",
+                "games_count_2.5": "271801"
             }
         },
         {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "AGO",
-            "team2": "NEXUS",
-            "link": "https://betscsgo.in/match/271567/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271611"
-                },
-                "map2": {
-                    "map_winner": "271614"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "AGO": "271617",
-                    "NEXUS": "271618"
-                },
-                "game_winner": "271567",
-                "games_count_2.5": "271568"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "LDLC",
-            "team2": "NEMIGA",
-            "link": "https://betscsgo.in/match/271565/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271603"
-                },
-                "map2": {
-                    "map_winner": "271606"
-                },
-                "map3": {
-                    "map_winner": "271874"
-                },
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "LDLC": "271609",
-                    "NEMIGA": "271610"
-                },
-                "game_winner": "271565",
-                "games_count_2.5": "271566"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "FATE",
+            "begin_date": "2021-02-10T21:00:00",
+            "team1": "WISLAKRAKOW",
             "team2": "GAMERLEGION",
-            "link": "https://betscsgo.in/match/271563/",
+            "link": "https://betscsgo.in/match/271909/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "271595"
+                    "map_winner": "271911"
                 },
                 "map2": {
-                    "map_winner": "271598"
+                    "map_winner": "271915"
                 },
                 "map3": {
-                    "map_winner": "271888"
+                    "map_winner": "271986"
                 },
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "FATE": "271601",
-                    "GAMERLEGION": "271602"
+                    "GAMERLEGION": "271919"
                 },
-                "game_winner": "271563",
-                "games_count_2.5": "271564"
+                "game_winner": "271909",
+                "games_count_2.5": "271910"
             }
         },
         {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "HELLRAISERS",
-            "team2": "SINGULARITY",
-            "link": "https://betscsgo.in/match/271561/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271587"
-                },
-                "map2": {
-                    "map_winner": "271590"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "HELLRAISERS": "271593",
-                    "SINGULARITY": "271594"
-                },
-                "game_winner": "271561",
-                "games_count_2.5": "271562"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "WINSTRIKE",
-            "team2": "WISLAKRAKOW",
-            "link": "https://betscsgo.in/match/271559/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271579"
-                },
-                "map2": {
-                    "map_winner": "271582"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "WINSTRIKE": "271585",
-                    "WISLAKRAKOW": "271586"
-                },
-                "game_winner": "271559",
-                "games_count_2.5": "271560"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:00:00",
-            "team1": "FORZE",
+            "begin_date": "2021-02-10T21:00:00",
+            "team1": "APEKS",
             "team2": "SAW",
-            "link": "https://betscsgo.in/match/271557/",
+            "link": "https://betscsgo.in/match/271898/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "271571"
+                    "map_winner": "271900"
                 },
                 "map2": {
-                    "map_winner": "271574"
-                },
-                "map3": {
-                    "map_winner": "271877"
-                },
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "FORZE": "271577",
-                    "SAW": "271578"
-                },
-                "game_winner": "271557",
-                "games_count_2.5": "271558"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T20:50:00",
-            "team1": "NIGMA",
-            "team2": "OG",
-            "link": "https://betsdota2.fun/match/166218/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166230"
-                },
-                "map2": {
-                    "map_winner": "166232"
-                },
-                "map3": {
-                    "map_winner": "166543"
-                },
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "NIGMA": "166228",
-                    "OG": "166229"
-                },
-                "game_winner": "166218",
-                "games_count_2.5": "166219"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T21:35:00",
-            "team1": "HELLBEARSMASHERS",
-            "team2": "SPIDERPIGZS",
-            "link": "https://betsdota2.fun/match/166359/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166361"
-                },
-                "map2": {
-                    "map_winner": "166363"
+                    "map_winner": "271904"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "HELLBEARSMASHERS": "166365",
-                    "SPIDERPIGZS": "166366"
+                    "APEKS": "271908"
                 },
-                "game_winner": "166359",
-                "games_count_2.5": "166360"
+                "game_winner": "271898",
+                "games_count_2.5": "271899"
             }
         },
         {
-            "begin_date": "2021-02-09T22:55:00",
-            "team1": "ALLIANCE",
-            "team2": "TUNDRA",
-            "link": "https://betsdota2.fun/match/166220/",
+            "begin_date": "2021-02-10T22:55:00",
+            "team1": "CREEPWAVE",
+            "team2": "NOBOUNTYHUNTER",
+            "link": "https://betsdota2.fun/match/166374/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "166236"
+                    "map_winner": "166376"
                 },
                 "map2": {
-                    "map_winner": "166238"
+                    "map_winner": "166378"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "ALLIANCE": "166234",
-                    "TUNDRA": "166235"
+                    "CREEPWAVE": "166380",
+                    "NOBOUNTYHUNTER": "166381"
                 },
-                "game_winner": "166220",
-                "games_count_2.5": "166221"
+                "game_winner": "166374",
+                "games_count_2.5": "166375"
             }
         },
         {
-            "begin_date": "2021-02-09T22:55:00",
-            "team1": "ALLIANCE",
-            "team2": "TUNDRA",
-            "link": "https://betsdota2.fun/match/166220/",
+            "begin_date": "2021-02-10T23:00:00",
+            "team1": "NOPING",
+            "team2": "THUNDERPREDATOR",
+            "link": "https://betsdota2.fun/match/166443/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "166236"
+                    "map_winner": "166445"
                 },
                 "map2": {
-                    "map_winner": "166238"
+                    "map_winner": "166447"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "ALLIANCE": "166234",
-                    "TUNDRA": "166235"
+                    "NOPING": "166449",
+                    "THUNDERPREDATOR": "166450"
                 },
-                "game_winner": "166220",
-                "games_count_2.5": "166221"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T22:55:00",
-            "team1": "ALLIANCE",
-            "team2": "TUNDRA",
-            "link": "https://betsdota2.fun/match/166220/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166236"
-                },
-                "map2": {
-                    "map_winner": "166238"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "ALLIANCE": "166234",
-                    "TUNDRA": "166235"
-                },
-                "game_winner": "166220",
-                "games_count_2.5": "166221"
-            }
-        },
-        {
-            "begin_date": "2021-02-09T22:55:00",
-            "team1": "ALLIANCE",
-            "team2": "TUNDRA",
-            "link": "https://betsdota2.fun/match/166220/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166236"
-                },
-                "map2": {
-                    "map_winner": "166238"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "ALLIANCE": "166234",
-                    "TUNDRA": "166235"
-                },
-                "game_winner": "166220",
-                "games_count_2.5": "166221"
+                "game_winner": "166443",
+                "games_count_2.5": "166444"
             }
         }
     ],
-    "last_update_all": "2021-02-09T19:47:16.342131",
-    "last_update_live": "2021-02-09T23:47:03.939956"
+    "last_update": "2021-02-10T22:48:07.802417"
 }
