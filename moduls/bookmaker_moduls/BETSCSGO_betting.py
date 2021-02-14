@@ -70,6 +70,8 @@ def find_vs(words : list, idx : int) :
     right_team = bet_manage.reform_team_name(right_team)
 
     return left_team + ' vs ' + right_team
+
+
 def template1(text: str) :
     temp = [
         r'ПОБЕДА\s*НА\s*КАРТЕ',
@@ -97,7 +99,7 @@ def parse1(photo_url: str, words: list) :
         res.winner = res.match_title[res.match_title.find('vs') + 3 : ]
     res.outcome_index = (OFFSET_TABLE['Победа на карте'], int(words[words.index('#') + 1]))
 
-    res.sum = float(words[words.index('Сумма') + 3])
+    # res.sum = float(words[words.index('Сумма') + 3])
 
     return res
 
@@ -131,9 +133,10 @@ def parse2(photo_url: str, words: list) :
         res.winner = res.match_title[res.match_title.find('vs') + 3 :]
     res.outcome_index = OFFSET_TABLE['Победа в матче']
 
-    res.sum = float(words[words.index('Сумма') + 3])
+    #res.sum = float(words[words.index('Сумма') + 3])
 
     return res
+
 
 def template5(text : str):
     temp = [
@@ -165,7 +168,7 @@ def parse5(photo_url: str, words: list):
 
     res.match_title = find_vs(words, words.index('vs'))
 
-    res.sum = float(words[words.index('Сумма') + 3])
+    #res.sum = float(words[words.index('Сумма') + 3])
 
     try:
         ndx = words.index('ВЫИГРАЮТ') - 1
@@ -191,7 +194,49 @@ def parse5(photo_url: str, words: list):
     return res
 
 
+def template6(text : str):
+    temp = [
+        'КОЛИЧЕСТВО',
+        'КАРТ',
+        '2.5',
+        'СУММА',
+        'СТАВКИ'
+    ]
+    not_temp = [
 
+    ]
+
+    flag = True
+    for x in temp :
+        if type(x) is list:
+            t = False
+            for z in x:
+                t = t or text.find(z) >= 0
+            flag = flag and t
+        else:
+            flag = flag and text.find(x) >= 0
+
+    for x in not_temp :
+        flag = flag and text.find(x) < 0
+    return flag
+def parse6(photo_url: str, words: list):
+    res = bet_manage.Stavka()
+
+    res.match_title = find_vs(words, words.index('vs'))
+
+    #res.sum = float(words[words.index('Сумма') + 3])
+
+    side = bet_manage.define_side_winner(photo_url)
+    if (side == 'left') :
+        res.winner = 'YES'
+    elif (side == 'right') :
+        res.winner = 'NO'
+
+    res.outcome_index = OFFSET_TABLE['Количество карт 2.5']
+
+    return res
+
+#----------------------------------------------------------
 
 def template3(text: str) :
     temp = [
@@ -275,6 +320,7 @@ PHOTO_PARSING_TEMPLATES = [
     (template3, parse3),
     (template4, parse4),
     (template5, parse5),
+    (template6, parse6),
 ]
 
 
@@ -299,7 +345,6 @@ def create_session(client_login=None, client_passwd=None) :
     session.headers.update(head)
     session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE)
 
-
     r = session.get(WALL_URL + '/login/')
 
     soup = bs(r.text, 'html.parser')
@@ -312,8 +357,6 @@ def create_session(client_login=None, client_passwd=None) :
         'nonce': (None, form_obj.find('input', {'name': 'nonce'})['value'])
     })
 
-    # поиск GetSessionToken
-
     GetSesToken_betscsgo = ''
     soup = bs(r.text, 'lxml')
     scr = soup.find_all('script')
@@ -325,7 +368,7 @@ def create_session(client_login=None, client_passwd=None) :
             GetSesToken_betscsgo = new_s[new_s.find('\"') + 1: new_s.find(';') - 1]
 
     session.cookies.set('cf_clearance', CURRENT_CF_CLEARANCE_add)
-    r = session.get(WALL_URL_add)
+    r = session.get(WALL_URL_add + '/login/')
 
     GetSesToken_betsdota2 = ''
     soup = bs(r.text, 'lxml')
@@ -398,6 +441,8 @@ def make_bet(stavka, summ, session) :
             session['betscsgo_token'] = GetSesToken
         else :
             session['betsdota2_token'] = GetSesToken
+    else:
+        logging.getLogger("all_bet").info("bet without changing token")
 
     return r.text
 
@@ -414,6 +459,7 @@ def dogon_check(stavka) :
 
     req = sess.get(stavka.bk_links[NAME]['link'])
 
+    # уязвимость
     pos = req.text.find('matches        =')
     text = req.text[pos + len('matches        ='):]
 
@@ -425,19 +471,23 @@ def dogon_check(stavka) :
     sess.close()
 
     for outcome in t:
-        if 'm_mapindex' in outcome.keys() and int(outcome['m_mapindex']) == stavka.outcome_index[1]:
-            if outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs') or \
-                outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs'):
-                return True
-            elif outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs') or \
-                    outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs'):
-                return False
-            elif outcome['m_status'] == '5':
-                # случай если ставка отменена
-                return True
-            else:
-                return None
-    # рабочая старая версия лежит в папке bet-bot
+        if 'm_mapindex' in outcome.keys():
+            if int(outcome['m_mapindex']) == 0:
+                # если матч закончился, а догон остался
+                if outcome['m_status'] == '3' or outcome['m_status'] == '2':
+                    return True
+            if int(outcome['m_mapindex']) == stavka.outcome_index[1]:
+                if outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs') or \
+                        outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs'):
+                    return True
+                elif outcome['m_status'] == '2' and stavka.match_title.find(stavka.winner) >= stavka.match_title.find('vs') or \
+                        outcome['m_status'] == '3' and stavka.match_title.find(stavka.winner) <= stavka.match_title.find('vs'):
+                    return False
+                elif outcome['m_status'] == '5':
+                    # случай если ставка отменена
+                    return True
+                else:
+                    return None
 
 
 def get_info(stavka, dat) :
@@ -450,9 +500,9 @@ def get_info(stavka, dat) :
                         bet_id = x['outcomes']['map' + str(stavka.outcome_index[1])][stavka.outcome_index[0]]
                     elif stavka.outcome_index[0] == OFFSET_TABLE['выиграет одну карту']:
                         if stavka.outcome_index[1].find(x['team1']) >= 0:
-                            bet_id = x['outcomes']['one_map_win']['team1']
-                        else:
-                            bet_id = x['outcomes']['one_map_win']['team2']
+                            bet_id = x['outcomes']['one_map_win'][x['team1']]
+                        elif stavka.outcome_index[1].find(x['team2']) >= 0:
+                            bet_id = x['outcomes']['one_map_win'][x['team2']]
                 else:
                     bet_id = x['outcomes'][stavka.outcome_index]
                 return {
@@ -463,6 +513,7 @@ def get_info(stavka, dat) :
                 }
             except KeyError:
                 return None
+    logging.getLogger("find_all_links").info("match not found")
 
 # specific functions
 

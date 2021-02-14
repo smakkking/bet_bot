@@ -63,8 +63,12 @@ def lld_sycle(queue, debug=False) :
 
             new_upload_data = bet_manage.read_groups()
             for key in GROUP_OFFSET.keys():
-                DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
-                DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+                try:
+                    DATA[key]['coupon'].bets.extend(new_upload_data[key]['coupon'].bets)
+                    DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
+                    DATA[key]['coupon'].delay.extend(new_upload_data[key]['coupon'].delay)
+                except KeyError:
+                    continue
             DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
             bet_manage.write_groups(DATA)
 
@@ -169,8 +173,6 @@ def checkd_sycle(queue, debug=False):
 
             DATA = check_dogon.main(DATA)
 
-            time.sleep(TIME_WAITsec * 2)
-
             queue.put(1, block=True)
 
             new_upload_data = bet_manage.read_groups()
@@ -179,7 +181,6 @@ def checkd_sycle(queue, debug=False):
                 DATA[key]['coupon'].dogon.extend(new_upload_data[key]['coupon'].dogon)
                 DATA[key]['coupon'].dogon = [x for x in DATA[key]['coupon'].dogon
                                              if x.id not in DATA[key]['coupon'].delete_id['dogon']]
-
                 # нужно ли обрабатывать
                 DATA[key]['parse_bet'] = (DATA[key]['coupon'].bets != [])
                 DATA[key]['text'] = new_upload_data[key]['text']
@@ -190,6 +191,8 @@ def checkd_sycle(queue, debug=False):
             if debug:
                 print("checkd executed")
                 break
+            else:
+                time.sleep(60)
 
         except KeyboardInterrupt:
             break
@@ -314,6 +317,7 @@ if __name__ == "__main__" :
         proc2.start()
         proc3.start()
         proc4.start()
+
 
         if not debug :
             proc5 = Process(target=db_sycle, args=(proc1.pid, proc2.pid, proc3.pid, proc4.pid))

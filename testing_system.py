@@ -149,31 +149,49 @@ def proxy_get():
 
 
 if __name__ == "__main__" :
-
     import grequests
-    import requests
-
-    N_MAX = 50
-
-    sess_ = []
-    for _ in range(N_MAX):
-        x = requests.Session()
-        x.cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
-        x.headers.update({
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
-        })
-        sess_.append(x)
 
     urls = [
-        ('https://betscsgo.in', x) for x in sess_
-    ]
+        (grequests.Session(), 'https://betscsgo.in', 'https://betscsgo.in/login/')
+    ] * 50
+
+
+    for u in urls:
+        u[0].cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
+        u[0].headers.update({
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
+    })
+
+
+    # TASK1
     duration = time.time()
-    rs = (grequests.get(u[0], session=u[1]) for u in urls)
+    rs = (grequests.get(u[1], session=u[0]) for u in urls)
 
-    t = grequests.map(rs)
+    errors_counter = 0
+    for responce in grequests.map(rs):
+        try:
+            if responce.status_code != 200:
+                print("error")
+        except:
+            errors_counter += 1
+    print(f"ended in {time.time() - duration} sec")
+    print(f"{errors_counter} requests ended with error\n")
 
-    print(t)
-    print(f"ended by {time.time() - duration} sec")
+    # TASK2
+    duration = time.time()
+    rs = (grequests.get(u[1], session=u[0]) for u in urls)
+
+    errors_counter = 0
+    for responce in grequests.map(rs):
+        try:
+            if responce.status_code != 200:
+                print("error")
+        except:
+            errors_counter += 1
+    print(f"ended in {time.time() - duration} sec")
+    print(f"{errors_counter} requests ended with error\n")
+
+
     """
 {
         "bk_links": {

@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'uqr^+47!1x)4#ohlhdp*5pl21-&y^27z_mf++&su&a&d7d$f3+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['bet-bot.online', '109.252.72.198', '0.0.0.0', '127.0.0.1', '84.252.128.241']
 

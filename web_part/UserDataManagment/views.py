@@ -134,9 +134,12 @@ class BotRegistration(views.View) :
 
 
 def calcuate_sub(duration, max_group_count) :
+    # базовая стоимость одного дня
     base_day_payment = 30
+    # скидка за длительность подписки
     a = 0.2
-    b = 0.14
+    # скидка за число групп
+    b = 0.1
 
     sale_mn = 0
     if duration == 1:

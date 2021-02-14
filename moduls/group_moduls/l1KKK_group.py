@@ -6,7 +6,7 @@ import logging
 
 
 WALL_URL = 'https://vk.com/1kkk_bets'
-NAME = '1kkk'
+NAME = 'Ikkk'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "1ККК | ПРОГНОЗЫ CSGO & DOTA 2"
 

@@ -69,6 +69,7 @@ class Coupon :
     def __init__(self, type_x='ordn', coup_data: dict=None) :
         self.bets = []
         self.dogon = []
+        self.delay = []
 
         # управление своевременным удалением из ставок
         self.delete_id = {
@@ -82,18 +83,23 @@ class Coupon :
                 self.add_bet(Stavka(bet))
             for bet in coup_data['dogon'] :
                 self.add_bet(Stavka(bet), to_dogon=True)
+            for bet in coup_data['delay']:
+                self.add_bet(Stavka(bet), to_delay=True)
 
     def __json_repr__(self) :
         return dict([
             ('type', self.type),
             ('bets', [b.__json_repr__() for b in self.bets]),
-            ('dogon', [b.__json_repr__() for b in self.dogon])
+            ('dogon', [b.__json_repr__() for b in self.dogon]),
+            ('delay', [b.__json_repr__() for b in self.delay])
         ])
         
-    def add_bet(self, bet, to_dogon=False) :
+    def add_bet(self, bet, to_dogon=False, to_delay=False) :
         if to_dogon :
             self.dogon.append(bet)
-        else :
+        elif to_delay :
+            self.delay.append(bet)
+        else:
             self.bets.append(bet)
 
     def change_type(self, new_type) :

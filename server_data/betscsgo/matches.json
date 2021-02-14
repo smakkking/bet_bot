@@ -1,120 +1,76 @@
 {
     "events": [
         {
-            "begin_date": "2021-02-10T22:35:00",
-            "team1": "COL",
-            "team2": "EG",
-            "link": "https://betscsgo.in/match/271800/",
+            "begin_date": "2021-02-14T14:00:00",
+            "team1": "NEON",
+            "team2": "EXECRATION",
+            "link": "https://betsdota2.fun/match/166943/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "271866"
+                    "map_winner": "166945"
                 },
                 "map2": {
-                    "map_winner": "271870"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "COL": "271982",
-                    "EG": "271983"
-                },
-                "game_winner": "271800",
-                "games_count_2.5": "271801"
-            }
-        },
-        {
-            "begin_date": "2021-02-10T21:00:00",
-            "team1": "WISLAKRAKOW",
-            "team2": "GAMERLEGION",
-            "link": "https://betscsgo.in/match/271909/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "271911"
-                },
-                "map2": {
-                    "map_winner": "271915"
+                    "map_winner": "166947"
                 },
                 "map3": {
-                    "map_winner": "271986"
+                    "map_winner": "167089"
                 },
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "GAMERLEGION": "271919"
+                    "EXECRATION": "166949"
                 },
-                "game_winner": "271909",
-                "games_count_2.5": "271910"
+                "game_winner": "166943",
+                "games_count_2.5": "166944"
             }
         },
         {
-            "begin_date": "2021-02-10T21:00:00",
-            "team1": "APEKS",
-            "team2": "SAW",
-            "link": "https://betscsgo.in/match/271898/",
+            "begin_date": "2021-02-14T13:55:00",
+            "team1": "PUCKCHAMP",
+            "team2": "VP.PRODIGY",
+            "link": "https://betsdota2.fun/match/166855/",
             "outcomes": {
                 "map1": {
-                    "map_winner": "271900"
+                    "map_winner": "166857"
                 },
                 "map2": {
-                    "map_winner": "271904"
+                    "map_winner": "166859"
+                },
+                "map3": {
+                    "map_winner": "167091"
+                },
+                "map4": {},
+                "map5": {},
+                "one_map_win": {
+                    "PUCKCHAMP": "166861",
+                    "VP.PRODIGY": "166862"
+                },
+                "game_winner": "166855",
+                "games_count_2.5": "166856"
+            }
+        },
+        {
+            "begin_date": "2021-02-14T16:55:00",
+            "team1": "ASM.GAMBIT",
+            "team2": "NA'VI",
+            "link": "https://betsdota2.fun/match/166701/",
+            "outcomes": {
+                "map1": {
+                    "map_winner": "166706"
+                },
+                "map2": {
+                    "map_winner": "166708"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "APEKS": "271908"
+                    "ASM.GAMBIT": "166705"
                 },
-                "game_winner": "271898",
-                "games_count_2.5": "271899"
-            }
-        },
-        {
-            "begin_date": "2021-02-10T22:55:00",
-            "team1": "CREEPWAVE",
-            "team2": "NOBOUNTYHUNTER",
-            "link": "https://betsdota2.fun/match/166374/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166376"
-                },
-                "map2": {
-                    "map_winner": "166378"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "CREEPWAVE": "166380",
-                    "NOBOUNTYHUNTER": "166381"
-                },
-                "game_winner": "166374",
-                "games_count_2.5": "166375"
-            }
-        },
-        {
-            "begin_date": "2021-02-10T23:00:00",
-            "team1": "NOPING",
-            "team2": "THUNDERPREDATOR",
-            "link": "https://betsdota2.fun/match/166443/",
-            "outcomes": {
-                "map1": {
-                    "map_winner": "166445"
-                },
-                "map2": {
-                    "map_winner": "166447"
-                },
-                "map3": {},
-                "map4": {},
-                "map5": {},
-                "one_map_win": {
-                    "NOPING": "166449",
-                    "THUNDERPREDATOR": "166450"
-                },
-                "game_winner": "166443",
-                "games_count_2.5": "166444"
+                "game_winner": "166701",
+                "games_count_2.5": "166702"
             }
         }
     ],
-    "last_update": "2021-02-10T22:48:07.802417"
+    "last_update": "2021-02-14T16:00:43.547293"
 }

@@ -46,15 +46,14 @@ def bbet_client(DATA, sessions, client):
 
 def bbet_all(DATA, bkm) :
 
+    # новая готовящаяся версия лежит в папке bet_bot
+
     bookmaker = bkm['clients'][0]['bookmaker']
 
-    with Pool(processes=len(bkm['clients'])) as p:
-        p.map(functools.partial(bbet_client, DATA, bkm['sessions']), bkm['clients'])
-    """
+    #with Pool(processes=len(bkm['clients'])) as p:
+    #    p.map(functools.partial(bbet_client, DATA, bkm['sessions']), bkm['clients'])
+
     for client in bkm['clients'] :
-
-        bookmaker = client['bookmaker']
-
         if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
             # ставить по api возможности пока нет
             pass
@@ -87,7 +86,6 @@ def bbet_all(DATA, bkm) :
                         logging.getLogger("created_bets").info(result['success'])
                         if not result['success']:
                             logging.getLogger("created_bets").info(result['error'])
-    """
 
     with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
         last_ = json.load(f)

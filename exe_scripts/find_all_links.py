@@ -16,11 +16,13 @@ def find_all_links(DATA, bk_events, key_g) :
                 elif BOOKMAKER_OFFSET[key].TAKES_MATCHES_LIVE :
                     pass
                 else :
-                    if key in stavka.bk_links and stavka.bk_links[key] is not None:
+                    if key in stavka.bk_links and stavka.bk_links[key]:
                         continue
                     stavka.set_bk_link(key, BOOKMAKER_OFFSET[key].get_info(stavka, bk_events[key]))
                     if stavka.bk_links[key] is None:
+                        # нет ссылки на ставку
                         logging.getLogger("find_all_links").info(f"{key} has no info for {key_g}")
+                        group['coupon'].add_bet(stavka, to_delay=True)
     else :
         # не умеет работать с системой ставок(когда одновременно), а может это и не нужно???
         pass
