@@ -9,6 +9,7 @@ WALL_URL = 'https://vk.com/bett_on'
 NAME = 'bet_on'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "BETON CS:GO | Прогнозы и ставки CSGO & DOTA 2"
+BANK = 1.5e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 
@@ -19,6 +20,7 @@ def check_templates(post, token) :
     for photo_url in post.photo_list :
         obj = bet_manage.YandexAPI_detection(photo_url, token)
         text = obj.text_detection()
+
         has_template = False
         for (tmp, parse) in BET_TEMPLATES :
             if tmp(text.upper()) :

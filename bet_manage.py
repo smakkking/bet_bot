@@ -9,15 +9,16 @@ import re
 import json
 from PIL import Image
 import subprocess
+import logging
 
 # light selenium
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+
+from global_constants import ALL_POSTS_JSON_PATH, DATABASE_PATH
 
 
-from global_constants import CHROME_DRIVER_PATH, CHROME_DIR_PACKAGES, DATABASE_PATH, ALL_POSTS_JSON_PATH
-
-
-LOAD_TIMEOUT = 0.75  # sec
+LOAD_TIMEOUT = 1  # sec
 
 
 class Stavka :
@@ -151,7 +152,8 @@ class LastGroupPost:
             })
             posts = resp.json()['response']['items']
         except Exception as e:
-            raise AssertionError("error in requesting group wall") from e
+            logging.getLogger("load_last_data").error(str(e))
+            raise AssertionError("error in requesting group wall")
 
         if count == 2 :
             try :
@@ -163,17 +165,22 @@ class LastGroupPost:
                 if 'attachments' in p.keys() :
                     for at in p['attachments'] :
                         if at['type'] == 'photo' :
-                            # какого размера фото выбирать
+                            # берем то, которое имеет максимальный размер
                             need_photo = None
+
+                            max_size = 0
                             for photo in at['photo']['sizes']:
-                                if photo['type'] == "x":
+                                if photo['height'] * photo['width'] > max_size:
                                     need_photo = photo['url']
+                                    max_size = photo['height'] * photo['width']
+
                             if need_photo:
                                 self.add_photo(need_photo)
                             else:
                                 self.add_photo(at['photo']['sizes'][-1]['url'])
             except Exception as e:
-                raise AssertionError("error in vk_api") from e
+                logging.getLogger("load_last_data").error(e, exc_info=True)
+                raise AssertionError("error in vk_api")
         else : 
             # для большого числа постов сохраяются только фото         
             for p in posts :
@@ -187,7 +194,7 @@ class SQL_DB():
 
     MODEL_NAME = 'UserDataManagment_standartuser'
 
-    def __init__(self) :
+    def __init__(self, path='') :
         self.connection = sqlite3.connect(DATABASE_PATH)
 
     def execute_query(self, query) :
@@ -202,7 +209,7 @@ class SQL_DB():
         return result
     
     def SQL_SELECT(self, select_cond : list, where_cond : str=None, groups_query=False) :
-        from global_constants import GROUP_OFFSET
+        from global_links import GROUP_OFFSET
         select_users = "SELECT"
         for arg in select_cond :
             select_users += ', ' + arg
@@ -318,6 +325,12 @@ class YandexAPI_detection() :
         return ' '.join(get_text_from_response(response.text))
 
 
+class Client:
+    def __init__(self, info: dict):
+        for (key, value) in info.items():
+            self.__setattr__(key, value)
+
+
 def get_html_with_browser(browser, url, sec=0, cookies=None) :
     if url != 'none' :
         browser.get(url)
@@ -331,11 +344,15 @@ def get_html_with_browser(browser, url, sec=0, cookies=None) :
 
     return browser.page_source
 
-def create_webdriver() :
+def create_webdriver(profile_path='') :
     opts = webdriver.FirefoxOptions()
     opts.headless = True
 
-    obj = webdriver.Firefox(options=opts, executable_path='/usr/bin/geckodriver')
+    obj = webdriver.Firefox(
+        options=opts,
+        executable_path='/usr/local/bin/geckodriver',
+        firefox_profile=FirefoxProfile(profile_path) if profile_path != '' else None
+    )
     obj.implicitly_wait(LOAD_TIMEOUT)
     return obj
     
@@ -377,10 +394,12 @@ def define_side_winner(url) :
     else:
         return 'left'
 
+
 def reform_team_name(s : str) :
     s = s.replace(' ', '')
     s = s.upper()
     return s
+
 
 def read_groups() :
 

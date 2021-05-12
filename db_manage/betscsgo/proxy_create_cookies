@@ -1,0 +1,11 @@
+# !/bin/bash
+
+(python3 collect_cookies.py -delete) &&
+(
+firefox -p default-release https://betscsgo.in https://betsdota2.fun; read;
+firefox -p proxy_0 https://betscsgo.in https://betsdota2.fun; read;
+firefox -p proxy_1 https://betscsgo.in https://betsdota2.fun; read;
+
+) &&
+(python3 collect_cookies.py -collect)
+

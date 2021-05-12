@@ -1,142 +1,61 @@
-import functools
-from multiprocessing import Pool
-import json
-import pickle
-import logging
 import copy
+import time
 
-
-from global_constants import BOOKMAKER_OFFSET, SERVER_DATA_PATH
+from global_links import GROUP_OFFSET, BOOKMAKER_OFFSET
 import bet_manage
 from exe_scripts import scan_database
 
-def bbet_client(DATA, sessions, client):
-    if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API:
-        # ставить по api возможности пока нет
-        pass
-    else:
-        try:
-            session = sessions[str(client['id'])]
-        except KeyError:
-            return
-        for group in client['groups']:
-            if DATA[group]['parse_bet']:
-                for stavka in DATA[group]['coupon'].bets:
-                    if not (client['bookmaker'] in stavka.bk_links.keys()):
-                        continue
-                    if stavka.bk_links[client['bookmaker']] is None:
-                        continue
 
-                    result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
-                        stavka,
-                        client['bet_summ'],
-                        session
-                    )
-                    try:
-                        result = json.loads(result)
-                    except json.decoder.JSONDecodeError:
-                        result = {
-                            'success': False,
-                            'error': "unknown"
-                        }
-                    logging.getLogger("created_bets").info(client['id'])
-                    logging.getLogger("created_bets").info(result['success'])
-                    if not result['success']:
-                        logging.getLogger("created_bets").error(result['error'])
+def main(DATA: dict):
 
-def bbet_all(DATA, bkm) :
+    # проверка на то, нужно ли исполнять
+    need_to_execute = False
+    for val in DATA.values():
+        need_to_execute |= val['parse_bet']
+    if not need_to_execute:
+        time.sleep(5)
+        return None
 
-    # новая готовящаяся версия лежит в папке bet_bot
-
-    bookmaker = bkm['clients'][0]['bookmaker']
-
-    #with Pool(processes=len(bkm['clients'])) as p:
-    #    p.map(functools.partial(bbet_client, DATA, bkm['sessions']), bkm['clients'])
-
-    for client in bkm['clients'] :
-        if BOOKMAKER_OFFSET[client['bookmaker']].HAS_API :
-            # ставить по api возможности пока нет
-            pass
-        else :
-            try:
-                session = bkm['sessions'][str(client['id'])]
-            except KeyError:
-                continue
-            for group in client['groups'] :
-                if DATA[group]['parse_bet'] :
-                    for stavka in DATA[group]['coupon'].bets :
-                        if not (client['bookmaker'] in stavka.bk_links.keys()) :
-                            continue
-                        if stavka.bk_links[client['bookmaker']] is None :
-                            continue
-
-                        result = BOOKMAKER_OFFSET[client['bookmaker']].make_bet(
-                            stavka,
-                            client['bet_summ'],
-                            session
-                        )
-                        try:
-                            result = json.loads(result)
-                        except json.decoder.JSONDecodeError:
-                            result = {
-                                'success' : False,
-                                'error' : "unknown"
-                            }
-                        logging.getLogger("created_bets").info(client['id'])
-                        logging.getLogger("created_bets").info(result['success'])
-                        if not result['success']:
-                            logging.getLogger("created_bets").info(result['error'])
-
-    with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'r') as f :
-        last_ = json.load(f)
-
-    with open(SERVER_DATA_PATH + bookmaker + '/sessions.json', 'w') as f :
-        for key in last_.keys() :
-            bkm['sessions'][key]['session'] = last_[key]['session']
-        json.dump(bkm['sessions'], f, indent=4)
-
-def main(DATA : dict) :
-
+    # TODO collect bk info locally in _betting.py modules functions
     bkm = {}
     for key in BOOKMAKER_OFFSET.keys():
-        bkm[key] = {}
-        bkm[key]['clients'] = []
-        if BOOKMAKER_OFFSET[key].HAS_API :
-            continue
-        #  получаем список всех активных сессий
+        bkm[key] = []
 
-        bet_manage.file_is_available(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/sessions.json')
-        with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/sessions.json', 'r') as f :
-            sessions = json.load(f)
+    clients_DATA = scan_database.main(mode='all_bet')
+    for client in clients_DATA:
+        bkm[client['bookmaker']].append(client)
 
-        for sess in sessions.values() :
-            with open(sess['session'], 'rb') as f :
-                sess['session'] = pickle.load(f)
-        bkm[key]['sessions'] = sessions
+    # deleting duplicates(and bets, that already were)
+    for group in DATA.keys():
+        new_bets = []
+        for x in DATA[group]['coupon'].bets:
+            if x not in DATA[group]['coupon'].delay:
+                new_bets.append(x)
+            else:
+                DATA[group]['coupon'].delete_id['bets'].append(x.id)
+        DATA[group]['coupon'].bets = new_bets
+        DATA[group]['bank'] = GROUP_OFFSET[group].BANK
 
-    clients_DATA = scan_database.main()
-    for client in clients_DATA :
-        bkm[client['bookmaker']]['clients'].append(client)
+    # TODO parallel process
+    x = {}
+    BOOKMAKER_OFFSET['betscsgo'].mass_bet(DATA, bkm['betscsgo'], x)
 
-    bbet_all(DATA, bkm['betscsgo'])
+    # списание средств со счетов
+    scan_database.main(mode='all_bet', payment=x['betscsgo'])
 
-
-    # КАК ПРОИСХОДИТ ПЕРЕВОД В ДОГОН?
-    for group in DATA.keys() :
-        for x in DATA[group]['coupon'].bets :
-            if x.dogon and x.outcome_index[1] < 4 :
+    # transfering to dogon
+    for group in DATA.keys():
+        for x in DATA[group]['coupon'].bets:
+            if x.dogon and x.outcome_index[1] < 4 and x.bk_links[GROUP_OFFSET[group].DOGON_AGGREGATOR]:
                 t = copy.deepcopy(x)
                 t.change_id()
                 DATA[group]['coupon'].add_bet(t, to_dogon=True)
             DATA[group]['coupon'].delete_id['bets'].append(x.id)
-
+            DATA[group]['coupon'].add_bet(x, to_delay=True)
 
     return DATA
 
 
-if __name__ == '__main__' :
-    #while True :
+if __name__ == '__main__':
     DATA = bet_manage.read_groups()
     bet_manage.write_groups(main(DATA))
-
-    

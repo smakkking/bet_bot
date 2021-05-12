@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Букмекер{% endblock %}
+
+{% block content %}
 <style>
     body{
         text-align: center;
@@ -60,7 +65,6 @@
 }
     #main {
         position: relative;
-        top: 80px;
         text-align: center;
     }
 
@@ -77,164 +81,71 @@
     body {
         font: 300 16px/22px "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-weight: 700;
+        font-size: 20px;
     }
+    pre {
+	    overflow: auto;
+	}
 </style>
-{% load static %}
+<div id="main">
+    <form method="POST">
+        {% csrf_token %}
 
-<html>
-    <head>
-        <title> Покупка подписки </title>
-        <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
-    </head>
-
-    <body>
-        <img src="{% static 'images/logo_up.jpg' %} " class="logo_up" style="position: absolute; top: 0; left: 0;">
-        <img src="{% static 'images/logo_down.jpg' %} " class="logo_down" style="position: absolute; bottom:0; right:0;">
-        <div style="color: #28b578; border-top: 4px solid #28b578;font-size: 48px;line-height: 44px;padding: 40px 0 22px 0;position: absolute;left: 220px;">
-            BET-BOT
+        <div style="color: red">
+            {{ form.non_field_errors }}
         </div>
-        <div id="main">
-            <p>
-		        <button class="btnn" onclick="window.location.href = '{% url 'menu' %}'">ГЛАВНОЕ МЕНЮ</button>
-            </p>
-            <form method="POST">
-                {% csrf_token %}
+        <div class="fieldWrapper">
+            {{ form.bookmaker.errors }}
+            <label for="{{ form.bookmaker.id_for_label }}">Букмекер</label>
+            {{ form.bookmaker }}
+        </div>
+        <div id="result" style="color:red; margin-bottom: 15px;"></div>
 
-                <p>
-                    {{ form.non_field_errors }}
-                </p>
-                <p>
-                    <div class="fieldWrapper">
-                        {{ form.bookmaker.errors }}
-                        <label for="{{ form.bookmaker.id_for_label }}">Букмекер</label>
-                        {{ form.bookmaker }}
-                    </div>
-                </p>
-                <div id="result" style="color:red"></div>
-
-                <div class="datas">
-                    <p>
-                        <div class="fieldWrapper">
-                            {{ form.max_group_count.errors }}
-                            <label for="{{ form.max_group_count.id_for_label }}">Количество групп :</label>
-                            {{ form.max_group_count }}
-                        </div>
-                    </p>
-                    <div class="dur">
-                    <p>Срок действия подписки:</p>
-                        <input id="radio-1" type="radio" name="duration", value="0.5", id="1week">
-                            <label for="radio-1">2 недели</label>
-                        <input id="radio-2" type="radio" name="duration", value="1" checked>
-                            <label for="radio-2">1 месяц</label>
-                        {% if free_trial %}
-                        <input id="radio-5" type="radio" name="duration", value="0" checked>
-                            <label for="radio-5">
-                                <div style="color: red; font-size: 20px;">
-                                    БЕСПЛАТНО
-                                </div>
-                                <div>
-                                    4 дня
-                                </div>
-                            </label>
-                        {% endif %}
-                        <input id="radio-3" type="radio" name="duration", value="3" >
-                            <label for="radio-3">3 месяца</label>
-                        <input id="radio-4" type="radio" name="duration", value="6" >
-                            <label for="radio-4">6 месяцев</label>
-                    </div>
-                </div>
-
-                <div class="datas">
-                    <p>Введите данные вашего аккаунта букмекерской конторы</p>
-                <div class="fieldWrapper">
-                    <p><div>
-                        {{ form.bookmaker_login.errors }}
-                    <label for="{{ form.bookmaker_login.id_for_label }}">Логин</label>
-                    {{ form.bookmaker_login }}
-                    </div></p>
-
-
-                    <div>
-                        {{ form.bookmaker_password.errors }}
-                    <label for="{{ form.bookmaker_password.id_for_label }}">Пароль</label>
-                    {{ form.bookmaker_password }}
-                    </div>
-                </div>
-                </div>
-
-            <p><div class="prices">
-                <div> Цена за подписку</div>
-                    <div id="sub_summ">
-                        {% if free_trial %}
-                            0
-                        {% else %}
-                            744
-                        {% endif %}
-                    </div>
-                </div>
-
-            <div class="prices">
-                <div> Цена за одну группу</div>
-                <div id="sub_group_summ">
-                    {% if free_trial %}
-                        0
-                    {% else %}
-                        744
-                    {% endif %}
-                </div>
-
-            </div></p>
-
-
-                <input type="submit" class="btnn" value="ОФОРМИТЬ ПОДПИСКУ">
-            </form>
-
+        <div>
+            Введите данные вашего аккаунта букмекерской конторы
         </div>
 
-        <script>
-            var ton = 0
-            $(document).ready(function(){
-                $('#id_bookmaker').change(function(){
-                    if ($('#id_bookmaker option:selected').attr("value") === "betscsgo") {
-                        $("#result").html("<b> ВНИМАНИЕ: аккаунт должен быть без Steam Guard! </b><div> На выбранной Вами букмекерской конторе невозможны конкурирующие ставки, поэтому бот будет пропускать ставки, противоречащие друг другу </div>");
-                    } else {
-                        $("#result").html("");
-                    }
-                    // скрыть эти комменты
-                    // сюда добавлять дополнительное отображение при выборе из bookmaker
-                    
-                });
+        <div class="fieldWrapper">
+            <div>
+                <div style="color: red">{{ form.bookmaker_login.errors }}</div>
+            <label for="{{ form.bookmaker_login.id_for_label }}">Логин</label>
+            {{ form.bookmaker_login }}
+            </div>
+
+
+            <div>
+                {{ form.bookmaker_password.errors }}
+            <label for="{{ form.bookmaker_password.id_for_label }}">Пароль</label>
+            {{ form.bookmaker_password }}
+            </div>
+        </div>
+            <div style="font-size: 14px">
+                Если Тебя беспокоит сохранность твоих средств на аккаунте,
+            </div>
+            <div style="font-size: 14px">
+                то пиши <a href="https://vk.com/sma_king">мне</a>,и я объясню как их обезопасить.
+            </div>
+        <input type="submit" class="btnn" value="СОХРАНИТЬ ДАННЫЕ">
+    </form>
+
+    {% if saved %}
+        <div> Данные успешно сохранены. Изменения вступят в силу в течение 1 дня.</div>
+    {% endif %}
+
+    <script>
+        var ton = 0;
+        $(document).ready(function(){
+            $('#id_bookmaker').change(function(){
+                if ($('#id_bookmaker option:selected').attr("value") === "betscsgo") {
+                    $("#result").html("<b> ВНИМАНИЕ: аккаунт должен быть без Steam Guard! </b><div> На выбранной Вами букмекерской конторе невозможны конкурирующие ставки, поэтому бот будет пропускать ставки, противоречащие друг другу </div>");
+                } else {
+                    $("#result").html("");
+                }
+                // скрыть эти комменты
+                // сюда добавлять дополнительное отображение при выборе из bookmaker
+                
             });
-            function calculate_sub() {
-                var dur = document.getElementsByName('duration');
-               var base_day_payment = 30, a = 0.2, b=0.1;
-               var days, sale_mn;
-
-               for (i = 0; i < dur.length; i++)
-                   if (dur[i].checked) {
-                       days = dur[i].value * 31;
-                       sale_mn = i
-                   }
-               if (days == 0) {
-                   document.getElementById("id_max_group_count").value = 1;
-                   document.getElementById("rangeValue").innerHTML = 1;
-               }
-
-               var group_count = document.getElementById("id_max_group_count").value;
-
-               var count_sale = Math.pow(1-b, group_count - 1);
-               var duration_sale = Math.pow(1-a, sale_mn)
-               var S = base_day_payment * days * duration_sale * count_sale;
-               $('#sub_summ').text(Math.trunc(S * group_count * 100) / 100);
-               $('#sub_group_summ').text(Math.trunc(S * 100) / 100);
-            }
-            $('input[type=radio]').change(function () {
-               calculate_sub();
-            });
-            $('#id_max_group_count').change(function () {
-               calculate_sub();
-            });
-        </script>
-    </body>
-
-</html>
+        });
+    </script>
+</div>
+{% endblock %}

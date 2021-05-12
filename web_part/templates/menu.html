@@ -1,140 +1,80 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Пополнение счета {% endblock %}
+
+{% block content %}
 
 <style>
-    .btnn, .v{
+    .btnn,
+    .v {
         margin: 10px;
         font-size: 22px;
     }
+
     .btnn:hover {
         background: #28B578;
     }
+
     .frame {
         transform: skew(0deg);
         border: 1px solid #28B578;
         border-radius: 15px;
         display: inline-block;
     }
-    .col{
+
+    .col {
         display: inline-block;
         margin-left: 6%;
         margin-right: 6%;
         margin-top: 40px;
     }
-    body, #id_sub_end_date{
+
+    body {
         text-align: center;
     }
+
     #main {
         position: relative;
-        top: 120px;
         text-align: center;
     }
-    #id_personal_count {
-        width: 75px;
-    }
+
     body {
         font: 300 16px/22px "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-weight: 700;
         font-size: 20px;
     }
-
 </style>
-{% load static %}
-
-<html>
-    <head>
-        <title> Главное меню </title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    </head>
-    <body>
-        <img src="{% static 'images/logo_up.jpg' %} " class="logo_up" style="position: absolute; top: 0; left: 0;">
-        <img src="{% static 'images/logo_down.jpg' %} " class="logo_down" style="position: absolute; bottom:0; right:0;">
-        <div style="color: #28b578; border-top: 4px solid #28b578;font-size: 48px;line-height: 44px;padding: 40px 0 22px 0;position: absolute;left: 220px;">
-            BET-BOT
-        </div>
-        <div class="frame" style=" position:absolute; top:25px; right:25px; ">
-            <div style="display: inline-block; margin: 10px">
-                    <label for="{{ form.personal_count.id_for_label }}">Ваш баланс:</label>
-                </div>
-            <div style="display: inline-block; margin: 10px">{{ form.personal_count }} руб.</div>
-        <p style="margin:0px;">
-            <button class="btnn frame" onclick="window.location.href = '{% url 'logout' %}'">ВЫХОД</button>
-        </p>
-        </div>
-
-        <div id="main">
-
-        <p><div class="frame">
-            {{ form.sub_end_date.errors }}
-                <p>
-                    <label for="{{ form.sub_end_date.id_for_label }}">Срок окончания подписки</label>
-                </p>
-            <p>{{ form.sub_end_date }}</p>
-
-        </div>
-        </p>
-        <div class="col">
-        <p>
-            <button class="btnn frame" onclick="window.location.href = '{% url 'settings' %}'">ИЗМЕНИТЬ УСЛОВИЯ СТАВОК </button>
-        </p>
-
-        {% if not sub_status %}
-        <p>
-            <button class="btnn frame" onclick="window.location.href = '{% url 'subscribe' %}'">ОФОРМИТЬ ПОДПИСКУ</button>
-        </p>
-        {% endif %}
-        <button id="bot_status" style="{% if bot_status %}
-                 background: #ff0000;
-             {% else %}
-                 background: #00ff00;
-             {% endif %}" class="v" onclick="
-                $.getJSON('{% url 'change_status' %}', function (data) {
-                    if (data['status']) {
-                    $('#bot_status').text('ОСТАНОВИТЬ БОТА');
-                    $('#bot_status')[0].style.background = '#ff0000';
-                } else {
-                    $('#bot_status').text('АКТИВИРОВАТЬ БОТА');
-                    $('#bot_status')[0].style.background = '#00ff00'
-                }
-                })
-                ">
-             {% if bot_status %}
-                 ОСТАНОВИТЬ БОТА
-             {% else %}
-                 АКТИВИРОВАТЬ БОТА
-             {% endif %}
-        </button>
 
 
+    <div id="main">
+ 
+        <div>
 
-        </div>
-
-        <div class="col">
-
-        <p>
-            <b style="font-size: 28px"> Пополнение счета:</b>
+            <p>
             <div> Оплата производится с помощью онлайн-кошелька QIWI</div>
-        </p>
-<p>
-    <div id="add_error"></div>
-        <div id="info" style="font-weight: 400;"> </div>
-</p>
+            </p>
+            <p>
+            <div id="info" style="font-weight: 400;"> </div>
+            <div id="add_error" style="color: red; margin-top:20px"></div>
+            </p>
 
-        <script>
-            var summ;
-            var comment;
-        </script>
+            <script>
+                var summ;
+                var comment;
+            </script>
 
-<div id="summ_div"> Введите сумму для пополнения</div>
-<input type="number"  id="summ">
-<button id="pay" class="btnn frame" onclick="
+            <div id="summ_div"> Введите сумму для пополнения</div>
+            <input type="number" id="summ">
+            <button id="pay" class="btnn frame" onclick="
     $.getJSON('{% url 'add' %}', {'summ' : $('#summ').val(), 'check_status' : false}, function (data) {
             if (!data['success']) {
                 $('#add_error').html(data['error']);
             } else {
                 $('#info').html(
                     '<div> Переведите ' + data['summ'] +
-                    ' руб. на кошелек с номером ' + data['phone'] +
-                    '</div> <div>с комментарием <b>' + data['code'] + '</b></div>'
+                    ' руб. на кошелек с номером <b>' + data['phone'] +
+                    '</b></div> <div>с комментарием <b>' + data['code'] + '</b></div>'
                 );
                 $('#add_error').text('');
                 comment = data['code'];
@@ -146,21 +86,20 @@
             }
         });
 "> Оплатить</button>
- <button hidden id="check" onclick="
+            <button hidden id="check" onclick="
     $.getJSON('{% url 'add' %}', {'price' : summ, 'check_status' : true, 'comment' : comment}, function (data) {
         if (!data['success']) {
             $('#add_error').html(data['error']);
         } else {
             $('#info').html(
-             '<b>Сумма зачислена на Ваш счет. Для синхронизации перезагрузите страницу</b>'
+             '<pre>Сумма зачислена на Ваш счет. \n Для синхронизации перезагрузите страницу.<pre>'
             );
             $('#add_error').text('');
          }
     });
 "> Проверить статус платежа</button>
-            </div>
-
         </div>
 
-    </body>
-</html>
+    </div>
+
+{% endblock %}

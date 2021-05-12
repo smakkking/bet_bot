@@ -8,6 +8,7 @@ WALL_URL = 'https://vk.com/csgo_expert_dota'
 NAME = 'ExpertMnenie'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "Экспертное мнение CSGO | Прогнозы CS:GO & DOTA 2"
+BANK = 1.7e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

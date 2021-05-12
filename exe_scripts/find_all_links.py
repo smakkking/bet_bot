@@ -3,7 +3,8 @@ import functools
 import logging
 import json
 
-from global_constants import BOOKMAKER_OFFSET, GROUP_OFFSET, SERVER_DATA_PATH
+from global_constants import SERVER_DATA_PATH
+from global_links import BOOKMAKER_OFFSET, GROUP_OFFSET
 import bet_manage
 
 def find_all_links(DATA, bk_events, key_g) :
@@ -22,7 +23,6 @@ def find_all_links(DATA, bk_events, key_g) :
                     if stavka.bk_links[key] is None:
                         # нет ссылки на ставку
                         logging.getLogger("find_all_links").info(f"{key} has no info for {key_g}")
-                        group['coupon'].add_bet(stavka, to_delay=True)
     else :
         # не умеет работать с системой ставок(когда одновременно), а может это и не нужно???
         pass
@@ -32,11 +32,14 @@ def main(DATA: dict) :
 
     bk_events = {}
     for key in BOOKMAKER_OFFSET.keys():
+
+        if BOOKMAKER_OFFSET[key].TAKES_MATCHES_LIVE:
+            continue
+
         bet_manage.file_is_available(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/matches.json')
         with open(SERVER_DATA_PATH + BOOKMAKER_OFFSET[key].NAME + '/matches.json', 'r', encoding="utf-8") as f:
             dat = json.load(f)
             bk_events[key] = dat['events']
-
 
     with Pool(processes=len(GROUP_OFFSET.keys())) as pool :
         DATA = dict(pool.map(functools.partial(find_all_links, DATA, bk_events), GROUP_OFFSET.keys()))

@@ -1,8 +1,0 @@
-# !/bin/bash
-mkdir server_data
-cd server_data
-mkdir betscsgo
-mkdir tmp_data
-cd tmp_data
-mkdir bets
-mkdir sessions

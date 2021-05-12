@@ -1,8 +1,10 @@
 from bet_manage import SQL_DB
 from datetime import datetime
 
+from global_constants import SERVER_DATA_PATH
+
 def main() :
-    a = SQL_DB()
+    a = SQL_DB(SERVER_DATA_PATH)
     d = a.SQL_SELECT(select_cond=['sub_end_date', 'id'], groups_query=False, where_cond='sub_status=1')
 
     change_sub_status = ''

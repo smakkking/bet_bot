@@ -1,76 +1,157 @@
 {
     "events": [
         {
-            "begin_date": "2021-02-14T14:00:00",
-            "team1": "NEON",
-            "team2": "EXECRATION",
-            "link": "https://betsdota2.fun/match/166943/",
+            "link": "https://betscsgo.in/match/281387/",
+            "begin_date": "2021-03-22T11:00:00",
+            "team1": "TRIDENT(RU)",
+            "team2": "NORDAVIND",
             "outcomes": {
                 "map1": {
-                    "map_winner": "166945"
+                    "map_winner": "281408"
                 },
                 "map2": {
-                    "map_winner": "166947"
+                    "map_winner": "281412"
                 },
                 "map3": {
-                    "map_winner": "167089"
+                    "map_winner": "281878"
                 },
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "EXECRATION": "166949"
+                    "NORDAVIND": "281417"
                 },
-                "game_winner": "166943",
-                "games_count_2.5": "166944"
+                "game_winner": "281387",
+                "games_count_2.5": "281388"
             }
         },
         {
-            "begin_date": "2021-02-14T13:55:00",
-            "team1": "PUCKCHAMP",
-            "team2": "VP.PRODIGY",
-            "link": "https://betsdota2.fun/match/166855/",
+            "link": "https://betsdota2.fun/match/171346/",
+            "begin_date": "2021-03-22T12:00:00",
+            "team1": "SPARKINGARROWGAMING",
+            "team2": "DIGITALGAMING",
             "outcomes": {
                 "map1": {
-                    "map_winner": "166857"
+                    "map_winner": "171355"
                 },
                 "map2": {
-                    "map_winner": "166859"
+                    "map_winner": "171357"
                 },
                 "map3": {
-                    "map_winner": "167091"
+                    "map_winner": "171559"
                 },
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "PUCKCHAMP": "166861",
-                    "VP.PRODIGY": "166862"
+                    "DIGITALGAMING": "171354"
                 },
-                "game_winner": "166855",
-                "games_count_2.5": "166856"
+                "game_winner": "171346",
+                "games_count_2.5": "171347"
             }
         },
         {
-            "begin_date": "2021-02-14T16:55:00",
-            "team1": "ASM.GAMBIT",
-            "team2": "NA'VI",
-            "link": "https://betsdota2.fun/match/166701/",
+            "link": "https://betscsgo.in/match/281710/",
+            "begin_date": "2021-03-22T13:45:00",
+            "team1": "VERTEX",
+            "team2": "NINJA",
+            "outcomes": {
+                "map1": {},
+                "map2": {},
+                "map3": {},
+                "map4": {},
+                "map5": {},
+                "one_map_win": {},
+                "game_winner": "281710"
+            }
+        },
+        {
+            "link": "https://betscsgo.in/match/281391/",
+            "begin_date": "2021-03-22T14:00:00",
+            "team1": "TEAMONE",
+            "team2": "GAMBIT",
             "outcomes": {
                 "map1": {
-                    "map_winner": "166706"
+                    "map_winner": "281398"
                 },
                 "map2": {
-                    "map_winner": "166708"
+                    "map_winner": "281402"
                 },
                 "map3": {},
                 "map4": {},
                 "map5": {},
                 "one_map_win": {
-                    "ASM.GAMBIT": "166705"
+                    "TEAMONE": "281397"
                 },
-                "game_winner": "166701",
-                "games_count_2.5": "166702"
+                "game_winner": "281391",
+                "games_count_2.5": "281392"
+            }
+        },
+        {
+            "link": "https://betscsgo.in/match/281393/",
+            "begin_date": "2021-03-22T14:00:00",
+            "team1": "LDLC",
+            "team2": "OFFSET",
+            "outcomes": {
+                "map1": {
+                    "map_winner": "281428"
+                },
+                "map2": {
+                    "map_winner": "281432"
+                },
+                "map3": {},
+                "map4": {},
+                "map5": {},
+                "one_map_win": {
+                    "LDLC": "281436",
+                    "OFFSET": "281437"
+                },
+                "game_winner": "281393",
+                "games_count_2.5": "281394"
+            }
+        },
+        {
+            "link": "https://betscsgo.in/match/281395/",
+            "begin_date": "2021-03-22T14:00:00",
+            "team1": "SKADE",
+            "team2": "BLINK",
+            "outcomes": {
+                "map1": {
+                    "map_winner": "281438"
+                },
+                "map2": {
+                    "map_winner": "281442"
+                },
+                "map3": {},
+                "map4": {},
+                "map5": {},
+                "one_map_win": {
+                    "BLINK": "281446"
+                },
+                "game_winner": "281395",
+                "games_count_2.5": "281396"
+            }
+        },
+        {
+            "link": "https://betsdota2.fun/match/171487/",
+            "begin_date": "2021-03-22T14:00:00",
+            "team1": "EXECRATION",
+            "team2": "YANGONGALACTICOS",
+            "outcomes": {
+                "map1": {
+                    "map_winner": "171501"
+                },
+                "map2": {
+                    "map_winner": "171503"
+                },
+                "map3": {},
+                "map4": {},
+                "map5": {},
+                "one_map_win": {
+                    "YANGONGALACTICOS": "171500"
+                },
+                "game_winner": "171487",
+                "games_count_2.5": "171488"
             }
         }
     ],
-    "last_update": "2021-02-14T16:00:43.547293"
+    "last_update": "2021-03-22T13:51:56.874926"
 }

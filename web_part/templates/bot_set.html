@@ -1,8 +1,15 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Настройки{% endblock %}
+
+{% block content %}
+
 <style>
     .fieldWrapper input[type=checkbox] {
-	    display: none;
+        display: none;
     }
+
     .fieldWrapper label[class="inf_label"] {
         display: inline-block;
         cursor: pointer;
@@ -17,79 +24,92 @@
         border-radius: 15px;
         margin: 7px;
     }
-    .fieldWrapper input[type=checkbox]:checked + label[class="inf_label"] {
-	    background: #28B578;
+
+    .fieldWrapper input[type=checkbox]:checked+label[class="inf_label"] {
+        background: #28B578;
     }
-    .fieldWrapper input[type=checkbox]:disabled + label[class="inf_label"] {
+
+    .fieldWrapper input[type=checkbox]:disabled+label[class="inf_label"] {
         background: #efefef;
         color: #666;
     }
-    .btnn{
+
+    .btnn {
         transform: skew(0deg);
         border: 1px solid #28B578;
         border-radius: 15px;
         display: inline-block;
         font-size: 22px;
     }
+
     .btnn:hover {
         background: #28b578;
     }
+
     #main {
         position: relative;
-        top: 80px;
         text-align: center;
     }
+
     body {
         font: 300 16px/22px "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-weight: 700;
         font-size: 20px;
     }
 </style>
-{% load static %}
 
-<html>
-<head>
-	<meta charset ="utf8" />
-	<title>Настройки</title>
-</head>
-<body>
-
-    <img src="{% static 'images/logo_up.jpg' %} " class="logo_up" style="position: absolute; top: 0; left: 0;">
-    <img src="{% static 'images/logo_down.jpg' %} " class="logo_down" style="position: absolute; bottom:0; right:0;">
-    <div style="color: #28b578; border-top: 4px solid #28b578;font-size: 48px;line-height: 44px;padding: 40px 0 22px 0;position: absolute;left: 220px;">
-        BET-BOT
-    </div>
-    <div id="main">	<p>
-		  <button class="btnn" onclick="window.location.href = '{% url 'menu' %}'">ГЛАВНОЕ МЕНЮ</button>
-        </p>
-	<form method="POST" action="" id="groups">
-		{% csrf_token %}
+<div id="main">
+    <form method="POST" action="" id="groups">
+        {% csrf_token %}
         <div style="color:red;">
             {{ form.non_field_errors }}
         </div>
+        <div>
+            {{ form.bet_mode.errors }}
+            {{ form.bet_mode.label_tag}}
+            {{ form.bet_mode }}
+        </div>
 
-        <p><div>
+        <div>
+            <div>
                 {{ form.bet_summ.errors }}
-                {{ form.bet_summ.label_tag}}
+                {{ form.bet_summ.label_tag }}
+            </div>
+            <div>
                 {{ form.bet_summ }}
-        </div></p>
-        {% for field in form %}
-            {% if field.id_for_label != 'id_bet_summ' %}
-                <p class="fieldWrapper grcls">
-                            {{ field.errors }}
-                {{ field }}
-                    <label for="{{ field.id_for_label }}" class="inf_label">
-                        {{ field.label_tag }}
-                        {{ field.help_text|safe }}
-                    </label>
-                </p>
+            </div>
+            <div id="summ_to_bet_1"></div>
+        </div>
 
-            {% endif %}
+        <div style="margin-top: 20px">Выберите группы:</div>
+        {% for field in form %}
+        {% if field.id_for_label != 'id_bet_summ' and field.id_for_label != 'id_bet_mode_0' and field.id_for_label != 'id_personal_count' %}
+        <p class="fieldWrapper grcls">
+            {{ field.errors }}
+            {{ field }}
+            <label for="{{ field.id_for_label }}" class="inf_label">
+                {{ field.label_tag }}
+                {{ field.help_text|safe }}
+            </label>
+        </p>
+
+        {% endif %}
 
         {% endfor %}
 
-	<input style="margin-bottom: 100px"type="submit" value="СОХРАНИТЬ" class="btnn"/>
-	</form></div>
+        <input style="margin-bottom: 100px" type="submit" value="СОХРАНИТЬ" class="btnn" />
+    </form>
+</div>
 
-</body>
-<html>
+<script>
+    $(document).ready(function () {
+        $('#id_bet_summ').hover(function () {
+            $('#summ_to_bet_1').html("<pre>При выборе опции 'Процент от текущего банка' будет сделана ставка на эту сумму,\n " +
+                "если из поста невозможно понять, сколько ставить</pre>");
+        }, function () {
+            $('#summ_to_bet_1').html("");
+        });
+    });
+</script>
+</div>
+{% endblock %}

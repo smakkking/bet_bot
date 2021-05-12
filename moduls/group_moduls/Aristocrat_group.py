@@ -9,6 +9,7 @@ WALL_URL = 'https://vk.com/aristocratical'
 NAME = 'aristocratical'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "Аристократ CS:GO | Прогнозы и ставки CSGO & Dota"
+BANK = 1.8e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

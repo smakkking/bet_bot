@@ -9,6 +9,7 @@ WALL_URL = 'https://vk.com/stavki_csgo_dota'
 NAME = 'private_prognoz'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "Частные CS:GO | Прогнозы CSGO & Dota 2"
+BANK = 1.7e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

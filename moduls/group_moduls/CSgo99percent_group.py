@@ -8,6 +8,7 @@ WALL_URL = 'https://vk.com/csgo_stavki99'
 NAME = 'CSGO99percent'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "99% CS:GO | ПРОГНОЗЫ CSGO & DOTA 2"
+BANK = 1.6e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

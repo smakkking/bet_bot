@@ -9,6 +9,7 @@ WALL_URL = 'https://vk.com/1kkk_bets'
 NAME = 'Ikkk'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "1ККК | ПРОГНОЗЫ CSGO & DOTA 2"
+BANK = 0.85e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

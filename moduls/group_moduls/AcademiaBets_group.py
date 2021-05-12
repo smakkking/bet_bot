@@ -9,6 +9,7 @@ WALL_URL = 'https://vk.com/akademiya_stavki_csgo'
 NAME = 'academia_bets'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "Академия Ставок CSGO • Прогнозы CS:GO & Dota 2"
+BANK = 1.7e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

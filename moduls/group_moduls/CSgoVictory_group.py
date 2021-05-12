@@ -8,7 +8,7 @@ WALL_URL = 'https://vk.com/victorybets_stavki'
 NAME = 'CSgoVictory'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = 'CS:GO VICTORY | ПРОГНОЗЫ CSGO & DOTA2'
-
+BANK = 1.6e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

@@ -17,7 +17,7 @@
           box-sizing: border-box;
 }
 .container,
-.grid {
+.grid{
   margin: 0 auto;
 
 }
@@ -231,6 +231,8 @@ body {
     </head>
     
 	<body>
+    {% block body %}
+
 			<header class="container group">
 				<h1 class="logo">
 					BET-BOT
@@ -245,19 +247,25 @@ body {
 			<section class="hero container">
 				<h2>Переосмысление ставочного дела</h2>
 				<p>Если вы хотите начать зарабатывать на спорте,затрачивая минимум усилий,то этот сайт ваш лучший вариант</p>
-				 <a class="btn btn-alt" href="{% url 'registration' %}">Зарегистрируйтесь сейчас</a>
-				 <a class="btn btn-alt" href="{% url 'login' %}">Вход</a>
+
+                <a class="btn btn-alt" href="/accounts/login">Вход</a>
+                <a class="btn btn-alt" href="/accounts/vk/login/?process=login">Вход через ВКонтакте</a>
+                <a class="btn btn-alt" href="/accounts/signup">Регистрация</a>
+
 			</section>
-			
+            {% block extra_body %}
+            {% endblock %}
+
+            {% block content %}
+            {% endblock %}
 			<section class="grid" >
 
 				<section class="col-1-3" >
 					  <h5>Аналитика и Капперы</h5>
-					<p>Наш сервис анализирует огромное количество параметров, а также собирает данные и учитывает мнение многих специалистов ставочного дела. 
-					   Благодаря этому вы в кратчайшие сроки получаете наиболее точный результат </p>
+					<p>Наш сервис анализирует огромное количество параметров, а также собирает данные и учитывает мнение многих специалистов ставочного дела.</p>
 				</section><!--
 
-				Говно
+
 			--><section class="col-1-3" >
 					  <h5>Автоматизация </h5>
 					<p>С этим сайтом вам не придётся больше сидеть и ловить лучший момент для своей ставки, а также постоянно мониторить различные сервисы.
@@ -266,12 +274,11 @@ body {
 
                 <section class="col-1-3">
                     <h5>Остались вопросы?</h5>
-                    <p>Пиши мне в личные сообщения</p>
-                    <p><a href="https://vk.com/sma_king">https://vk.com/sma_king</a></p>
+                    <p>Пиши на данную почту<p>
+                    <p><b>bet-bot_supp@mail.ru</b></p>
                 </section>
             </section>
-		  
-	
+
 			<footer class="primary-footer container group">
 			
 				<small>&copy; BET-BOT</small>
@@ -280,5 +287,8 @@ body {
 				</nav>
 				
 			</footer>
+
+    {% endblock %}
+
 	</body>
 </html>

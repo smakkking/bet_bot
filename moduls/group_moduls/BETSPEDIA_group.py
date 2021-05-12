@@ -8,6 +8,7 @@ WALL_URL = 'https://vk.com/betspedia_csgo'
 NAME = 'BetsPedia'
 DOGON_AGGREGATOR = BETSCSGO_betting.NAME
 TITLE = "BETSPEDIA CS:GO | ПРОГНОЗЫ CSGO & DOTA 2"
+BANK = 1.7e5
 
 BET_TEMPLATES = BETSCSGO_betting.PHOTO_PARSING_TEMPLATES # + other bookmakers templates
 

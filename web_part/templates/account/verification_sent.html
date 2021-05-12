@@ -1,0 +1,11 @@
+{% extends "test.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<div style="text-align: center">
+
+    <p>{% blocktrans %}Мы выслали вам письмо с подтверждением. Перейдите по ссылке, чтобы закончить процесс регистрации.{% endblocktrans %}</p>
+    <p>{% blocktrans %}Обычно, оно приходит в течение 10 минут. Не забудьте проверить спам.{% endblocktrans %}</p>
+</div>
+{% endblock %}

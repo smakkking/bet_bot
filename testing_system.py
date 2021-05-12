@@ -8,7 +8,7 @@ from bet_manage import LastGroupPost, YandexAPI_detection, get_html_with_browser
 from global_constants import SERVER_DATA_PATH, ALL_POSTS_JSON_PATH
 
 import nltk, json, time
-from moduls.group_moduls import Aristocrat_group, SaveMoney_group
+from moduls.group_moduls import BetOn_group
 from moduls.bookmaker_moduls import BETSCSGO_betting
 
 def testing_group(group, N) :
@@ -82,6 +82,7 @@ def testing_group(group, N) :
 
     driver.close()
 
+
 def get_stavka(photo_url, group, debug=False) :
     YandexAPI_detection.create_new_token()
     a = YandexAPI_detection(photo_url)
@@ -102,6 +103,7 @@ def get_stavka(photo_url, group, debug=False) :
             stavka = parse(photo_url, text_nltk)
 
     return None if (stavka is None) else stavka.__json_repr__()
+
 
 def undetected_bets_test(group) :
     with open(SERVER_DATA_PATH + 'undetected_bets.json', 'r') as f:
@@ -149,65 +151,26 @@ def proxy_get():
 
 
 if __name__ == "__main__" :
-    import grequests
 
-    urls = [
-        (grequests.Session(), 'https://betscsgo.in', 'https://betscsgo.in/login/')
-    ] * 50
-
-
-    for u in urls:
-        u[0].cookies.set('cf_clearance', BETSCSGO_betting.CURRENT_CF_CLEARANCE)
-        u[0].headers.update({
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'
-    })
-
-
-    # TASK1
-    duration = time.time()
-    rs = (grequests.get(u[1], session=u[0]) for u in urls)
-
-    errors_counter = 0
-    for responce in grequests.map(rs):
-        try:
-            if responce.status_code != 200:
-                print("error")
-        except:
-            errors_counter += 1
-    print(f"ended in {time.time() - duration} sec")
-    print(f"{errors_counter} requests ended with error\n")
-
-    # TASK2
-    duration = time.time()
-    rs = (grequests.get(u[1], session=u[0]) for u in urls)
-
-    errors_counter = 0
-    for responce in grequests.map(rs):
-        try:
-            if responce.status_code != 200:
-                print("error")
-        except:
-            errors_counter += 1
-    print(f"ended in {time.time() - duration} sec")
-    print(f"{errors_counter} requests ended with error\n")
-
+    print(get_stavka(" https://sun9-24.userapi.com/impg/WHKwI7NcYC2d_Zp7GAhgQnDNAqTKl7w9P6uuhA/P9xe2fvRXPQ.jpg?size=1411x132&quality=96&sign=42d5c2174cb1e7ec7e5123c0c34d99ea&c_uniq_tag=QUF-rEJDND2zPCT4Md_flrHSGNjjeHFaJQ3SiTr6oa0&type=album", BetOn_group, debug=True))
 
     """
 {
-        "bk_links": {
-            "betscsgo": {
-                "team1": "SPROUT",
-                "team2": "TBD",
-                "bet_id": "267019",
-                "link": "https://betscsgo.in/match/267019/"
-            }
-        },
-        "summ_multiplier": 1,
-        "sum": 7500.0,
-        "match_title": "SPROUT vs TBD",
-        "winner": "SPROUT",
-        "outcome_index": "game_winner",
-        "dogon": false
-    }
+                    "bk_links": {
+                        "betscsgo": {
+                            "team1": "FAZE",
+                            "team2": "LIQUID",
+                            "bet_id": "272258",
+                            "link": "https://betscsgo.in/match/272258/"
+                        }
+                    },
+                    "summ_multiplier": 1,
+                    "sum": 7500.0,
+                    "match_title": "FAZE vs LIQUID",
+                    "winner": "LIQUID",
+                    "outcome_index": "game_winner",
+                    "dogon": false,
+                    "id": 1255212551
+                }
     """
     'https://sun9-20.userapi.com/impf/O_fBuxflvvuDAQ4hWiKkClU5kevKL2TUgChlwg/7Xg3HApXyTQ.jpg?size=557x480&quality=96&proxy=1&sign=1e2691b1dc2b48878c7a4daf9d7c8289&c_uniq_tag=DhzWafUB25cMqfx5L4Dy0p8CqPoppvFNGF7jBg8-S_M&type=album'
